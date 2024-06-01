@@ -7,10 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		323A00E32C0AA4360056BAD1 /* libglfw.3.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */; };
+		323A00E42C0AA4360056BAD1 /* libglfw.3.4.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		323A00E72C0AC3530056BAD1 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 323A00E62C0AC3530056BAD1 /* glad.c */; };
+		323A00EE2C0AC7440056BAD1 /* commander_collection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00EC2C0AC7440056BAD1 /* commander_collection.cpp */; };
+		326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 326A8BE72C0A28E300E30250 /* OpenGL.framework */; };
 		3278B0C22C097C5500DF6489 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3278B0C12C097C5500DF6489 /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		323A00E52C0AA4360056BAD1 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				323A00E42C0AA4360056BAD1 /* libglfw.3.4.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3278B0BC2C097C5500DF6489 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -23,8 +39,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.4.dylib; path = ../../../../opt/homebrew/Cellar/glfw/3.4/lib/libglfw.3.4.dylib; sourceTree = "<group>"; };
+		323A00E62C0AC3530056BAD1 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glad.c; path = "../../OpenGL/glad-4.1/src/glad.c"; sourceTree = "<group>"; };
+		323A00E92C0AC4B10056BAD1 /* theme_color.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = theme_color.h; sourceTree = "<group>"; };
+		323A00EC2C0AC7440056BAD1 /* commander_collection.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = commander_collection.cpp; sourceTree = "<group>"; };
+		323A00ED2C0AC7440056BAD1 /* commander_collection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = commander_collection.hpp; sourceTree = "<group>"; };
+		323A00EF2C0ACBFB0056BAD1 /* constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
+		326A8BE72C0A28E300E30250 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		326A8BE92C0A297800E30250 /* libglfw.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.dylib; path = "../OpenGL/glfw-3.4.bin.MACOS/lib-arm64/libglfw.3.dylib"; sourceTree = "<group>"; };
 		3278B0BE2C097C5500DF6489 /* GV_Core_with_OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GV_Core_with_OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		3278B0C12C097C5500DF6489 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		32B4D8442C0A319700B76257 /* glfw-3.4.bin.MACOS */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "glfw-3.4.bin.MACOS"; path = "../OpenGL/glfw-3.4.bin.MACOS"; sourceTree = "<group>"; };
+		32B4D8462C0A31B400B76257 /* libglfw.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.dylib; path = "../OpenGL/glfw-3.4.bin.MACOS/lib-universal/libglfw.3.dylib"; sourceTree = "<group>"; };
+		32B4D8472C0A31B400B76257 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = "../OpenGL/glfw-3.4.bin.MACOS/lib-universal/libglfw3.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,17 +59,50 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */,
+				323A00E32C0AA4360056BAD1 /* libglfw.3.4.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		323A00E82C0AC48A0056BAD1 /* theme */ = {
+			isa = PBXGroup;
+			children = (
+				323A00E92C0AC4B10056BAD1 /* theme_color.h */,
+			);
+			path = theme;
+			sourceTree = "<group>";
+		};
+		323A00EA2C0AC6E90056BAD1 /* controller */ = {
+			isa = PBXGroup;
+			children = (
+				323A00EC2C0AC7440056BAD1 /* commander_collection.cpp */,
+				323A00ED2C0AC7440056BAD1 /* commander_collection.hpp */,
+			);
+			path = controller;
+			sourceTree = "<group>";
+		};
+		326A8BE62C0A28E300E30250 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */,
+				32B4D8462C0A31B400B76257 /* libglfw.3.dylib */,
+				32B4D8472C0A31B400B76257 /* libglfw3.a */,
+				32B4D8442C0A319700B76257 /* glfw-3.4.bin.MACOS */,
+				326A8BE92C0A297800E30250 /* libglfw.3.dylib */,
+				326A8BE72C0A28E300E30250 /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		3278B0B52C097C5500DF6489 = {
 			isa = PBXGroup;
 			children = (
 				3278B0C02C097C5500DF6489 /* GV_Core_with_OpenGL */,
 				3278B0BF2C097C5500DF6489 /* Products */,
+				326A8BE62C0A28E300E30250 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -57,7 +117,11 @@
 		3278B0C02C097C5500DF6489 /* GV_Core_with_OpenGL */ = {
 			isa = PBXGroup;
 			children = (
+				323A00EA2C0AC6E90056BAD1 /* controller */,
+				323A00E82C0AC48A0056BAD1 /* theme */,
+				323A00E62C0AC3530056BAD1 /* glad.c */,
 				3278B0C12C097C5500DF6489 /* main.cpp */,
+				323A00EF2C0ACBFB0056BAD1 /* constants.h */,
 			);
 			path = GV_Core_with_OpenGL;
 			sourceTree = "<group>";
@@ -72,6 +136,7 @@
 				3278B0BA2C097C5500DF6489 /* Sources */,
 				3278B0BB2C097C5500DF6489 /* Frameworks */,
 				3278B0BC2C097C5500DF6489 /* CopyFiles */,
+				323A00E52C0AA4360056BAD1 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -120,6 +185,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3278B0C22C097C5500DF6489 /* main.cpp in Sources */,
+				323A00E72C0AC3530056BAD1 /* glad.c in Sources */,
+				323A00EE2C0AC7440056BAD1 /* commander_collection.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,7 +196,9 @@
 		3278B0C32C097C5500DF6489 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -184,13 +253,16 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				SYSTEM_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
 		3278B0C42C097C5500DF6489 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -247,7 +319,17 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 379P4X5DA9;
 				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_STRICT_ALIASING = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"${glfw_lib-3.4}",
+					/opt/homebrew/Cellar/glfw/3.4/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"${glad_header-4.1}",
+					"${glfw_header-3.4}",
+				);
 			};
 			name = Debug;
 		};
@@ -257,7 +339,16 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 379P4X5DA9;
 				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_STRICT_ALIASING = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"${glfw_lib-3.4}",
+					/opt/homebrew/Cellar/glfw/3.4/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"${glad_header-4.1}",
+					"${glfw_header-3.4}",
+				);
 			};
 			name = Release;
 		};
