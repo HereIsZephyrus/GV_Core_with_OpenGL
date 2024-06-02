@@ -6,21 +6,22 @@
 //
 #define GL_SILENCE_DEPRECATION
 #include "commander_collection.hpp"
-#include "drawlines.hpp"
+#include "../painting/drawlines.hpp"
 #include <iostream>
 namespace Draw{
 static bool isDrawing = false;
 static double sX, sY;
 }
 
-inline float calcNormal(double x,int length){
-    return (x / length) * 2.0f - 1.0f;
+inline float calcNormalX(double x){
+    return static_cast<float>(x / WINDOW_WIDTH ) * 2.0f - 1.0f;
+}
+inline float calcNormalY(double x) {
+    return 1.0f - static_cast<float>(x / WINDOW_HEIGHT) * 2.0f ;
 }
 void drawing(GLFWwindow* window, double xpos, double ypos){
-    float sx = calcNormal(Draw::sX, WINDOW_WIDTH);
-    float sy = calcNormal(Draw::sY, WINDOW_HEIGHT);
-    float tx = calcNormal(xpos, WINDOW_WIDTH);
-    float ty = calcNormal(ypos, WINDOW_HEIGHT);
+    float sx = calcNormalX(Draw::sX),  tx = calcNormalX(xpos);
+    float sy = calcNormalY(Draw::sY),  ty = calcNormalY(ypos);
     drawLine(sx,sy,tx,ty);
     return;
 }
@@ -74,6 +75,6 @@ void mouseDrawCirle(GLFWwindow* window, int button, int action, int mods) {
 */
 void keyCommand(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
+        glfwSetWindowShouldClose(window, true);
     }
 }

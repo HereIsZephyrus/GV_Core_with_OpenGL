@@ -1,0 +1,16 @@
+﻿  commander_collection.cpp
+  main.cpp
+  drawlines.cpp
+  Generating Code...
+main.obj : error LNK2019: unresolved external symbol __imp_glClear referenced in function "int __cdecl prepareWindow(struct GLFWwindow * &)" (?prepareWindow@@YAHAEAPEAUGLFWwindow@@@Z)
+drawlines.obj : error LNK2001: unresolved external symbol __imp_glClear
+main.obj : error LNK2019: unresolved external symbol __imp_glClearColor referenced in function "int __cdecl prepareWindow(struct GLFWwindow * &)" (?prepareWindow@@YAHAEAPEAUGLFWwindow@@@Z)
+main.obj : error LNK2019: unresolved external symbol __imp_glLoadIdentity referenced in function "int __cdecl prepareWindow(struct GLFWwindow * &)" (?prepareWindow@@YAHAEAPEAUGLFWwindow@@@Z)
+main.obj : error LNK2019: unresolved external symbol __imp_glMatrixMode referenced in function "int __cdecl prepareWindow(struct GLFWwindow * &)" (?prepareWindow@@YAHAEAPEAUGLFWwindow@@@Z)
+main.obj : error LNK2019: unresolved external symbol __imp_glOrtho referenced in function "int __cdecl prepareWindow(struct GLFWwindow * &)" (?prepareWindow@@YAHAEAPEAUGLFWwindow@@@Z)
+main.obj : error LNK2019: unresolved external symbol __imp_glViewport referenced in function "void __cdecl framebuffer_size_callback(struct GLFWwindow *,int,int)" (?framebuffer_size_callback@@YAXPEAUGLFWwindow@@HH@Z)
+drawlines.obj : error LNK2019: unresolved external symbol __imp_glBegin referenced in function "void __cdecl drawLine(float const &,float const &,float const &,float const &)" (?drawLine@@YAXAEBM000@Z)
+drawlines.obj : error LNK2019: unresolved external symbol __imp_glColor3f referenced in function "void __cdecl drawLine(float const &,float const &,float const &,float const &)" (?drawLine@@YAXAEBM000@Z)
+drawlines.obj : error LNK2019: unresolved external symbol __imp_glEnd referenced in function "void __cdecl drawLine(float const &,float const &,float const &,float const &)" (?drawLine@@YAXAEBM000@Z)
+drawlines.obj : error LNK2019: unresolved external symbol __imp_glVertex2f referenced in function "void __cdecl drawLine(float const &,float const &,float const &,float const &)" (?drawLine@@YAXAEBM000@Z)
+C:\Users\Administrator\GitHub\GV_Core_with_OpenGL\GV_Core_with_OpenGL.vsxproj\x64\Debug\OpenGLCore.exe : fatal error LNK1120: 10 unresolved externals
