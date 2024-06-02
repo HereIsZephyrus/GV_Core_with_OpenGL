@@ -11,6 +11,7 @@
 		323A00E42C0AA4360056BAD1 /* libglfw.3.4.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		323A00E72C0AC3530056BAD1 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 323A00E62C0AC3530056BAD1 /* glad.c */; };
 		323A00EE2C0AC7440056BAD1 /* commander_collection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00EC2C0AC7440056BAD1 /* commander_collection.cpp */; };
+		323A00F32C0AD1430056BAD1 /* drawlines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00F12C0AD1430056BAD1 /* drawlines.cpp */; };
 		326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 326A8BE72C0A28E300E30250 /* OpenGL.framework */; };
 		3278B0C22C097C5500DF6489 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3278B0C12C097C5500DF6489 /* main.cpp */; };
 /* End PBXBuildFile section */
@@ -45,13 +46,11 @@
 		323A00EC2C0AC7440056BAD1 /* commander_collection.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = commander_collection.cpp; sourceTree = "<group>"; };
 		323A00ED2C0AC7440056BAD1 /* commander_collection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = commander_collection.hpp; sourceTree = "<group>"; };
 		323A00EF2C0ACBFB0056BAD1 /* constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
+		323A00F12C0AD1430056BAD1 /* drawlines.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = drawlines.cpp; sourceTree = "<group>"; };
+		323A00F22C0AD1430056BAD1 /* drawlines.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = drawlines.hpp; sourceTree = "<group>"; };
 		326A8BE72C0A28E300E30250 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		326A8BE92C0A297800E30250 /* libglfw.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.dylib; path = "../OpenGL/glfw-3.4.bin.MACOS/lib-arm64/libglfw.3.dylib"; sourceTree = "<group>"; };
 		3278B0BE2C097C5500DF6489 /* GV_Core_with_OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GV_Core_with_OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		3278B0C12C097C5500DF6489 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		32B4D8442C0A319700B76257 /* glfw-3.4.bin.MACOS */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "glfw-3.4.bin.MACOS"; path = "../OpenGL/glfw-3.4.bin.MACOS"; sourceTree = "<group>"; };
-		32B4D8462C0A31B400B76257 /* libglfw.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.dylib; path = "../OpenGL/glfw-3.4.bin.MACOS/lib-universal/libglfw.3.dylib"; sourceTree = "<group>"; };
-		32B4D8472C0A31B400B76257 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = "../OpenGL/glfw-3.4.bin.MACOS/lib-universal/libglfw3.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,14 +83,19 @@
 			path = controller;
 			sourceTree = "<group>";
 		};
+		323A00F02C0AD0C40056BAD1 /* painting */ = {
+			isa = PBXGroup;
+			children = (
+				323A00F12C0AD1430056BAD1 /* drawlines.cpp */,
+				323A00F22C0AD1430056BAD1 /* drawlines.hpp */,
+			);
+			path = painting;
+			sourceTree = "<group>";
+		};
 		326A8BE62C0A28E300E30250 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */,
-				32B4D8462C0A31B400B76257 /* libglfw.3.dylib */,
-				32B4D8472C0A31B400B76257 /* libglfw3.a */,
-				32B4D8442C0A319700B76257 /* glfw-3.4.bin.MACOS */,
-				326A8BE92C0A297800E30250 /* libglfw.3.dylib */,
 				326A8BE72C0A28E300E30250 /* OpenGL.framework */,
 			);
 			name = Frameworks;
@@ -117,6 +121,7 @@
 		3278B0C02C097C5500DF6489 /* GV_Core_with_OpenGL */ = {
 			isa = PBXGroup;
 			children = (
+				323A00F02C0AD0C40056BAD1 /* painting */,
 				323A00EA2C0AC6E90056BAD1 /* controller */,
 				323A00E82C0AC48A0056BAD1 /* theme */,
 				323A00E62C0AC3530056BAD1 /* glad.c */,
@@ -187,6 +192,7 @@
 				3278B0C22C097C5500DF6489 /* main.cpp in Sources */,
 				323A00E72C0AC3530056BAD1 /* glad.c in Sources */,
 				323A00EE2C0AC7440056BAD1 /* commander_collection.cpp in Sources */,
+				323A00F32C0AD1430056BAD1 /* drawlines.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
