@@ -45,7 +45,7 @@
 		323A00E92C0AC4B10056BAD1 /* theme_color.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = theme_color.h; sourceTree = "<group>"; };
 		323A00EC2C0AC7440056BAD1 /* commander_collection.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = commander_collection.cpp; sourceTree = "<group>"; };
 		323A00ED2C0AC7440056BAD1 /* commander_collection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = commander_collection.hpp; sourceTree = "<group>"; };
-		323A00EF2C0ACBFB0056BAD1 /* constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
+		323A00EF2C0ACBFB0056BAD1 /* ports.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ports.h; sourceTree = "<group>"; };
 		323A00F12C0AD1430056BAD1 /* drawlines.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = drawlines.cpp; sourceTree = "<group>"; };
 		323A00F22C0AD1430056BAD1 /* drawlines.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = drawlines.hpp; sourceTree = "<group>"; };
 		326A8BE72C0A28E300E30250 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -126,7 +126,7 @@
 				323A00E82C0AC48A0056BAD1 /* theme */,
 				323A00E62C0AC3530056BAD1 /* glad.c */,
 				3278B0C12C097C5500DF6489 /* main.cpp */,
-				323A00EF2C0ACBFB0056BAD1 /* constants.h */,
+				323A00EF2C0ACBFB0056BAD1 /* ports.h */,
 			);
 			path = GV_Core_with_OpenGL;
 			sourceTree = "<group>";

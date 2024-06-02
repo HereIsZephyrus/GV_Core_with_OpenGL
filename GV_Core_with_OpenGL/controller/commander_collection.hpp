@@ -10,12 +10,14 @@
 
 #include <stdio.h>
 #include <GLFW/glfw3.h>
+#include <GLUT/glut.h>
 #include <vector>
-#include "constants.h"
+#include "ports.h"
 typedef std::pair<float, float>  fPoint;
 extern std::vector<fPoint> lines;
 void keyCommand(GLFWwindow* window, int key, int scancode, int action, int mods);
-void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) ;
-void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
+void mouseDrawLine(GLFWwindow* window, int button, int action, int mods);
+void mouseDrawLines(GLFWwindow* window, int button, int action, int mods);
+void mouseDrawCirles(GLFWwindow* window, int button, int action, int mods);
 
 #endif /* commander_collection_hpp */

@@ -4,34 +4,29 @@
 //
 //  Created by ChanningTong on 6/1/24.
 //
-
+#define GL_SILENCE_DEPRECATION
+#include <iostream>
+#include <cmath>
 #include "drawlines.hpp"
 
-void drawLine() {
-    // clear buffer
+void drawLine(const float &sX,const float &sY,const float &tX,const float &tY) {
     glClear(GL_COLOR_BUFFER_BIT);
-    glBegin(GL_LINES);
+    std::cout<<sX << ' '<<sY<<' '<<tX << ' '<<tY<<std::endl;
+    int dx = tX - sX,dy = tY - sY;
+    int steps = std::max(std::abs(dx), std::abs(dy));
+    float xinc = static_cast<float>(dx) / steps;
+    float yinc = static_cast<float>(dy) / steps;
+    float x = sX,y = sY;
+    glBegin(GL_LINE);
         glColor3f(1.0f, 0.0f, 0.0f);
-        glVertex2f(-0.5f, -0.5f);
-        glVertex2f(0.5f, 0.5f);
+        glVertex2f(sX, sY);
+        glVertex2f(tX, tY);
     glEnd();
-
-    glfwSwapBuffers(glfwGetCurrentContext());
-}
-
-void drawLineWithMouse(GLFWwindow *window) {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    // 绘制线条
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glBegin(GL_LINES);
-    for (const auto& line : lines) {
-        glVertex2f(line.first, line.second);
+    glBegin(GL_POINTS);
+    for (int i = 0; i <= steps; i++,x += xinc,y += yinc) {
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex2f(x, y);
     }
     glEnd();
-    
-    // 交换缓冲区
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+    glfwSwapBuffers(glfwGetCurrentContext());
 }

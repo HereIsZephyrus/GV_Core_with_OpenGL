@@ -7,8 +7,10 @@
 
 #ifndef constants_h
 #define constants_h
-
+//#include <GLFW/glfw3.h>
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
+//extern int VIEW_WIDTH;
+//extern int VIEW_HEIGHT;
 
 #endif /* constants_h */

@@ -11,6 +11,5 @@
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 #include "../controller/commander_collection.hpp"
-void drawLine() ;
-void drawLineWithMouse(GLFWwindow *window) ;
+void drawLine(const float &sX,const float &sY,const float &tX,const float &tY) ;
 #endif /* drawlines_hpp */
