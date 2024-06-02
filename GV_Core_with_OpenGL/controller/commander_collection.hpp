@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 #include <GLFW/glfw3.h>
-#include <GLUT/glut.h>
 #include <vector>
 #include "ports.h"
 #include "../painting/painting_table.hpp"
