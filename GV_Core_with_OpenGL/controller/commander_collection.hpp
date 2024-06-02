@@ -13,8 +13,8 @@
 #include <GLUT/glut.h>
 #include <vector>
 #include "ports.h"
-typedef std::pair<float, float>  fPoint;
-extern std::vector<fPoint> lines;
+#include "../painting/painting_table.hpp"
+
 void keyCommand(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawLine(GLFWwindow* window, int button, int action, int mods);
 void mouseDrawLines(GLFWwindow* window, int button, int action, int mods);

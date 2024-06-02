@@ -11,6 +11,7 @@
 #include <iostream>
 #include "ports.h"
 #include "theme/theme_color.h"
+#include "painting/painting_table.hpp"
 #include "controller/commander_collection.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -71,8 +72,8 @@ int main(int argc, const char * argv[]) {
         glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(window);
         glfwPollEvents();
-        //glFlush();
-        //flushTheWindow();
+       // glFlush();
+        flushTheWindow(window);
     }
 
     // clean and destroy the window
