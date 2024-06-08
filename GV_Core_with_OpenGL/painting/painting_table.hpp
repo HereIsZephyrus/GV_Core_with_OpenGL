@@ -7,8 +7,13 @@
 
 #ifndef painting_table_hpp
 #define painting_table_hpp
-
-#include <stdio.h>
+#define GLEW_STATIC
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-void flushTheWindow(GLFWwindow* window);
+#include <vector>
+int flushTheWindow(GLFWwindow* window);
+typedef std::pair<float, float>  fPoint;
+namespace table {
+    static std::vector<fPoint> lines;
+}
 #endif /* painting_table_hpp */

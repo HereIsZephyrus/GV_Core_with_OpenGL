@@ -7,11 +7,11 @@
 
 #ifndef drawlines_hpp
 #define drawlines_hpp
-
-#include <stdio.h>
+#define GLEW_STATIC
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #include <vector>
-typedef std::pair<float, float>  fPoint;
-extern std::vector<fPoint> lines;
+
 void drawLine(const float &sX,const float &sY,const float &tX,const float &tY);
 #endif /* drawlines_hpp */
