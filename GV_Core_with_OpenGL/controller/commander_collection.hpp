@@ -13,7 +13,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <vector>
-#include "../painting/painting_table.hpp"
 
 void keyBasicCommand(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawLine(GLFWwindow* window, int button, int action, int mods);

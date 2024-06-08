@@ -13,23 +13,11 @@
 #include <GLFW/glfw3.h>
 //#include <SDL2/SDL_opengl.h>
 #include "window.hpp"
-#include "painting/painting_table.hpp"
 #include "controller/commander_collection.hpp"
+#include "rendering.hpp"
 //#include "imgui.h"
 //#include "imgui_impl_glfw.h"
 //#include "imgui_impl_opengl3.h"
-
-void menuCallback(int menuItem) {
-    switch (menuItem) {
-        case 0:
-            // 处理第一个菜单项
-            break;
-        case 1:
-            // 处理第二个菜单项
-            break;
-        // 添加更多菜单项的处理逻辑
-    }
-}
 
 static int initOpenGL(GLFWwindow *&window) {
     if (!glfwInit()) {
@@ -96,6 +84,15 @@ void bindBasicCommand(GLFWwindow* &window){
     //glfwSetMouseButtonCallback(window, mouseDrawLine);
     return;
 }
+void destoryResources(GLFWwindow* &window){
+    glDeleteVertexArrays(1,&Renders::VAO);
+    glDeleteBuffers(1,&Renders::VBO);
+    glDeleteBuffers(1,&Renders::EBO);
+    // clean and destroy the window
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return;
+}
 int main(int argc, const char * argv[]) {
     // init GLEW and GLFW
     GLFWwindow * window;
@@ -107,33 +104,36 @@ int main(int argc, const char * argv[]) {
     if (initVIew(window) != 0 )
         return -1;
     
-    GLuint shaderProgram;
-    if (Renders::buildShaderProgram(window, shaderProgram)!=0)
-        return -2;
+    Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
     
     GLfloat vertices[] =
     {
-        -0.5f, -0.5f, -0.0f,
-        0.5f, -0.5f, -0.0f,
-        0.0f,0.5f, 0.0f
+        0.5f, 0.5f, 0.0f,   // 右上角
+        0.5f, -0.5f, 0.0f,  // 右下角
+        -0.5f, -0.5f, 0.0f, // 左下角
+         -0.5f, 0.5f, 0.0f
     };
+    GLuint indices[] = { // 注意索引从0开始!
+        0, 1, 3, // 第一个三角形
+        1, 2, 3  // 第二个三角形
+    };
+    //Renders::bindPermitive(Renders::VAO,Renders::VBO,vertices);
+    glGenVertexArrays(1,&Renders::VAO);
+    glBindVertexArray(Renders::VAO);
     
-    GLuint VBO;
-    glGenBuffers(1,&VBO);
-    glBindBuffer(GL_ARRAY_BUFFER,VBO);
+    glGenBuffers(1,&Renders::VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, Renders::VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     
-    GLuint VAO;
-    glGenVertexArrays(1,&VAO);
-    glBindVertexArray(VAO);
+    glGenBuffers(1, &Renders::EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Renders::EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Renders::EBO);
     
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
     glEnableVertexAttribArray(0);
     
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-    
     glBindVertexArray(0);
-    
     bindBasicCommand(window);
     
     // main loop
@@ -142,17 +142,14 @@ int main(int argc, const char * argv[]) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        singleYellow.Rend();
+        glBindVertexArray(Renders::VAO);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
-        
         glfwSwapBuffers(window);
     }
-    glDeleteVertexArrays(1,&VAO);
-    glDeleteBuffers(1,&VBO);
-    // clean and destroy the window
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    
+    destoryResources(window);
     return 0;
 }

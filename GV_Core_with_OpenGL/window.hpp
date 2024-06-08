@@ -25,30 +25,15 @@ public:
     const GLint WINDOW_WIDTH = 800;
     const GLint WINDOW_HEIGHT = 600;
     int SCREEN_WIDTH,SCREEN_HEIGHT;
-    
-    float calcNormalX(double x){
-        return static_cast<float>(x / WINDOW_WIDTH ) * 2.0f - 1.0f;
-    }
-    float calcNormalY(double x) {
-        return 1.0f - static_cast<float>(x / WINDOW_HEIGHT) * 2.0f ;
-    }
-    double calcViewportX(float x){
-        return static_cast<double>((std::abs(x) + 1.0f) / 2.0f * WINDOW_WIDTH);
-    }
-    double calcViewportY(float x){
-        return static_cast<double>( (1.0f - std::abs(x) ) / 2.0f * WINDOW_HEIGHT);
-    }
 
 private:
     WindowParas() {}
 };
 
 namespace Renders{
-extern const GLchar* vertexShaderSource;
-extern const GLchar* fragmentShaderSource;
-int buildVertexRender(GLFWwindow* &,GLuint&);
-int buildFragementRender(GLFWwindow* &,GLuint&);
-int buildShaderProgram(GLFWwindow* &,GLuint&);
+extern GLuint VAO;
+extern GLuint VBO;
+extern GLuint EBO;
 }
 
 #endif /* window_hpp */

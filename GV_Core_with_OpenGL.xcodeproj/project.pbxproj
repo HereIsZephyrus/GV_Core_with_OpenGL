@@ -12,12 +12,11 @@
 		322E52FA2C13F6E2002AFB73 /* window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E52F82C13F6E2002AFB73 /* window.cpp */; };
 		322E52FC2C13FD88002AFB73 /* libSDL2-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 322E52FB2C13FD88002AFB73 /* libSDL2-2.0.0.dylib */; };
 		322E52FD2C13FD88002AFB73 /* libSDL2-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 322E52FB2C13FD88002AFB73 /* libSDL2-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		322E53062C14A5CF002AFB73 /* rendering.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E53042C14A5CF002AFB73 /* rendering.cpp */; };
 		323A00E32C0AA4360056BAD1 /* libglfw.3.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */; };
 		323A00E42C0AA4360056BAD1 /* libglfw.3.4.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		323A00E72C0AC3530056BAD1 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 323A00E62C0AC3530056BAD1 /* glad.c */; };
 		323A00EE2C0AC7440056BAD1 /* commander_collection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00EC2C0AC7440056BAD1 /* commander_collection.cpp */; };
-		323A00F32C0AD1430056BAD1 /* drawlines.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00F12C0AD1430056BAD1 /* drawlines.cpp */; };
-		323A00F82C0D1FB30056BAD1 /* painting_table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00F62C0D1FB30056BAD1 /* painting_table.cpp */; };
 		326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 326A8BE72C0A28E300E30250 /* OpenGL.framework */; };
 		3278B0C22C097C5500DF6489 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3278B0C12C097C5500DF6489 /* main.cpp */; };
 /* End PBXBuildFile section */
@@ -128,14 +127,12 @@
 		322E52FB2C13FD88002AFB73 /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "../../../../opt/homebrew/Cellar/sdl2/2.30.3/lib/libSDL2-2.0.0.dylib"; sourceTree = "<group>"; };
 		322E52FE2C140339002AFB73 /* libsfml-system.2.6.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsfml-system.2.6.1.dylib"; path = "../../../../opt/homebrew/Cellar/sfml/2.6.1/lib/libsfml-system.2.6.1.dylib"; sourceTree = "<group>"; };
 		322E52FF2C14033A002AFB73 /* libsfml-window.2.6.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsfml-window.2.6.1.dylib"; path = "../../../../opt/homebrew/Cellar/sfml/2.6.1/lib/libsfml-window.2.6.1.dylib"; sourceTree = "<group>"; };
+		322E53042C14A5CF002AFB73 /* rendering.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rendering.cpp; sourceTree = "<group>"; };
+		322E53052C14A5CF002AFB73 /* rendering.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rendering.hpp; sourceTree = "<group>"; };
 		323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.4.dylib; path = ../../../../opt/homebrew/Cellar/glfw/3.4/lib/libglfw.3.4.dylib; sourceTree = "<group>"; };
 		323A00E62C0AC3530056BAD1 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glad.c; path = "../../OpenGL/glad-4.1/src/glad.c"; sourceTree = "<group>"; };
 		323A00EC2C0AC7440056BAD1 /* commander_collection.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = commander_collection.cpp; sourceTree = "<group>"; };
 		323A00ED2C0AC7440056BAD1 /* commander_collection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = commander_collection.hpp; sourceTree = "<group>"; };
-		323A00F12C0AD1430056BAD1 /* drawlines.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = drawlines.cpp; sourceTree = "<group>"; };
-		323A00F22C0AD1430056BAD1 /* drawlines.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = drawlines.hpp; sourceTree = "<group>"; };
-		323A00F62C0D1FB30056BAD1 /* painting_table.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = painting_table.cpp; sourceTree = "<group>"; };
-		323A00F72C0D1FB30056BAD1 /* painting_table.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = painting_table.hpp; sourceTree = "<group>"; };
 		326A8BE72C0A28E300E30250 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		3278B0BE2C097C5500DF6489 /* GV_Core_with_OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GV_Core_with_OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		3278B0C12C097C5500DF6489 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -309,17 +306,6 @@
 			path = controller;
 			sourceTree = "<group>";
 		};
-		323A00F02C0AD0C40056BAD1 /* painting */ = {
-			isa = PBXGroup;
-			children = (
-				323A00F12C0AD1430056BAD1 /* drawlines.cpp */,
-				323A00F22C0AD1430056BAD1 /* drawlines.hpp */,
-				323A00F62C0D1FB30056BAD1 /* painting_table.cpp */,
-				323A00F72C0D1FB30056BAD1 /* painting_table.hpp */,
-			);
-			path = painting;
-			sourceTree = "<group>";
-		};
 		326A8BE62C0A28E300E30250 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -357,10 +343,11 @@
 			children = (
 				322E52F82C13F6E2002AFB73 /* window.cpp */,
 				322E52F92C13F6E2002AFB73 /* window.hpp */,
-				323A00F02C0AD0C40056BAD1 /* painting */,
 				323A00EA2C0AC6E90056BAD1 /* controller */,
 				323A00E62C0AC3530056BAD1 /* glad.c */,
 				3278B0C12C097C5500DF6489 /* main.cpp */,
+				322E53042C14A5CF002AFB73 /* rendering.cpp */,
+				322E53052C14A5CF002AFB73 /* rendering.hpp */,
 			);
 			path = GV_Core_with_OpenGL;
 			sourceTree = "<group>";
@@ -424,11 +411,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				3278B0C22C097C5500DF6489 /* main.cpp in Sources */,
+				322E53062C14A5CF002AFB73 /* rendering.cpp in Sources */,
 				323A00E72C0AC3530056BAD1 /* glad.c in Sources */,
 				323A00EE2C0AC7440056BAD1 /* commander_collection.cpp in Sources */,
 				322E52FA2C13F6E2002AFB73 /* window.cpp in Sources */,
-				323A00F32C0AD1430056BAD1 /* drawlines.cpp in Sources */,
-				323A00F82C0D1FB30056BAD1 /* painting_table.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
