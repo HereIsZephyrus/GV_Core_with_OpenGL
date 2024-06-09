@@ -5,45 +5,56 @@
 //  Created by ChanningTong on 6/9/24.
 //
 
+#include <iostream>
 #include "primitive.hpp"
-Primitive::Primitive(GLfloat* vertices,GLenum shape,GLsizei count,GLsizei stride):type{DrawType::Array},shape(shape){
-    //init memoery
-    this->vertices = new GLfloat[count*stride];
-    indices = nullptr;
-    std::memcpy(this->vertices, vertices, sizeof(GLfloat)*stride*count);
-    //generate index
+#include "glexception.hpp"
+Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei count,GLsizei stride):type{DrawType::Array},shape(shape),vertexCount(count),indexLen(0),stride(stride){
+    this->vertices = vertices;
+    this->indices = {};
     glGenVertexArrays(1,&VAO);
+    glBindVertexArray(VAO);
     glGenBuffers(1,&VBO);
 }
-Primitive::Primitive(GLfloat* vertices,GLuint* indices,GLenum shape,GLsizei count,GLsizei stride,GLsizei indlen):type{DrawType::Index},shape(shape),indexLen(indlen){
-    //init memoery
-    this->vertices = new GLfloat[count*stride];
-    this->indices = new GLuint[indexLen];
-    std::memcpy(this->vertices, vertices, sizeof(GLfloat)*stride*count);
-    std::memcpy(this->indices, indices, sizeof(GLuint) *indexLen);
-    //generate index
+Primitive::Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei count,GLsizei stride,GLsizei indlen):type{DrawType::Index},shape(shape),vertexCount(count),indexLen(indlen),stride(stride){
+    this->vertices = vertices;
+    this->indices = indices;
     glGenVertexArrays(1,&VAO);
+    glBindVertexArray(VAO);
     glGenBuffers(1,&VBO);
     glGenBuffers(1, &EBO);
 }
-void Primitive::draw(){
+void Primitive::load(){
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,stride * sizeof (GLfloat),(GLvoid *)0);
-    glEnableVertexAttribArray(0);
-    if (type == DrawType::Array){
-        glBindVertexArray(VAO);
-        glDrawArrays(shape, 0, vertexCount);
-        glBindVertexArray(0);
-    }
+    const void* dataHead = static_cast<const void*>(vertices.data());
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,dataHead, GL_STATIC_DRAW);
+    //std::cout<<*static_cast<const GLfloat*>(dataHead)<<std::endl;
     if (type == DrawType::Index){
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBindVertexArray(VAO);
-        glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(indices.size() * sizeof(GLuint)), static_cast<const void*>(indices.data()), GL_STATIC_DRAW);
     }
+    //glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,stride * sizeof (GLfloat),(GLvoid *)0);
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
+    glEnableVertexAttribArray(0);
+}
+void Primitive::draw(){
+    GLint currentBuffer;
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentBuffer);
+    if (currentBuffer != VBO){
+        //std::cout<<currentBuffer<<' '<<VBO<<std::endl;
+        load();
+    }
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(VAO);
+    if (type == DrawType::Array){
+        //glDrawArrays(shape, 0, vertexCount);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+       // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
+    }
+    if (type == DrawType::Index){
+        glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0);
+        //CHECK_GL_ERROR( glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0));
+    }
+    glBindVertexArray(0);
     return;
 }

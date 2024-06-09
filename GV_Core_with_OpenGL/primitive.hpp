@@ -14,42 +14,51 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
+typedef std::vector<GLfloat> vertexArray;
+typedef std::vector<GLuint> indexArray;
 enum class DrawType{
     Array,
     Index,
 };
 class Primitive{
 public:
-    Primitive(GLfloat* vertices,GLenum shape,GLsizei count,GLsizei stride);
-    Primitive(GLfloat* vertices,GLuint* indices,GLenum shape,GLsizei count,GLsizei stride,GLsizei indlen);
+    Primitive(vertexArray vertices,GLenum shape,GLsizei count,GLsizei stride);
+    Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei count,GLsizei stride,GLsizei indlen);
     ~Primitive(){
-        delete [] vertices;
-        delete [] indices;
+        vertices.clear();
+        indices.clear();
         glDeleteVertexArrays(1,&VAO);
         glDeleteBuffers(1,&VBO);
         if (type == DrawType::Index)
             glDeleteBuffers(1,&EBO);
     }
     void draw();
+    void load();
 private:
     GLuint VAO,VBO,EBO;
     GLenum shape;
     GLsizei vertexCount,stride,indexLen;
     DrawType type;
-    GLfloat* vertices;
-    GLuint* indices;
+    vertexArray vertices;
+    indexArray indices;
 };
 
 namespace pr {
-inline  GLfloat vertices[] ={
-    0.5f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
+
+inline vertexArray tranVertex = {
     -0.5f, -0.5f, 0.0f,
-     -0.5f, 0.5f, 0.0f
+    0.5f, -0.5f, 0.0f,
+    0.0f,  0.5f, 0.0f
 };
-inline  GLuint indices[] = {
+inline indexArray indices ={
     0, 1, 3,
     1, 2, 3
+};
+inline vertexArray rectVertex ={
+    0.4f, 0.4f, 0.0f,
+    0.4f, -0.4f, 0.0f,
+    -0.4f, -0.4f, 0.0f,
+     -0.4f, 0.4f, 0.0f
 };
 extern std::vector<Primitive> primitives;
 }

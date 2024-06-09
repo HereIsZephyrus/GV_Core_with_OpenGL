@@ -44,7 +44,7 @@ static int initOpenGL(GLFWwindow *&window) {
     //settings.attributeFlags = sf::ContextSettings::Core;
     
     WindowParas& windowPara = WindowParas::getInstance();
-    window = glfwCreateWindow(windowPara.WINDOW_WIDTH, windowPara.WINDOW_HEIGHT, "TCB第一次图形学实验", nullptr, nullptr);
+    window = glfwCreateWindow(windowPara.WINDOW_WIDTH, windowPara.WINDOW_HEIGHT, "TCBOpenGL学习", nullptr, nullptr);
     if (window == nullptr) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -85,75 +85,34 @@ void bindBasicCommand(GLFWwindow* &window){
     //glfwSetMouseButtonCallback(window, mouseDrawLine);
     return;
 }
-void destoryResources(GLFWwindow* &window){
-    //glDeleteVertexArrays(1,&Renders::VAO);
-    //glDeleteBuffers(1,&Renders::VBO);
-    //glDeleteBuffers(1,&Renders::EBO);
-    // clean and destroy the window
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    return;
-}
 int main(int argc, const char * argv[]) {
     // init GLEW and GLFW
     GLFWwindow * window;
     if (initOpenGL(window) != 0)
         return -1;
-    
-    //initImGUI(window);
-    
     if (initVIew(window) != 0 )
         return -1;
+    //initImGUI(window);
     
     Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
-    
-    Primitive triangle = Primitive(pr::vertices, GL_TRIANGLES, 4, 3);
-    Primitive rectangle = Primitive(pr::vertices, pr::indices, GL_TRIANGLES, 4, 3, 6);
-    //GLfloat vertices[] =
-    //{
-    //    0.5f, 0.5f, 0.0f,   // 右上角
-    //    0.5f, -0.5f, 0.0f,  // 右下角
-    //    -0.5f, -0.5f, 0.0f, // 左下角
-    //     -0.5f, 0.5f, 0.0f
-    //};
-    //GLuint indices[] = { // 注意索引从0开始!
-    //    0, 1, 3, // 第一个三角形
-    //    1, 2, 3  // 第二个三角形
-    //};
-    //
-    //glGenVertexArrays(1,&Renders::VAO);
-    //glBindVertexArray(Renders::VAO);
-    //
-    //glGenBuffers(1,&Renders::VBO);
-    //glBindBuffer(GL_ARRAY_BUFFER, Renders::VBO);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    //
-    //glGenBuffers(1, &Renders::EBO);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Renders::EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Renders::EBO);
-    //
-    //glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
-    //glEnableVertexAttribArray(0);
-    //
-    //glBindVertexArray(0);
+    Primitive triangle = Primitive(pr::tranVertex, GL_TRIANGLES, 3, 3);
+    Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4, 3, 6);
+   
     bindBasicCommand(window);
-    
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
     // main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
         singleYellow.Rend();
-        //glBindVertexArray(Renders::VAO);
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        //glBindVertexArray(0);
         triangle.draw();
+        rectangle.draw();
         glfwSwapBuffers(window);
     }
-    
-    destoryResources(window);
+    glfwDestroyWindow(window);
+    glfwTerminate();
     return 0;
 }

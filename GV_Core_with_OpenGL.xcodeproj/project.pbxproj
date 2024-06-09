@@ -20,6 +20,7 @@
 		323A00EE2C0AC7440056BAD1 /* commander.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00EC2C0AC7440056BAD1 /* commander.cpp */; };
 		326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 326A8BE72C0A28E300E30250 /* OpenGL.framework */; };
 		3278B0C22C097C5500DF6489 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3278B0C12C097C5500DF6489 /* main.cpp */; };
+		32948FAD2C157E65007A0078 /* glexception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32948FAB2C157E65007A0078 /* glexception.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -139,6 +140,8 @@
 		326A8BE72C0A28E300E30250 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		3278B0BE2C097C5500DF6489 /* GV_Core_with_OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GV_Core_with_OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		3278B0C12C097C5500DF6489 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		32948FAB2C157E65007A0078 /* glexception.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = glexception.cpp; sourceTree = "<group>"; };
+		32948FAC2C157E65007A0078 /* glexception.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = glexception.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -345,6 +348,8 @@
 				322E53052C14A5CF002AFB73 /* rendering.hpp */,
 				322E53072C1532E6002AFB73 /* primitive.cpp */,
 				322E53082C1532E6002AFB73 /* primitive.hpp */,
+				32948FAB2C157E65007A0078 /* glexception.cpp */,
+				32948FAC2C157E65007A0078 /* glexception.hpp */,
 			);
 			path = GV_Core_with_OpenGL;
 			sourceTree = "<group>";
@@ -410,6 +415,7 @@
 				3278B0C22C097C5500DF6489 /* main.cpp in Sources */,
 				322E53062C14A5CF002AFB73 /* rendering.cpp in Sources */,
 				323A00E72C0AC3530056BAD1 /* glad.c in Sources */,
+				32948FAD2C157E65007A0078 /* glexception.cpp in Sources */,
 				323A00EE2C0AC7440056BAD1 /* commander.cpp in Sources */,
 				322E52FA2C13F6E2002AFB73 /* window.cpp in Sources */,
 				322E53092C1532E6002AFB73 /* primitive.cpp in Sources */,
