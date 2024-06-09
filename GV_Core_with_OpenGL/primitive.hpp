@@ -22,8 +22,8 @@ enum class DrawType{
 };
 class Primitive{
 public:
-    Primitive(vertexArray vertices,GLenum shape,GLsizei count,GLsizei stride);
-    Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei count,GLsizei stride,GLsizei indlen);
+    Primitive(vertexArray vertices,GLenum shape,GLsizei stride);
+    Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen);
     ~Primitive(){
         vertices.clear();
         indices.clear();
@@ -37,10 +37,13 @@ public:
 private:
     GLuint VAO,VBO,EBO;
     GLenum shape;
-    GLsizei vertexCount,stride,indexLen;
+    GLsizei stride,indexLen;
     DrawType type;
     vertexArray vertices;
     indexArray indices;
+    inline const GLsizei getVertexNum(){
+        return static_cast<GLsizei>(vertices.size() / stride);
+    }
 };
 
 namespace pr {

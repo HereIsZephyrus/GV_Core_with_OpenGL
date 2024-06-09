@@ -8,14 +8,14 @@
 #include <iostream>
 #include "primitive.hpp"
 #include "glexception.hpp"
-Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei count,GLsizei stride):type{DrawType::Array},shape(shape),vertexCount(count),indexLen(0),stride(stride){
+Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):type{DrawType::Array},shape(shape),indexLen(0),stride(stride){
     this->vertices = vertices;
     this->indices = {};
     glGenVertexArrays(1,&VAO);
     glBindVertexArray(VAO);
     glGenBuffers(1,&VBO);
 }
-Primitive::Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei count,GLsizei stride,GLsizei indlen):type{DrawType::Index},shape(shape),vertexCount(count),indexLen(indlen),stride(stride){
+Primitive::Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen):type{DrawType::Index},shape(shape),indexLen(indlen),stride(stride){
     this->vertices = vertices;
     this->indices = indices;
     glGenVertexArrays(1,&VAO);
@@ -47,8 +47,7 @@ void Primitive::draw(){
     glEnableVertexAttribArray(0);
     glBindVertexArray(VAO);
     if (type == DrawType::Array){
-        //glDrawArrays(shape, 0, vertexCount);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(shape, 0, getVertexNum());
        // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
     }
     if (type == DrawType::Index){

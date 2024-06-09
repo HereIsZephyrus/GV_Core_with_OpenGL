@@ -16,9 +16,9 @@
 #include "rendering.hpp"
 #include "primitive.hpp"
 #include "commander.hpp"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+//#include "imgui.h"
+//#include "imgui_impl_glfw.h"
+//#include "imgui_impl_opengl3.h"
 
 static int initOpenGL(GLFWwindow *&window) {
     if (!glfwInit()) {
@@ -64,6 +64,7 @@ static int initImGUI(GLFWwindow *window) {
     return  0;
 }
 
+
 static int initVIew(GLFWwindow* &window){
     WindowParas& windowPara = WindowParas::getInstance();
     glfwGetFramebufferSize(window, &windowPara.SCREEN_WIDTH, &windowPara.SCREEN_HEIGHT);
@@ -79,14 +80,7 @@ static int initVIew(GLFWwindow* &window){
     return 0;
 }
 
-void bindBasicCommand(GLFWwindow* &window){
-    glfwSetKeyCallback(window, keyBasicCommand);
-    //glfwSetMouseButtonCallback(window, mouseDrawLine);
-    return;
-}
-
 int main(int argc, const char * argv[]) {
-    // init GLEW and GLFW
     GLFWwindow *& window = WindowParas::getInstance().window;
     if (initOpenGL(window) != 0)
         return -1;
@@ -95,16 +89,15 @@ int main(int argc, const char * argv[]) {
     initImGUI(window);
     
     Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
-    Primitive triangle = Primitive(pr::tranVertex, GL_TRIANGLES, 3, 3);
-    Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4, 3, 6);
+    Primitive triangle = Primitive(pr::tranVertex, GL_TRIANGLES,  3);
+    Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4,  6);
    
-    bindBasicCommand(window);
-    
+    glfwSetKeyCallback(window, keyBasicCommand);
     // main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         gui::DrawGUI();
-
+        
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
