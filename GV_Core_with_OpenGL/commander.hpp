@@ -16,7 +16,6 @@
 
 enum class interectState{
     drawing,//draw feature
-    draging,//drag the window
     toselect,//to select feature
     holding,//binded to the object
 };
@@ -29,6 +28,7 @@ public:
     Records(const Records&) = delete;
     void operator = (const Records&) = delete;
     GLboolean keyRecord[26],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
+    GLboolean dragingMode;
     interectState state;
     void initIObuffer();
 private:

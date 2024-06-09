@@ -17,6 +17,7 @@ void Records::initIObuffer(){
     pressAlt = GL_FALSE;
     pressShift = GL_FALSE;
     pressCtrl = GL_FALSE;
+    dragingMode = GL_FALSE;
     state = interectState::toselect;
 }
 
