@@ -7,15 +7,6 @@
 #include <iostream>
 #include "window.hpp"
 
-void WindowParas::initIObuffer(){
-    memset(keyRecord, GL_FALSE, sizeof(keyRecord));
-    pressLeft = GL_FALSE;
-    pressRight = GL_FALSE;
-    pressAlt = GL_FALSE;
-    pressShift = GL_FALSE;
-    pressCtrl = GL_FALSE;
-}
-
 namespace gui{
 void showDemo(){
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -62,7 +53,7 @@ bool show_demo_window = true;
 bool show_another_window = false;
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-static void projectMeau() {
+static void projectMenu() {
     if (ImGui::MenuItem("New", "CTRL N"))
     {
         
@@ -81,7 +72,7 @@ static void projectMeau() {
     }
 }
 
-static void editMeau() {
+static void editMenu() {
     if (ImGui::MenuItem("Undo", "CTRL Z"))
     {
         
@@ -104,7 +95,7 @@ static void editMeau() {
     }
 }
 
-static void viewMeau() {
+static void viewMenu() {
     if (ImGui::MenuItem("Zoom to layer", "CTRL F"))
     {
         
@@ -147,20 +138,20 @@ void DrawGUI() {
         }
 
         if (ImGui::BeginMenu("Project")){
-            projectMeau();
+            projectMenu();
             ImGui::EndMenu();
         }
 
         if (ImGui::BeginMenu("Edit")){
-            editMeau();
+            editMenu();
             ImGui::EndMenu();
         }
         
         if (ImGui::BeginMenu("View")){
-            viewMeau();
+            viewMenu();
             ImGui::EndMenu();
         }
-
+        
         ImGui::EndMainMenuBar();
     }
     //showDemo();

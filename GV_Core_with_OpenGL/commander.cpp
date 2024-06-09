@@ -9,6 +9,17 @@
 #include "window.hpp"
 #include <iostream>
 
+
+void Records::initIObuffer(){
+    memset(keyRecord, GL_FALSE, sizeof(keyRecord));
+    pressLeft = GL_FALSE;
+    pressRight = GL_FALSE;
+    pressAlt = GL_FALSE;
+    pressShift = GL_FALSE;
+    pressCtrl = GL_FALSE;
+    state = interectState::toselect;
+}
+
 void MeauCommand(GLFWwindow* window, int key, int scancode, int action, int mods){
     if (action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)){
         if (mods & GLFW_MOD_SHIFT){
@@ -62,16 +73,16 @@ void MeauCommand(GLFWwindow* window, int key, int scancode, int action, int mods
 }
 
 void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods){
-    WindowParas& windowPara = WindowParas::getInstance();
+    Records& record = Records::getInstance();
     if (action == GLFW_PRESS){
-        if (mods & GLFW_MOD_CONTROL) windowPara.pressCtrl = GL_TRUE;
-        if (mods & GLFW_MOD_SHIFT)  windowPara.pressShift = GL_TRUE;
-        if (mods & GLFW_MOD_ALT)    windowPara.pressAlt = GL_TRUE;
+        if (mods & GLFW_MOD_CONTROL) record.pressCtrl = GL_TRUE;
+        if (mods & GLFW_MOD_SHIFT)  record.pressShift = GL_TRUE;
+        if (mods & GLFW_MOD_ALT)    record.pressAlt = GL_TRUE;
     }
     if (action == GLFW_RELEASE){
-        if (mods & GLFW_MOD_CONTROL) windowPara.pressCtrl = GL_FALSE;
-        if (mods & GLFW_MOD_SHIFT)  windowPara.pressShift = GL_FALSE;
-        if (mods & GLFW_MOD_ALT)    windowPara.pressAlt = GL_FALSE;
+        if (mods & GLFW_MOD_CONTROL) record.pressCtrl = GL_FALSE;
+        if (mods & GLFW_MOD_SHIFT)  record.pressShift = GL_FALSE;
+        if (mods & GLFW_MOD_ALT)    record.pressAlt = GL_FALSE;
     }
 }
 void keyBasicCommand(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -83,14 +94,14 @@ void keyBasicCommand(GLFWwindow* window, int key, int scancode, int action, int 
 
 void mouseDrawCommand(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-    WindowParas& windowPara = WindowParas::getInstance();
+    Records& record = Records::getInstance();
     if (action == GLFW_PRESS){
-        if (button == GLFW_MOUSE_BUTTON_LEFT)   windowPara.pressLeft = GL_TRUE;
-        if (button == GLFW_MOUSE_BUTTON_RIGHT)  windowPara.pressRight = GL_TRUE;
+        if (button == GLFW_MOUSE_BUTTON_LEFT)   record.pressLeft = GL_TRUE;
+        if (button == GLFW_MOUSE_BUTTON_RIGHT)  record.pressRight = GL_TRUE;
     }
     if (action == GLFW_RELEASE){
-        if (button == GLFW_MOUSE_BUTTON_LEFT)   windowPara.pressLeft = GL_FALSE;
-        if (button == GLFW_MOUSE_BUTTON_RIGHT)  windowPara.pressRight = GL_FALSE;
+        if (button == GLFW_MOUSE_BUTTON_LEFT)   record.pressLeft = GL_FALSE;
+        if (button == GLFW_MOUSE_BUTTON_RIGHT)  record.pressRight = GL_FALSE;
     }
     return;
 }
@@ -102,8 +113,8 @@ void mouseViewCommand(GLFWwindow* window, int button, int action, int mods){
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
-    WindowParas& windowPara = WindowParas::getInstance();
-    if (windowPara.pressCtrl){//if conflict, ctrl first
+    Records& record = Records::getInstance();
+    if (record.pressCtrl){//if conflict, ctrl first
         if (yoffset > 0){
             //scroll up
         }
@@ -111,7 +122,7 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
             //scroll down
         }
     }
-    else if (windowPara.pressAlt){//if conflict, then alt
+    else if (record.pressAlt){//if conflict, then alt
         if (yoffset > 0){
             //scroll right
         }
