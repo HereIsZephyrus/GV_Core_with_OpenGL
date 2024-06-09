@@ -27,8 +27,9 @@ public:
     GLFWwindow * window;
     const GLint WINDOW_WIDTH = 800;
     const GLint WINDOW_HEIGHT = 600;
-    int SCREEN_WIDTH,SCREEN_HEIGHT;
-
+    GLint SCREEN_WIDTH,SCREEN_HEIGHT;
+    GLboolean keyRecord[26],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
+    void initIObuffer();
 private:
     WindowParas() {}
 };

@@ -44,6 +44,7 @@ static int initOpenGL(GLFWwindow *&window) {
     //settings.attributeFlags = sf::ContextSettings::Core;
     
     WindowParas& windowPara = WindowParas::getInstance();
+    windowPara.initIObuffer();
     window = glfwCreateWindow(windowPara.WINDOW_WIDTH, windowPara.WINDOW_HEIGHT, "TCBOpenGL学习", nullptr, nullptr);
     if (window == nullptr) {
         std::cerr << "Failed to create GLFW window" << std::endl;
@@ -88,11 +89,13 @@ int main(int argc, const char * argv[]) {
         return -1;
     initImGUI(window);
     
-    Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
-    Primitive triangle = Primitive(pr::tranVertex, GL_TRIANGLES,  3);
-    Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4,  6);
+    //Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
+    //Primitive triangle = Primitive(pr::tranVertex, GL_TRIANGLES,  3);
+    //Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4,  6);
    
     glfwSetKeyCallback(window, keyBasicCommand);
+    glfwSetMouseButtonCallback(window, mouseViewCommand);
+    glfwSetScrollCallback(window, scrollCallback);
     // main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -101,9 +104,9 @@ int main(int argc, const char * argv[]) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        singleYellow.Rend();
-        triangle.draw();
-        rectangle.draw();
+        //singleYellow.Rend();
+        //triangle.draw();
+        //rectangle.draw();
         glfwSwapBuffers(window);
     }
     

@@ -15,8 +15,9 @@
 #include <vector>
 
 void keyBasicCommand(GLFWwindow* window, int key, int scancode, int action, int mods);
-void mouseDrawLine(GLFWwindow* window, int button, int action, int mods);
-//void mouseDrawLines(GLFWwindow* window, int button, int action, int mods);
-//void mouseDrawCirles(GLFWwindow* window, int button, int action, int mods);
+void mouseDrawCommand(GLFWwindow* window, int button, int action, int mods);
+void mouseViewCommand(GLFWwindow* window, int button, int action, int mods);
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+//void mouseDrawLine(GLFWwindow* window, int button, int action, int mods);
 
 #endif /* commander_hpp */

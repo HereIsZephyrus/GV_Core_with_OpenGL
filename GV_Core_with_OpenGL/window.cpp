@@ -7,6 +7,15 @@
 #include <iostream>
 #include "window.hpp"
 
+void WindowParas::initIObuffer(){
+    memset(keyRecord, GL_FALSE, sizeof(keyRecord));
+    pressLeft = GL_FALSE;
+    pressRight = GL_FALSE;
+    pressAlt = GL_FALSE;
+    pressShift = GL_FALSE;
+    pressCtrl = GL_FALSE;
+}
+
 namespace gui{
 bool show_demo_window = true;
 bool show_another_window = false;
