@@ -24,6 +24,8 @@ class Primitive{
 public:
     Primitive(vertexArray vertices,GLenum shape,GLsizei stride);
     Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen);
+    Primitive(const Primitive&) = delete;
+    void operator=(const Primitive&) = delete;
     ~Primitive(){
         vertices.clear();
         indices.clear();
