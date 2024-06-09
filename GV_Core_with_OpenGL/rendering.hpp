@@ -13,10 +13,7 @@
 #include <iostream>
 
 #include <GL/glew.h>
-namespace rd{
-extern std::string singleVertices;
-extern std::string fillYellow;
-};
+
 class Shader{
 public:
     Shader(const Shader&) = delete;
@@ -27,6 +24,12 @@ public:
     void Rend(){glUseProgram(this->Program);}
 private:
     GLuint Program;
+};
+
+namespace rd{
+
+extern std::string singleVertices;
+extern std::string fillYellow;
 };
 
 #endif /* rendering_hpp */

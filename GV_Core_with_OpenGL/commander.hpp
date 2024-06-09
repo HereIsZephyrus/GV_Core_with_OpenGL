@@ -5,8 +5,8 @@
 //  Created by ChanningTong on 6/1/24.
 //
 
-#ifndef commander_collection_hpp
-#define commander_collection_hpp
+#ifndef commander_hpp
+#define commander_hpp
 
 #include <stdio.h>
 #define GLEW_STATIC
@@ -19,4 +19,4 @@ void mouseDrawLine(GLFWwindow* window, int button, int action, int mods);
 //void mouseDrawLines(GLFWwindow* window, int button, int action, int mods);
 //void mouseDrawCirles(GLFWwindow* window, int button, int action, int mods);
 
-#endif /* commander_collection_hpp */
+#endif /* commander_hpp */

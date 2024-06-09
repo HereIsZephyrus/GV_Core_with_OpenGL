@@ -5,8 +5,8 @@
 //  Created by ChanningTong on 6/1/24.
 //
 #define GL_SILENCE_DEPRECATION
-#include "commander_collection.hpp"
-#include "../window.hpp"
+#include "commander.hpp"
+#include "window.hpp"
 #include <iostream>
 
 void keyBasicCommand(GLFWwindow* window, int key, int scancode, int action, int mods) {
