@@ -74,8 +74,13 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GLFW_INCLUDE_GLCOREARB;GLFW_EXPOSE_NATIVE_WIN32
+;GLFW_EXPOSE_NATIVE_WGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>imgui</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,14 +133,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\GV_Core_with_OpenGL\GV_Core_with_OpenGL\controller\commander_collection.cpp" />
-    <ClCompile Include="..\..\..\GV_Core_with_OpenGL\GV_Core_with_OpenGL\main.cpp" />
-    <ClCompile Include="..\..\..\GV_Core_with_OpenGL\GV_Core_with_OpenGL\painting\drawlines.cpp" />
+    <ClCompile Include="..\..\GV_Core_with_OpenGL\commander.cpp" />
+    <ClCompile Include="..\..\GV_Core_with_OpenGL\glad.c" />
+    <ClCompile Include="..\..\GV_Core_with_OpenGL\glexception.cpp" />
+    <ClCompile Include="..\..\GV_Core_with_OpenGL\main.cpp" />
+    <ClCompile Include="..\..\GV_Core_with_OpenGL\primitive.cpp" />
+    <ClCompile Include="..\..\GV_Core_with_OpenGL\rendering.cpp" />
+    <ClCompile Include="..\..\GV_Core_with_OpenGL\window.cpp" />
+    <ClCompile Include="..\..\ImGUIopengl3\imgui.cpp" />
+    <ClCompile Include="..\..\ImGUIopengl3\imgui_demo.cpp" />
+    <ClCompile Include="..\..\ImGUIopengl3\imgui_draw.cpp" />
+    <ClCompile Include="..\..\ImGUIopengl3\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\..\ImGUIopengl3\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\ImGUIopengl3\imgui_tables.cpp" />
+    <ClCompile Include="..\..\ImGUIopengl3\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\GV_Core_with_OpenGL\GV_Core_with_OpenGL\controller\commander_collection.hpp" />
-    <ClInclude Include="..\..\..\GV_Core_with_OpenGL\GV_Core_with_OpenGL\painting\drawlines.hpp" />
-    <ClInclude Include="..\..\..\GV_Core_with_OpenGL\GV_Core_with_OpenGL\ports.h" />
+    <ClInclude Include="..\..\GV_Core_with_OpenGL\commander.hpp" />
+    <ClInclude Include="..\..\GV_Core_with_OpenGL\glexception.hpp" />
+    <ClInclude Include="..\..\GV_Core_with_OpenGL\primitive.hpp" />
+    <ClInclude Include="..\..\GV_Core_with_OpenGL\rendering.hpp" />
+    <ClInclude Include="..\..\GV_Core_with_OpenGL\window.hpp" />
+    <ClInclude Include="..\..\ImGUIopengl3\imconfig.h" />
+    <ClInclude Include="..\..\ImGUIopengl3\imgui.h" />
+    <ClInclude Include="..\..\ImGUIopengl3\imgui_impl_glfw.h" />
+    <ClInclude Include="..\..\ImGUIopengl3\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\..\ImGUIopengl3\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\..\ImGUIopengl3\imgui_internal.h" />
+    <ClInclude Include="..\..\ImGUIopengl3\imstb_rectpack.h" />
+    <ClInclude Include="..\..\ImGUIopengl3\imstb_textedit.h" />
+    <ClInclude Include="..\..\ImGUIopengl3\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
