@@ -16,9 +16,9 @@
 #include "rendering.hpp"
 #include "primitive.hpp"
 #include "commander.hpp"
-//#include "imgui.h"
-//#include "imgui_impl_glfw.h"
-//#include "imgui_impl_opengl3.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 static int initOpenGL(GLFWwindow *&window) {
     if (!glfwInit()) {
@@ -52,18 +52,17 @@ static int initOpenGL(GLFWwindow *&window) {
     }
     return 0;
 }
-/*
+
 static int initImGUI(GLFWwindow *window) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
-    
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");
     return  0;
 }
-*/
 
 static int initVIew(GLFWwindow* &window){
     WindowParas& windowPara = WindowParas::getInstance();
@@ -85,33 +84,39 @@ void bindBasicCommand(GLFWwindow* &window){
     //glfwSetMouseButtonCallback(window, mouseDrawLine);
     return;
 }
+
 int main(int argc, const char * argv[]) {
     // init GLEW and GLFW
-    GLFWwindow * window;
+    GLFWwindow *& window = WindowParas::getInstance().window;
     if (initOpenGL(window) != 0)
         return -1;
     if (initVIew(window) != 0 )
         return -1;
-    //initImGUI(window);
+    initImGUI(window);
     
     Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
     Primitive triangle = Primitive(pr::tranVertex, GL_TRIANGLES, 3, 3);
     Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4, 3, 6);
    
     bindBasicCommand(window);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
+    
     // main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
+        gui::DrawGUI();
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         singleYellow.Rend();
         triangle.draw();
         rectangle.draw();
         glfwSwapBuffers(window);
     }
+    
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;

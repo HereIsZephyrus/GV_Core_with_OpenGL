@@ -11,6 +11,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cmath>
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 // build a singleton to manage all window vars
 class WindowParas{
@@ -21,7 +24,7 @@ public:
     }
     WindowParas(const WindowParas&) = delete;
     void operator=(const WindowParas&) = delete;
-    
+    GLFWwindow * window;
     const GLint WINDOW_WIDTH = 800;
     const GLint WINDOW_HEIGHT = 600;
     int SCREEN_WIDTH,SCREEN_HEIGHT;
@@ -30,10 +33,11 @@ private:
     WindowParas() {}
 };
 
-namespace Renders{
-extern GLuint VAO;
-extern GLuint VBO;
-extern GLuint EBO;
+namespace gui {
+extern bool show_demo_window;
+extern bool show_another_window;
+extern ImVec4 clear_color;
+void DrawGUI();
 }
 
 #endif /* window_hpp */
