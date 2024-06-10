@@ -21,7 +21,7 @@ public:
     Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
     Shader(std::string vertexShader,std::string fragmentShader);
     //Shader(){}
-    void Rend(){
+    inline void rend(){
         //std::cout<<"Render is running"<<std::endl;
         glUseProgram(this->Program);
     }

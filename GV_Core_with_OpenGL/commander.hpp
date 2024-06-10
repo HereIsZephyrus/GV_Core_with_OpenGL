@@ -23,14 +23,14 @@ enum class interectState{
 };
 class Records{
 public:
-    static Records& getInstance(){
+    static Records& getState(){
         static Records instance;
         return instance;
     }
     Records(const Records&) = delete;
     void operator = (const Records&) = delete;
-    GLboolean keyRecord[26],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
-    GLboolean dragingMode;
+    GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
+    GLboolean dragingMode,drawingPrimitive;
     interectState state;
     void initIObuffer();
 private:
@@ -49,10 +49,12 @@ public:
 private:
     Take(){}
 };
-void keyBasicCommand(GLFWwindow* window, int key, int scancode, int action, int mods);
-void mouseDrawCommand(GLFWwindow* window, int button, int action, int mods);
-void mouseViewCommand(GLFWwindow* window, int button, int action, int mods);
+void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);
+void mouseViewCallback(GLFWwindow* window, int button, int action, int mods);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-//void mouseDrawLine(GLFWwindow* window, int button, int action, int mods);
+void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos);
+void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos);
+void cursorFocusCallback(GLFWwindow* window, int entered);
 
 #endif /* commander_hpp */

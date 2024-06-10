@@ -51,7 +51,7 @@ int main(int argc, const char * argv[]) {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         
         Take& take = Take::holdon();
-        take.shader->Rend();
+        take.shader->rend();
         take.obj->draw();
         glfwSwapBuffers(window);
     }
@@ -85,7 +85,7 @@ int initOpenGL(GLFWwindow *&window) {
     //settings.attributeFlags = sf::ContextSettings::Core;
     
     WindowParas& windowPara = WindowParas::getInstance();
-    Records& record = Records::getInstance();
+    Records& record = Records::getState();
     record.initIObuffer();
     window = glfwCreateWindow(windowPara.WINDOW_WIDTH, windowPara.WINDOW_HEIGHT, "TCBOpenGL学习", nullptr, nullptr);
     if (window == nullptr) {
@@ -124,9 +124,11 @@ int initVIew(GLFWwindow* &window){
 }
 
 int initInterect(GLFWwindow* &window){
-    glfwSetKeyCallback(window, keyBasicCommand);
-    glfwSetMouseButtonCallback(window, mouseViewCommand);
+    glfwSetKeyCallback(window, keyBasicCallback);
+    glfwSetMouseButtonCallback(window, mouseViewCallback);
     glfwSetScrollCallback(window, scrollCallback);
+    glfwSetCursorPosCallback(window, cursorSelectCallback);
+    glfwSetCursorEnterCallback(window, cursorFocusCallback);
     return 0;
 }
 

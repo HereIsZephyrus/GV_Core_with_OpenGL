@@ -18,10 +18,57 @@ void Records::initIObuffer(){
     pressShift = GL_FALSE;
     pressCtrl = GL_FALSE;
     dragingMode = GL_FALSE;
+    drawingPrimitive = GL_TRUE;
     state = interectState::toselect;
 }
 
-void MeauCommand(GLFWwindow* window, int key, int scancode, int action, int mods){
+static void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+static void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods);
+static void mouseModsToggle(GLFWwindow* window, int button, int action, int mods);
+static void viewScroll(GLFWwindow* window, double xoffset, double yoffset);
+
+void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+    MeauCallback(window, key, scancode, action, mods);
+    keyModsToggle(window, key, scancode, action, mods);
+    return;
+}
+void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+    mouseModsToggle(window, button, action, mods);
+    Records& record = Records::getState();
+    if (action == GLFW_PRESS &&record.state == interectState::drawing && record.drawingPrimitive == false){
+        record.drawingPrimitive = true;
+        //generate a new primitive
+    }
+    return;
+}
+void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+    mouseModsToggle(window, button, action, mods);
+    return;
+}
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+    
+    viewScroll(window,xoffset,yoffset);
+    return;
+}
+void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos){
+    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+    
+    return;
+}
+void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos){
+    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+    return;
+}
+void cursorFocusCallback(GLFWwindow* window, int entered){
+    ImGui_ImplGlfw_CursorEnterCallback(window, entered);
+    return;
+}
+
+void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
     if (action == GLFW_PRESS && (mods & GLFW_MOD_CONTROL)){
         if (mods & GLFW_MOD_SHIFT){
             if (key == GLFW_KEY_Z){
@@ -72,49 +119,39 @@ void MeauCommand(GLFWwindow* window, int key, int scancode, int action, int mods
         }
     }
 }
-
 void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods){
-    Records& record = Records::getInstance();
+    Records& record = Records::getState();
     if (action == GLFW_PRESS){
+        record.keyRecord[key] = GL_TRUE;
         if (mods & GLFW_MOD_CONTROL) record.pressCtrl = GL_TRUE;
         if (mods & GLFW_MOD_SHIFT)  record.pressShift = GL_TRUE;
         if (mods & GLFW_MOD_ALT)    record.pressAlt = GL_TRUE;
+        
     }
     if (action == GLFW_RELEASE){
+        record.keyRecord[key] = GL_FALSE;
         if (mods & GLFW_MOD_CONTROL) record.pressCtrl = GL_FALSE;
         if (mods & GLFW_MOD_SHIFT)  record.pressShift = GL_FALSE;
         if (mods & GLFW_MOD_ALT)    record.pressAlt = GL_FALSE;
     }
 }
-void keyBasicCommand(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-    MeauCommand(window, key, scancode, action, mods);
-    keyModsToggle(window, key, scancode, action, mods);
-    return;
-}
-
-void mouseDrawCommand(GLFWwindow* window, int button, int action, int mods){
-    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-    Records& record = Records::getInstance();
+void mouseModsToggle(GLFWwindow* window, int button, int action, int mods){
+    Records& record = Records::getState();
     if (action == GLFW_PRESS){
-        if (button == GLFW_MOUSE_BUTTON_LEFT)   record.pressLeft = GL_TRUE;
-        if (button == GLFW_MOUSE_BUTTON_RIGHT)  record.pressRight = GL_TRUE;
+        if (button == GLFW_MOUSE_BUTTON_LEFT)
+            record.pressLeft = GL_TRUE;
+        if (button == GLFW_MOUSE_BUTTON_RIGHT)
+            record.pressRight = GL_TRUE;
     }
     if (action == GLFW_RELEASE){
-        if (button == GLFW_MOUSE_BUTTON_LEFT)   record.pressLeft = GL_FALSE;
-        if (button == GLFW_MOUSE_BUTTON_RIGHT)  record.pressRight = GL_FALSE;
+        if (button == GLFW_MOUSE_BUTTON_LEFT)
+            record.pressLeft = GL_FALSE;
+        if (button == GLFW_MOUSE_BUTTON_RIGHT)
+            record.pressRight = GL_FALSE;
     }
-    return;
 }
-
-void mouseViewCommand(GLFWwindow* window, int button, int action, int mods){
-    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-    return;
-}
-
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
-    Records& record = Records::getInstance();
+void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
+    Records& record = Records::getState();
     if (record.pressCtrl){//if conflict, ctrl first
         if (yoffset > 0){
             //scroll up
