@@ -9,6 +9,20 @@
 #include "window.hpp"
 
 namespace gui{
+static void renderMenu(GLFWwindow *&window);
+static void renderEditPanel();
+void DrawGUI() {
+    GLFWwindow *& window = WindowParas::getInstance().window;
+    Records& record = Records::getState();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    
+    renderMenu(window);
+    if (record.state == interectState::drawing) renderEditPanel();
+    ImGui::Render();
+    return;
+}
 static void projectMenu() {
     if (ImGui::MenuItem("New", "CTRL N")){
         
@@ -26,7 +40,7 @@ static void projectMenu() {
 }
 
 static void editMenu() {
-    Records& record = Records::getInstance();
+    Records& record = Records::getState();
     if (ImGui::MenuItem("Undo", "CTRL Z")){
         
     }
@@ -35,12 +49,12 @@ static void editMenu() {
     }
     if (record.state == interectState::toselect && ImGui::MenuItem("Start edit")){
         record.state = interectState::drawing;
-        glfwSetMouseButtonCallback(WindowParas::getInstance().window, mouseDrawCommand);
+        glfwSetMouseButtonCallback(WindowParas::getInstance().window, mouseDrawCallback);
     }
         
     if (record.state == interectState::drawing && ImGui::MenuItem("Stop edit")){
         record.state = interectState::toselect;
-        glfwSetMouseButtonCallback(WindowParas::getInstance().window, mouseViewCommand);
+        glfwSetMouseButtonCallback(WindowParas::getInstance().window, mouseViewCallback);
     }
         
     if (ImGui::MenuItem("Add Data", "CTRL A")){
@@ -59,9 +73,9 @@ static void viewMenu() {
         
     }
     if (ImGui::MenuItem("Drag", "F5"))
-        Records::getInstance().dragingMode = GL_TRUE;
+        Records::getState().dragingMode = GL_TRUE;
     if (ImGui::MenuItem("Select", "F6"))
-        Records::getInstance().dragingMode = GL_FALSE;
+        Records::getState().dragingMode = GL_FALSE;
 }
 
 static void renderMenu(GLFWwindow *&window) {
@@ -96,20 +110,24 @@ static void renderMenu(GLFWwindow *&window) {
     }
 }
 static void renderEditPanel(){
+    ImVec4 color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+       float thickness = 1.0f;
+       bool fill = false;
+       int drawType = 0; // 0: 点, 1: 线, 2: 面
     ImGui::Begin("Edit Panel");
-    ImGui::Text("This is a edit panel");
+        ImGui::Text("This is a edit panel");
+        ImGui::RadioButton("Point", &drawType, 0); ImGui::SameLine();
+        ImGui::RadioButton("Line", &drawType, 1); ImGui::SameLine();
+        ImGui::RadioButton("Fill", &drawType, 2);
+
+        // 设置颜色
+        ImGui::ColorEdit4("Color", (float*)&color);
+
+        // 设置线条粗细
+        ImGui::SliderFloat("Thickness", &thickness, 1.0f, 10.0f);
+
+        // 是否填充
+        ImGui::Checkbox("Fill", &fill);
     ImGui::End();
-}
-void DrawGUI() {
-    GLFWwindow *& window = WindowParas::getInstance().window;
-    Records& record = Records::getInstance();
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-    
-    renderMenu(window);
-    if (record.state == interectState::drawing) renderEditPanel();
-    ImGui::Render();
-    return;
 }
 }

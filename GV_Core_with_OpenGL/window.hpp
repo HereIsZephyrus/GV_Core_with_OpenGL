@@ -25,8 +25,8 @@ public:
     WindowParas(const WindowParas&) = delete;
     void operator=(const WindowParas&) = delete;
     GLFWwindow * window;
-    const GLint WINDOW_WIDTH = 800;
-    const GLint WINDOW_HEIGHT = 600;
+    const GLint WINDOW_WIDTH = 960;
+    const GLint WINDOW_HEIGHT = 720;
     GLint SCREEN_WIDTH,SCREEN_HEIGHT;
     //GLboolean keyRecord[26],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
     //void initIObuffer();
