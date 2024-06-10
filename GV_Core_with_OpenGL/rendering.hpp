@@ -16,18 +16,20 @@
 
 class Shader{
 public:
-    Shader(const Shader&) = delete;
+   Shader(const Shader&) = delete;
     void operator=(const Shader&) = delete;
     Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
     Shader(std::string vertexShader,std::string fragmentShader);
-    
-    void Rend(){glUseProgram(this->Program);}
+    //Shader(){}
+    void Rend(){
+        //std::cout<<"Render is running"<<std::endl;
+        glUseProgram(this->Program);
+    }
 private:
     GLuint Program;
 };
 
 namespace rd{
-
 extern std::string singleVertices;
 extern std::string fillYellow;
 };

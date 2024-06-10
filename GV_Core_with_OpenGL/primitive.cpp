@@ -38,6 +38,7 @@ void Primitive::load(){
     glEnableVertexAttribArray(0);
 }
 void Primitive::draw(){
+    //std::cout<<"Draw is running"<<std::endl;
     GLint currentBuffer;
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentBuffer);
     if (currentBuffer != VBO){

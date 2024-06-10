@@ -13,6 +13,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include "primitive.hpp"
+#include "rendering.hpp"
 
 enum class interectState{
     drawing,//draw feature
@@ -33,6 +35,19 @@ public:
     void initIObuffer();
 private:
     Records(){}
+};
+class Take{
+public:
+    static Take& holdon(){
+        static Take instance;
+        return instance;
+    }
+    Take(const Take&) = delete;
+    void operator = (const Take&) = delete;
+    Primitive* obj; // for now only one primitive can be selected
+    Shader* shader;
+private:
+    Take(){}
 };
 void keyBasicCommand(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawCommand(GLFWwindow* window, int button, int action, int mods);

@@ -12,6 +12,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <memory>
 #include <vector>
 
 typedef std::vector<GLfloat> vertexArray;
@@ -24,8 +25,10 @@ class Primitive{
 public:
     Primitive(vertexArray vertices,GLenum shape,GLsizei stride);
     Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen);
+    //Primitive(){}
     Primitive(const Primitive&) = delete;
     void operator=(const Primitive&) = delete;
+    
     ~Primitive(){
         vertices.clear();
         indices.clear();
@@ -49,7 +52,6 @@ private:
 };
 
 namespace pr {
-
 inline vertexArray tranVertex = {
     -0.5f, -0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,
@@ -65,7 +67,8 @@ inline vertexArray rectVertex ={
     -0.4f, -0.4f, 0.0f,
      -0.4f, 0.4f, 0.0f
 };
-extern std::vector<Primitive> primitives;
+
+extern std::vector<std::unique_ptr<Primitive> >primitives;
 }
 
 #endif /* primitive_hpp */

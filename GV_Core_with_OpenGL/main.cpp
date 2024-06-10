@@ -12,15 +12,56 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 //#include <SDL2/SDL_opengl.h>
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 #include "window.hpp"
 #include "rendering.hpp"
 #include "primitive.hpp"
 #include "commander.hpp"
-//#include "imgui.h"
-//#include "imgui_impl_glfw.h"
-//#include "imgui_impl_opengl3.h"
 
-static int initOpenGL(GLFWwindow *&window) {
+static int initOpenGL(GLFWwindow *&window);
+static int initImGUI(GLFWwindow *window);
+static int initVIew(GLFWwindow* &window);
+static int initInterect(GLFWwindow* &window);
+static int releaseResources(GLFWwindow* &window);
+int main(int argc, const char * argv[]) {
+    GLFWwindow *& window = WindowParas::getInstance().window;
+    if (initOpenGL(window) != 0)
+        return -1;
+    if (initVIew(window) != 0 )
+        return -1;
+    initImGUI(window);
+    initInterect(window);
+    
+    //init style
+    Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
+    Primitive triangle = Primitive(pr::tranVertex, GL_TRIANGLES,  3);
+    //Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4,  6);
+    Take& take = Take::holdon();
+    take.shader = &singleYellow;
+    take.obj = &triangle;
+    
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+        gui::DrawGUI();
+        
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        
+        Take& take = Take::holdon();
+        take.shader->Rend();
+        take.obj->draw();
+        glfwSwapBuffers(window);
+    }
+    
+    releaseResources(window);
+    return 0;
+}
+
+
+int initOpenGL(GLFWwindow *&window) {
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
         return -1;
@@ -55,7 +96,7 @@ static int initOpenGL(GLFWwindow *&window) {
     return 0;
 }
 
-static int initImGUI(GLFWwindow *window) {
+int initImGUI(GLFWwindow *window) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
@@ -67,8 +108,7 @@ static int initImGUI(GLFWwindow *window) {
     return  0;
 }
 
-
-static int initVIew(GLFWwindow* &window){
+int initVIew(GLFWwindow* &window){
     WindowParas& windowPara = WindowParas::getInstance();
     glfwGetFramebufferSize(window, &windowPara.SCREEN_WIDTH, &windowPara.SCREEN_HEIGHT);
     glfwMakeContextCurrent(window); // to draw at this window
@@ -83,35 +123,14 @@ static int initVIew(GLFWwindow* &window){
     return 0;
 }
 
-int main(int argc, const char * argv[]) {
-    GLFWwindow *& window = WindowParas::getInstance().window;
-    if (initOpenGL(window) != 0)
-        return -1;
-    if (initVIew(window) != 0 )
-        return -1;
-    initImGUI(window);
-    
-    //Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
-    //Primitive triangle = Primitive(pr::tranVertex, GL_TRIANGLES,  3);
-    //Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4,  6);
-   
+int initInterect(GLFWwindow* &window){
     glfwSetKeyCallback(window, keyBasicCommand);
     glfwSetMouseButtonCallback(window, mouseViewCommand);
     glfwSetScrollCallback(window, scrollCallback);
-    // main loop
-    while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
-        gui::DrawGUI();
-        
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        //singleYellow.Rend();
-        //triangle.draw();
-        //rectangle.draw();
-        glfwSwapBuffers(window);
-    }
-    
+    return 0;
+}
+
+int releaseResources(GLFWwindow* &window){
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
