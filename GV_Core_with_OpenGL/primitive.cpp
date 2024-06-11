@@ -63,3 +63,23 @@ void Primitive::draw(){
     glBindVertexArray(0);
     return;
 }
+
+namespace pr {
+static const vertexArray tranVertex = {
+    -0.5f, -0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f,
+    0.0f,  0.5f, 0.0f
+};
+static const indexArray indices ={
+    0, 1, 3,
+    1, 2, 3
+};
+static const vertexArray rectVertex ={
+    0.4f, 0.4f, 0.0f,
+    0.4f, -0.4f, 0.0f,
+    -0.4f, -0.4f, 0.0f,
+     -0.4f, 0.4f, 0.0f
+};
+Primitive rectangle = Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6);
+Primitive triangle = Primitive(tranVertex, GL_TRIANGLES,  3);
+}

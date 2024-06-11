@@ -8,7 +8,7 @@
 #include "commander.hpp"
 #include "window.hpp"
 #include <iostream>
-
+#include <memory>
 
 void Records::initIObuffer(){
     memset(keyRecord, GL_FALSE, sizeof(keyRecord));
@@ -18,14 +18,24 @@ void Records::initIObuffer(){
     pressShift = GL_FALSE;
     pressCtrl = GL_FALSE;
     dragingMode = GL_FALSE;
-    drawingPrimitive = GL_TRUE;
+    drawingPrimitive = GL_FALSE;
     state = interectState::toselect;
 }
 
 static void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void mouseModsToggle(GLFWwindow* window, int button, int action, int mods);
+static void drawModsToggle(GLFWwindow* window, int button, int action, int mods);
 static void viewScroll(GLFWwindow* window, double xoffset, double yoffset);
+
+void Take::addPoint(){
+    WindowParas& windowPara = WindowParas::getInstance();
+    GLdouble cursorX, cursorY;
+    glfwGetCursorPos(windowPara.window, &cursorX, &cursorY);
+    drawingVertices.push_back(windowPara.screen2normalX(cursorX));
+    drawingVertices.push_back(windowPara.screen2normalY(cursorY));
+    drawingVertices.push_back(0.0f); // flat draw
+}
 
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
@@ -36,20 +46,7 @@ void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     mouseModsToggle(window, button, action, mods);
-    Records& record = Records::getState();
-    Take& take = Take::holdon();
-    if (action == GLFW_PRESS && record.pressLeft && record.state == interectState::drawing && take.drawType != GL_POINT && record.drawingPrimitive == false){
-        record.drawingPrimitive = true;
-        //generate a new primitive
-    }
-    if (action == GLFW_RELEASE && record.drawingPrimitive && take.holdonToDraw){
-        record.drawingPrimitive = false;
-        //finish the draw and push into the formal primitive render queue
-    }
-    if (action == GLFW_PRESS && record.pressRight && record.drawingPrimitive && !take.holdonToDraw){
-        record.drawingPrimitive = false;
-        //finish the draw and push into the formal primitive render queue
-    }
+    drawModsToggle(window, button, action, mods);
     return;
 }
 void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
@@ -190,5 +187,47 @@ void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
         if (yoffset < 0){
             //zoom out
         }
+    }
+}
+static bool startDrawCheck(GLFWwindow* window, int button, int action, int mods){
+    Records& record = Records::getState();
+    if (action != GLFW_PRESS || !record.pressLeft) return false; // check left click
+    if ( record.state != interectState::drawing || Take::holdon().drawType == GL_POINT) return false; //check ready to start
+    return !record.drawingPrimitive; //check aleady started
+}
+static bool finishDrawCheck(GLFWwindow* window, int button, int action, int mods){
+    Records& record = Records::getState();
+    if (!record.drawingPrimitive) return false; //check under drawing
+    if (action == GLFW_PRESS){//click right to stop
+        if (button == GLFW_MOUSE_BUTTON_RIGHT && !Take::holdon().holdonToDraw)
+            return true;
+        return false;
+    }
+    else if (action == GLFW_RELEASE){//release left to stop
+        if (button == GLFW_MOUSE_BUTTON_LEFT && Take::holdon().holdonToDraw)
+            return true;
+        return false;
+    }
+    return false;
+}
+void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
+    
+    Records& record = Records::getState();
+    Take& take = Take::holdon();
+    if (startDrawCheck(window, button, action, mods)){
+        record.drawingPrimitive = true;
+        //generate a new primitive
+        std::cout<<"start draw"<<std::endl;
+        take.drawingVertices.clear();
+        take.addPoint();
+    }
+    if (finishDrawCheck(window,button,action,mods)){
+        record.drawingPrimitive = false;
+        //finish the draw and push into the formal primitive render queue
+        take.addPoint();
+        std::cout<<"finish draw"<<std::endl;
+        std::unique_ptr<Primitive> newPrimitive = std::make_unique<Primitive>(new Primitive(take.drawingVertices,take.drawType,3));
+        pr::primitives.push_back(std::move(newPrimitive));
+        take.drawType = GL_POINT;
     }
 }

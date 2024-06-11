@@ -52,22 +52,8 @@ private:
 };
 
 namespace pr {
-inline vertexArray tranVertex = {
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.0f,  0.5f, 0.0f
-};
-inline indexArray indices ={
-    0, 1, 3,
-    1, 2, 3
-};
-inline vertexArray rectVertex ={
-    0.4f, 0.4f, 0.0f,
-    0.4f, -0.4f, 0.0f,
-    -0.4f, -0.4f, 0.0f,
-     -0.4f, 0.4f, 0.0f
-};
-
+extern Primitive rectangle;
+extern Primitive triangle;
 extern std::vector<std::unique_ptr<Primitive> >primitives;
 }
 

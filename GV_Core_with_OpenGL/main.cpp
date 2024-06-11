@@ -20,8 +20,6 @@
 #include "primitive.hpp"
 #include "commander.hpp"
 
-Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4,  6);
-Primitive triangle = Primitive(pr::tranVertex, GL_TRIANGLES,  3);
 static int initImGUI(GLFWwindow *window);
 static int initInterect(GLFWwindow* &window);
 static int releaseResources(GLFWwindow* &window);
@@ -36,7 +34,7 @@ int main(int argc, const char * argv[]) {
     Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
     Take& take = Take::holdon();
     take.shader = &singleYellow;
-    take.obj = &triangle;
+    take.obj = &pr::triangle;
     
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -48,7 +46,7 @@ int main(int argc, const char * argv[]) {
         Take& take = Take::holdon();
         take.shader->rend();
         take.obj->draw();
-        rectangle.draw();
+        pr::rectangle.draw();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }

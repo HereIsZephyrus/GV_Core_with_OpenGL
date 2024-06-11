@@ -30,8 +30,18 @@ public:
     const GLint WINDOW_WIDTH = 960;
     const GLint WINDOW_HEIGHT = 720;
     GLint SCREEN_WIDTH,SCREEN_HEIGHT;
-    //GLboolean keyRecord[26],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
-    //void initIObuffer();
+    GLfloat screen2normalX(GLdouble screenX){
+        return  (2.0f * static_cast<GLfloat>(screenX / WINDOW_WIDTH)) - 1.0f;
+    }
+    GLfloat screen2normalY(GLdouble screenY){
+        return 1.0f - (2.0f * static_cast<GLfloat>(screenY / WINDOW_HEIGHT));
+    }
+    GLdouble normal2screenX(GLfloat normalX){
+        return static_cast<GLdouble>((normalX + 1.0f) * WINDOW_WIDTH / 2.0f);
+    }
+    GLdouble normal2screenY(GLfloat normalY){
+        return static_cast<GLdouble>((1.0f - normalY) * WINDOW_HEIGHT / 2.0f);
+    }
 private:
     WindowParas() {}
 };
