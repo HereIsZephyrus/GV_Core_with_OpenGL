@@ -7,6 +7,7 @@
 #define GL_SILENCE_DEPRECATION
 #include "commander.hpp"
 #include "window.hpp"
+#include "primitive.hpp"
 #include <iostream>
 #include <memory>
 
@@ -226,7 +227,8 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         //finish the draw and push into the formal primitive render queue
         take.addPoint();
         std::cout<<"finish draw"<<std::endl;
-        std::unique_ptr<Primitive> newPrimitive = std::make_unique<Primitive>(new Primitive(take.drawingVertices,take.drawType,3));
+        pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
+        newPrimitive->bindShader(rd::defaultShader);
         pr::primitives.push_back(std::move(newPrimitive));
         take.drawType = GL_POINT;
     }

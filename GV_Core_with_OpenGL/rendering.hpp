@@ -11,6 +11,9 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
+#include <map>
+#include <memory>
 
 #include <GL/glew.h>
 #include "imgui.h"
@@ -24,7 +27,7 @@ public:
     Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
     Shader(std::string vertexShader,std::string fragmentShader);
     //Shader(){}
-    inline void rend(){
+    void  rend() const{
         //std::cout<<"Render is running"<<std::endl;
         glUseProgram(this->Program);
     }
@@ -45,10 +48,13 @@ public:
 private:
     ShaderStyle(){}
 };
-
+typedef std::unique_ptr<Shader> pShader;
 namespace rd{
 extern std::string singleVertices;
 extern std::string fillYellow;
+extern std::map<std::string,pShader > shaders;
+//extern Shader* defaultShader;
+extern const Shader* defaultShader;
 };
 
 #endif /* rendering_hpp */

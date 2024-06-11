@@ -14,6 +14,7 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <vector>
+#include "rendering.hpp"
 
 typedef std::vector<GLfloat> vertexArray;
 typedef std::vector<GLuint> indexArray;
@@ -28,7 +29,7 @@ public:
     //Primitive(){}
     Primitive(const Primitive&) = delete;
     void operator=(const Primitive&) = delete;
-    
+    //Shader* shader;
     ~Primitive(){
         vertices.clear();
         indices.clear();
@@ -37,6 +38,7 @@ public:
         if (type == DrawType::Index)
             glDeleteBuffers(1,&EBO);
     }
+    void bindShader(const Shader* tobind){shader = tobind;}
     void draw();
     void load();
 private:
@@ -46,15 +48,16 @@ private:
     DrawType type;
     vertexArray vertices;
     indexArray indices;
+    const Shader* shader;
     inline const GLsizei getVertexNum(){
         return static_cast<GLsizei>(vertices.size() / stride);
     }
 };
-
+typedef std::unique_ptr<Primitive> pPrimitive;
 namespace pr {
-extern Primitive rectangle;
-extern Primitive triangle;
-extern std::vector<std::unique_ptr<Primitive> >primitives;
+extern pPrimitive rectangle;
+extern pPrimitive triangle;
+extern std::vector<pPrimitive >primitives;
 }
 
 #endif /* primitive_hpp */

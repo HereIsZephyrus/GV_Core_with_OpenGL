@@ -8,6 +8,9 @@
 #include "rendering.hpp"
 #include "window.hpp"
 namespace rd{
+std::map<std::string,pShader > shaders;
+const Shader* defaultShader;
+
 std::string singleVertices = "#version 410 core\n"
 "layout (location = 0) in vec3 position;\n"
 "void main(){gl_Position = vec4( position.x,position.y,position.z, 1.0);}\n";

@@ -11,6 +11,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <memory>
 //#include <SDL2/SDL_opengl.h>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -22,6 +23,7 @@
 
 static int initImGUI(GLFWwindow *window);
 static int initInterect(GLFWwindow* &window);
+static int initStyle();
 static int releaseResources(GLFWwindow* &window);
 int main(int argc, const char * argv[]) {
     GLFWwindow *& window = WindowParas::getInstance().window;
@@ -29,12 +31,7 @@ int main(int argc, const char * argv[]) {
         return -1;
     initImGUI(window);
     initInterect(window);
-    
-    //init style
-    Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
-    Take& take = Take::holdon();
-    take.shader = &singleYellow;
-    take.obj = &pr::triangle;
+    initStyle();
     
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -42,11 +39,12 @@ int main(int argc, const char * argv[]) {
         
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
-        Take& take = Take::holdon();
-        take.shader->rend();
-        take.obj->draw();
-        pr::rectangle.draw();
+
+        //rd::defaultShader->rend();
+        for (auto it = pr::primitives.begin(); it!= pr::primitives.end(); it++)
+            (*it)->draw();
+        //take.obj->draw();
+        //pr::rectangle.draw();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
@@ -80,6 +78,16 @@ int initInterect(GLFWwindow* &window){
     glfwSetScrollCallback(window, scrollCallback);
     glfwSetCursorPosCallback(window, cursorSelectCallback);
     glfwSetCursorEnterCallback(window, cursorFocusCallback);
+    return 0;
+}
+int initStyle(){
+    pShader singleYellow (new Shader(rd::singleVertices, rd::fillYellow));
+    rd::shaders["singleYellow"] = std::move(singleYellow);
+    rd::defaultShader = rd::shaders["singleYellow"].get();
+    pr::triangle-> bindShader(rd::defaultShader);
+    pr::rectangle->bindShader(rd::defaultShader);
+    pr::primitives.push_back(std::move(pr::triangle));
+    pr::primitives.push_back(std::move(pr::rectangle));
     return 0;
 }
 

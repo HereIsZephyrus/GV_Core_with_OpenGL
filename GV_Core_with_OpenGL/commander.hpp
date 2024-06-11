@@ -46,9 +46,9 @@ public:
     Take(const Take&) = delete;
     void operator = (const Take&) = delete;
     Primitive* obj; // for now only one primitive can be selected
-    std::vector<GLfloat> drawingVertices;
+    Shader* drawingShader;
+    vertexArray drawingVertices;
     void addPoint();
-    Shader* shader;
     GLenum drawType;
     bool holdonToDraw; // hold on to draw or click to draw
 private:

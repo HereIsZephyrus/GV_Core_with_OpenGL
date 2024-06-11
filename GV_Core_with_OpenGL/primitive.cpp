@@ -14,6 +14,7 @@ Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):type{Draw
         initOpenGL(WindowParas::getInstance().window);
     this->vertices = vertices;
     this->indices = {};
+    shader = nullptr;
     glGenVertexArrays(1,&VAO);
     glBindVertexArray(VAO);
     glGenBuffers(1,&VBO);
@@ -25,6 +26,7 @@ Primitive::Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsize
         initOpenGL(WindowParas::getInstance().window);
     this->vertices = vertices;
     this->indices = indices;
+    shader = nullptr;
     glGenVertexArrays(1,&VAO);
     glBindVertexArray(VAO);
     glGenBuffers(1,&VBO);
@@ -45,6 +47,12 @@ void Primitive::load(){
 void Primitive::draw(){
     //std::cout<<"Draw is running"<<std::endl;
     GLint currentBuffer;
+    if (shader == nullptr){
+        std::cerr<<"havn't bind shader";
+        return;
+    }
+    else
+        shader ->rend();
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentBuffer);
     if (currentBuffer != VBO){
         //std::cout<<currentBuffer<<' '<<VBO<<std::endl;
@@ -65,6 +73,7 @@ void Primitive::draw(){
 }
 
 namespace pr {
+std::vector<std::unique_ptr<Primitive> >primitives;
 static const vertexArray tranVertex = {
     -0.5f, -0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,
@@ -80,6 +89,7 @@ static const vertexArray rectVertex ={
     -0.4f, -0.4f, 0.0f,
      -0.4f, 0.4f, 0.0f
 };
-Primitive rectangle = Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6);
-Primitive triangle = Primitive(tranVertex, GL_TRIANGLES,  3);
+std::unique_ptr<Primitive> rectangle(new Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6));
+//Primitive rectangle = Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6);
+std::unique_ptr<Primitive> triangle(new Primitive(tranVertex, GL_TRIANGLES,  3));
 }
