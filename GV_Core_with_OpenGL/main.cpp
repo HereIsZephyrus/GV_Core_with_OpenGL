@@ -48,11 +48,11 @@ int main(int argc, const char * argv[]) {
         
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         
         Take& take = Take::holdon();
         take.shader->rend();
         take.obj->draw();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
     
@@ -105,6 +105,10 @@ int initImGUI(GLFWwindow *window) {
     
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");
+    
+    ShaderStyle& style = ShaderStyle::getStyle();
+    style.drawColor =  ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    style.thickness = 1.0f;
     return  0;
 }
 

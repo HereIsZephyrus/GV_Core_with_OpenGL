@@ -31,6 +31,7 @@ public:
     void operator = (const Records&) = delete;
     GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
     GLboolean dragingMode,drawingPrimitive;
+    bool showCreateElementWindow;
     interectState state;
     void initIObuffer();
 private:
@@ -46,6 +47,8 @@ public:
     void operator = (const Take&) = delete;
     Primitive* obj; // for now only one primitive can be selected
     Shader* shader;
+    GLenum drawType;
+    bool finishedDrawing;
 private:
     Take(){}
 };

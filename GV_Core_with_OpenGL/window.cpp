@@ -11,6 +11,7 @@
 namespace gui{
 static void renderMenu(GLFWwindow *&window);
 static void renderEditPanel();
+static void renderSelectPanel();
 void DrawGUI() {
     GLFWwindow *& window = WindowParas::getInstance().window;
     Records& record = Records::getState();
@@ -20,6 +21,7 @@ void DrawGUI() {
     
     renderMenu(window);
     if (record.state == interectState::drawing) renderEditPanel();
+    if (record.showCreateElementWindow)             renderSelectPanel();
     ImGui::Render();
     return;
 }
@@ -51,12 +53,12 @@ static void editMenu() {
         record.state = interectState::drawing;
         glfwSetMouseButtonCallback(WindowParas::getInstance().window, mouseDrawCallback);
     }
-        
+    
     if (record.state == interectState::drawing && ImGui::MenuItem("Stop edit")){
         record.state = interectState::toselect;
         glfwSetMouseButtonCallback(WindowParas::getInstance().window, mouseViewCallback);
     }
-        
+    
     if (ImGui::MenuItem("Add Data", "CTRL A")){
         
     }
@@ -78,7 +80,7 @@ static void viewMenu() {
         Records::getState().dragingMode = GL_FALSE;
 }
 
-static void renderMenu(GLFWwindow *&window) {
+void renderMenu(GLFWwindow *&window) {
     if (ImGui::BeginMainMenuBar()){
         if (ImGui::BeginMenu("MyGIS")){
             if (ImGui::MenuItem("About")){
@@ -109,25 +111,60 @@ static void renderMenu(GLFWwindow *&window) {
         ImGui::EndMainMenuBar();
     }
 }
-static void renderEditPanel(){
-    ImVec4 color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-       float thickness = 1.0f;
-       bool fill = false;
-       int drawType = 0; // 0: 点, 1: 线, 2: 面
+
+
+void renderEditPanel(){
+    Records& record = Records::getState();
+    ShaderStyle& style = ShaderStyle::getStyle();
     ImGui::Begin("Edit Panel");
-        ImGui::Text("This is a edit panel");
-        ImGui::RadioButton("Point", &drawType, 0); ImGui::SameLine();
-        ImGui::RadioButton("Line", &drawType, 1); ImGui::SameLine();
-        ImGui::RadioButton("Fill", &drawType, 2);
-
-        // 设置颜色
-        ImGui::ColorEdit4("Color", (float*)&color);
-
-        // 设置线条粗细
-        ImGui::SliderFloat("Thickness", &thickness, 1.0f, 10.0f);
-
-        // 是否填充
-        ImGui::Checkbox("Fill", &fill);
+    ImGui::Text("This is a edit panel");
+    if (ImGui::Button("Create Element"))
+        record.showCreateElementWindow = true;
+    ImGui::ColorEdit4("Color", (float*)&style.drawColor);
+    ImGui::SliderFloat("Thickness", &style.thickness, 1.0f, 10.0f);
+    ImGui::Checkbox("Fill", &style.toFill);
     ImGui::End();
 }
+
+void renderSelectPanel(){
+    Records& record = Records::getState();
+    GLenum& drawType = Take::holdon().drawType;
+    ImGui::Begin("Create Element", &record.showCreateElementWindow, ImGuiWindowFlags_AlwaysAutoResize);
+    
+    if (ImGui::Button("Points")){
+        drawType = GL_POINTS;
+        record.showCreateElementWindow = false;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Lines")){
+        drawType = GL_LINES;
+        record.showCreateElementWindow = false;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Strip")){
+        drawType = GL_LINE_STRIP;
+        record.showCreateElementWindow = false;
+    }
+    if (ImGui::Button("Polygen")){
+        if (ShaderStyle::getStyle().toFill)
+            drawType = GL_TRIANGLE_FAN;
+        else
+            drawType = GL_LINE_LOOP;
+        record.showCreateElementWindow = false;
+    }
+    if (ImGui::Button("Trangles")){
+        drawType = GL_TRIANGLES;
+        record.showCreateElementWindow = false;
+    }
+    if (ImGui::Button("Rectangle")){
+        drawType = GL_TRIANGLE_STRIP;
+        record.showCreateElementWindow = false;
+    }
+    if (ImGui::Button("Circle")){
+        drawType = GL_TRIANGLE_FAN;
+        record.showCreateElementWindow = false;
+    }
+    
+    ImGui::End();
 }
+}//namespace gui
