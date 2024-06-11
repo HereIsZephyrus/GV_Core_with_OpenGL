@@ -14,6 +14,8 @@ Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):type{Draw
     glGenVertexArrays(1,&VAO);
     glBindVertexArray(VAO);
     glGenBuffers(1,&VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
 }
 Primitive::Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen):type{DrawType::Index},shape(shape),indexLen(indlen),stride(stride){
     this->vertices = vertices;
@@ -21,19 +23,17 @@ Primitive::Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsize
     glGenVertexArrays(1,&VAO);
     glBindVertexArray(VAO);
     glGenBuffers(1,&VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
     glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(indices.size() * sizeof(GLuint)), static_cast<const void*>(indices.data()), GL_STATIC_DRAW);
 }
 void Primitive::load(){
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    const void* dataHead = static_cast<const void*>(vertices.data());
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,dataHead, GL_STATIC_DRAW);
-    //std::cout<<*static_cast<const GLfloat*>(dataHead)<<std::endl;
-    if (type == DrawType::Index){
+    if (type == DrawType::Index)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(indices.size() * sizeof(GLuint)), static_cast<const void*>(indices.data()), GL_STATIC_DRAW);
-    }
-    //glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,stride * sizeof (GLfloat),(GLvoid *)0);
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
     glEnableVertexAttribArray(0);
 }

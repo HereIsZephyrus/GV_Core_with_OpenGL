@@ -37,7 +37,7 @@ int main(int argc, const char * argv[]) {
     //init style
     Shader singleYellow = Shader(rd::singleVertices, rd::fillYellow);
     Primitive triangle = Primitive(pr::tranVertex, GL_TRIANGLES,  3);
-    //Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4,  6);
+    Primitive rectangle = Primitive(pr::rectVertex, pr::indices, GL_TRIANGLES, 4,  6);
     Take& take = Take::holdon();
     take.shader = &singleYellow;
     take.obj = &triangle;
@@ -52,6 +52,7 @@ int main(int argc, const char * argv[]) {
         Take& take = Take::holdon();
         take.shader->rend();
         take.obj->draw();
+        rectangle.draw();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
