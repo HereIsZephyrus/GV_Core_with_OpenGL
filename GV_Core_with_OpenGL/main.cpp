@@ -109,6 +109,8 @@ int initImGUI(GLFWwindow *window) {
     ShaderStyle& style = ShaderStyle::getStyle();
     style.drawColor =  ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
     style.thickness = 1.0f;
+    Take& take = Take::holdon();
+    take.drawType = GL_POINT; //set as blank style
     return  0;
 }
 

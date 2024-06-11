@@ -129,20 +129,24 @@ void renderEditPanel(){
 void renderSelectPanel(){
     Records& record = Records::getState();
     GLenum& drawType = Take::holdon().drawType;
+    bool& holdonToDraw = Take::holdon().holdonToDraw;
     ImGui::Begin("Create Element", &record.showCreateElementWindow, ImGuiWindowFlags_AlwaysAutoResize);
     
     if (ImGui::Button("Points")){
         drawType = GL_POINTS;
+        holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
     ImGui::SameLine();
     if (ImGui::Button("Lines")){
         drawType = GL_LINES;
+        holdonToDraw = true;
         record.showCreateElementWindow = false;
     }
     ImGui::SameLine();
     if (ImGui::Button("Strip")){
         drawType = GL_LINE_STRIP;
+        holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
     if (ImGui::Button("Polygen")){
@@ -150,18 +154,22 @@ void renderSelectPanel(){
             drawType = GL_TRIANGLE_FAN;
         else
             drawType = GL_LINE_LOOP;
+        holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
     if (ImGui::Button("Trangles")){
         drawType = GL_TRIANGLES;
+        holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
     if (ImGui::Button("Rectangle")){
         drawType = GL_TRIANGLE_STRIP;
+        holdonToDraw = true;
         record.showCreateElementWindow = false;
     }
     if (ImGui::Button("Circle")){
         drawType = GL_TRIANGLE_FAN;
+        holdonToDraw = true;
         record.showCreateElementWindow = false;
     }
     

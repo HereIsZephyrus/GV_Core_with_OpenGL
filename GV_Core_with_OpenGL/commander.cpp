@@ -37,9 +37,18 @@ void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     mouseModsToggle(window, button, action, mods);
     Records& record = Records::getState();
-    if (action == GLFW_PRESS &&record.state == interectState::drawing && record.drawingPrimitive == false){
+    Take& take = Take::holdon();
+    if (action == GLFW_PRESS && record.pressLeft && record.state == interectState::drawing && take.drawType != GL_POINT && record.drawingPrimitive == false){
         record.drawingPrimitive = true;
         //generate a new primitive
+    }
+    if (action == GLFW_RELEASE && record.drawingPrimitive && take.holdonToDraw){
+        record.drawingPrimitive = false;
+        //finish the draw and push into the formal primitive render queue
+    }
+    if (action == GLFW_PRESS && record.pressRight && record.drawingPrimitive && !take.holdonToDraw){
+        record.drawingPrimitive = false;
+        //finish the draw and push into the formal primitive render queue
     }
     return;
 }

@@ -48,7 +48,7 @@ public:
     Primitive* obj; // for now only one primitive can be selected
     Shader* shader;
     GLenum drawType;
-    bool finishedDrawing;
+    bool holdonToDraw; // hold on to draw or click to draw
 private:
     Take(){}
 };
