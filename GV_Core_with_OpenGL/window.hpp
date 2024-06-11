@@ -15,6 +15,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+inline bool HAS_INIT_OPENGL_CONTEXT = false;
+int initOpenGL(GLFWwindow *&window);
 // build a singleton to manage all window vars
 class WindowParas{
 public:

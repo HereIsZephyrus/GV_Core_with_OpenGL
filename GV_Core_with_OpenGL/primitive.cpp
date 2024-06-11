@@ -8,7 +8,10 @@
 #include <iostream>
 #include "primitive.hpp"
 #include "glexception.hpp"
+#include "window.hpp"
 Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):type{DrawType::Array},shape(shape),indexLen(0),stride(stride){
+    if (!HAS_INIT_OPENGL_CONTEXT)
+        initOpenGL(WindowParas::getInstance().window);
     this->vertices = vertices;
     this->indices = {};
     glGenVertexArrays(1,&VAO);
@@ -18,6 +21,8 @@ Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):type{Draw
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
 }
 Primitive::Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen):type{DrawType::Index},shape(shape),indexLen(indlen),stride(stride){
+    if (!HAS_INIT_OPENGL_CONTEXT)
+        initOpenGL(WindowParas::getInstance().window);
     this->vertices = vertices;
     this->indices = indices;
     glGenVertexArrays(1,&VAO);

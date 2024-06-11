@@ -6,6 +6,7 @@
 //
 
 #include "rendering.hpp"
+#include "window.hpp"
 namespace rd{
 std::string singleVertices = "#version 410 core\n"
 "layout (location = 0) in vec3 position;\n"
@@ -58,6 +59,8 @@ Shader::Shader(std::string vertexShader,std::string fragmentShader){
     glDeleteShader(fragment);
 }
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath){
+    if (!HAS_INIT_OPENGL_CONTEXT)
+        initOpenGL(WindowParas::getInstance().window);
     // 1. Retrieve the vertex/fragment source code from filePath
     std::string vertexShader;
     std::string fragmentShader;

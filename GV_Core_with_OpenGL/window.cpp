@@ -8,6 +8,50 @@
 #include "commander.hpp"
 #include "window.hpp"
 
+int initOpenGL(GLFWwindow *&window) {
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW" << std::endl;
+        return -1;
+    }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    
+    //SDL_Init(SDL_INIT_EVERYTHING);
+    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    //SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+    //sf::ContextSettings settings;
+    //settings.depthBits = 24;
+    //settings.stencilBits = 8;
+    //settings.majorVersion = 4;
+    //settings.minorVersion = 1;
+    //settings.attributeFlags = sf::ContextSettings::Core;
+    
+    WindowParas& windowPara = WindowParas::getInstance();
+    window = glfwCreateWindow(windowPara.WINDOW_WIDTH, windowPara.WINDOW_HEIGHT, "TCBOpenGL学习", nullptr, nullptr);
+    if (window == nullptr) {
+        std::cerr << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    glfwGetFramebufferSize(window, &windowPara.SCREEN_WIDTH, &windowPara.SCREEN_HEIGHT);
+    glfwMakeContextCurrent(window); // to draw at this window
+    glewExperimental = GL_TRUE;
+    if (GLEW_OK != glewInit()){
+        std::cerr << "Failed to initialize GLEW"<<std::endl;
+        return -2;
+    }
+    glViewport(0, 0, windowPara.SCREEN_WIDTH, windowPara.SCREEN_HEIGHT);
+    const GLubyte* version = glGetString(GL_VERSION);
+    std::cout<<version<<std::endl;
+    HAS_INIT_OPENGL_CONTEXT = true;
+    return 0;
+}
+
 namespace gui{
 static void renderMenu(GLFWwindow *&window);
 static void renderEditPanel();
