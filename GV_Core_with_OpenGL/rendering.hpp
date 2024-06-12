@@ -52,6 +52,7 @@ typedef std::unique_ptr<Shader> pShader;
 namespace rd{
 extern std::string singleVertices;
 extern std::string fillYellow;
+extern std::string fillWhite;
 extern std::map<std::string,pShader > shaders;
 //extern Shader* defaultShader;
 extern const Shader* defaultShader;

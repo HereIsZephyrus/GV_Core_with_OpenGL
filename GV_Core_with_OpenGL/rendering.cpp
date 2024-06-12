@@ -18,6 +18,10 @@ std::string singleVertices = "#version 410 core\n"
 std::string fillYellow = "#version 410 core\n"
 "out vec4 color;\n"
 "void main( ){color = vec4( 1.0f, 0.5f, 0.2f, 1.0f );}";
+
+std::string fillWhite = "#version 410 core\n"
+"out vec4 color;\n"
+"void main( ){color = vec4( 1.0f, 1.0f, 1.0f, 1.0f );}";
 };
 Shader::Shader(std::string vertexShader,std::string fragmentShader){
     const GLchar* vShaderCode = vertexShader.c_str();

@@ -8,6 +8,7 @@
 #include <iostream>
 #include "primitive.hpp"
 #include "glexception.hpp"
+#include "commander.hpp"
 #include "window.hpp"
 Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):type{DrawType::Array},shape(shape),indexLen(0),stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
@@ -74,6 +75,14 @@ void Primitive::draw(){
 
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >primitives;
+pPrimitive drawPreviewPrimitive = nullptr;
+void createPrimitiveTo(std::vector<pPrimitive >& primitiveList){
+    Take& take = Take::holdon();
+    pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
+    newPrimitive->bindShader(rd::defaultShader);
+    pr::primitives.push_back(std::move(newPrimitive));
+    return;
+}
 static const vertexArray tranVertex = {
     -0.5f, -0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,

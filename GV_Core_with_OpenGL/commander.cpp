@@ -10,6 +10,7 @@
 #include "primitive.hpp"
 #include <iostream>
 #include <memory>
+#include <vector>
 
 void Records::initIObuffer(){
     memset(keyRecord, GL_FALSE, sizeof(keyRecord));
@@ -33,6 +34,7 @@ void Take::addPoint(){
     WindowParas& windowPara = WindowParas::getInstance();
     GLdouble cursorX, cursorY;
     glfwGetCursorPos(windowPara.window, &cursorX, &cursorY);
+    std::cout<<"x = "<<cursorX<<','<<" y = "<<cursorY<<std::endl;
     drawingVertices.push_back(windowPara.screen2normalX(cursorX));
     drawingVertices.push_back(windowPara.screen2normalY(cursorY));
     drawingVertices.push_back(0.0f); // flat draw
@@ -48,6 +50,11 @@ void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     mouseModsToggle(window, button, action, mods);
     drawModsToggle(window, button, action, mods);
+    //tackle ondraw behavior
+    Records& record = Records::getState();
+    if (!Take::holdon().holdonToDraw && action == GLFW_PRESS && record.drawingPrimitive && record.pressLeft)
+            Take::holdon().addPoint();
+    //holdon draw method will not add middle points, which means the primitives drawed by this way has only two control points. So this situation is handled in cursorcallback
     return;
 }
 void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
@@ -68,6 +75,25 @@ void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos){
 }
 void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos){
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+    if (Records::getState().drawingPrimitive){//generate preview
+        //take the last point
+        vertexArray& vertices = Take::holdon().drawingVertices;
+        vertexArray::const_reverse_iterator it = vertices.rbegin();
+        WindowParas& windowPara = WindowParas::getInstance();
+        vertexArray tempVertices;
+        tempVertices.push_back(*(it+2));    //last x
+        tempVertices.push_back(*(it+1));    //last y
+        tempVertices.push_back(*(it));        //last z
+        tempVertices.push_back(windowPara.screen2normalX(xpos));    //cursor x
+        tempVertices.push_back(windowPara.screen2normalY(ypos));    //cursor y
+        tempVertices.push_back(0.0f);        //cursor z
+        //generate preview primitive
+        pPrimitive previewPrimitive(new Primitive(tempVertices,GL_LINES,3));
+        previewPrimitive -> bindShader(rd::shaders["singleWhite"].get());
+        pr::drawPreviewPrimitive = std::move(previewPrimitive);
+    }
+    else
+        pr::drawPreviewPrimitive = nullptr;
     return;
 }
 void cursorFocusCallback(GLFWwindow* window, int entered){
@@ -212,7 +238,6 @@ static bool finishDrawCheck(GLFWwindow* window, int button, int action, int mods
     return false;
 }
 void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
-    
     Records& record = Records::getState();
     Take& take = Take::holdon();
     if (startDrawCheck(window, button, action, mods)){
@@ -227,9 +252,7 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         //finish the draw and push into the formal primitive render queue
         take.addPoint();
         std::cout<<"finish draw"<<std::endl;
-        pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
-        newPrimitive->bindShader(rd::defaultShader);
-        pr::primitives.push_back(std::move(newPrimitive));
+        pr::createPrimitiveTo(pr::primitives);
         take.drawType = GL_POINT;
     }
 }
