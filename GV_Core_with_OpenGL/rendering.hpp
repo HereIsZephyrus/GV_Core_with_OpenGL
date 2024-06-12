@@ -31,6 +31,9 @@ public:
         //std::cout<<"Render is running"<<std::endl;
         glUseProgram(this->Program);
     }
+    GLuint getProgram(){
+        return Program;
+    }
 private:
     GLuint Program;
 };

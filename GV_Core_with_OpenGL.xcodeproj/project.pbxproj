@@ -28,6 +28,9 @@
 		32C5E09D2C18A14E00152CDF /* imgui_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C5E0912C18A14E00152CDF /* imgui_tables.cpp */; };
 		32C5E09E2C18A14E00152CDF /* imgui_widgets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C5E0922C18A14E00152CDF /* imgui_widgets.cpp */; };
 		32C5E09F2C18A14E00152CDF /* imgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C5E0932C18A14E00152CDF /* imgui.cpp */; };
+		32C5E0A12C193D9C00152CDF /* libglm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C5E0A02C193D9C00152CDF /* libglm.dylib */; };
+		32C5E0A22C193D9C00152CDF /* libglm.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32C5E0A02C193D9C00152CDF /* libglm.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32C5E0A52C19464E00152CDF /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C5E0A32C19464E00152CDF /* camera.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +41,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				322E52FD2C13FD88002AFB73 /* libSDL2-2.0.0.dylib in Embed Libraries */,
+				32C5E0A22C193D9C00152CDF /* libglm.dylib in Embed Libraries */,
 				323A00E42C0AA4360056BAD1 /* libglfw.3.4.dylib in Embed Libraries */,
 				322E52F72C13EE17002AFB73 /* libGLEW.2.2.0.dylib in Embed Libraries */,
 			);
@@ -92,6 +96,9 @@
 		32C5E0952C18A14E00152CDF /* imstb_rectpack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imstb_rectpack.h; sourceTree = "<group>"; };
 		32C5E0962C18A14E00152CDF /* imstb_textedit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imstb_textedit.h; sourceTree = "<group>"; };
 		32C5E0972C18A14E00152CDF /* imstb_truetype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imstb_truetype.h; sourceTree = "<group>"; };
+		32C5E0A02C193D9C00152CDF /* libglm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglm.dylib; path = ../../../../opt/homebrew/Cellar/glm/1.0.1/lib/libglm.dylib; sourceTree = "<group>"; };
+		32C5E0A32C19464E00152CDF /* camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = camera.cpp; sourceTree = "<group>"; };
+		32C5E0A42C19464E00152CDF /* camera.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = camera.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +109,7 @@
 				322E52FC2C13FD88002AFB73 /* libSDL2-2.0.0.dylib in Frameworks */,
 				322E52F62C13EE17002AFB73 /* libGLEW.2.2.0.dylib in Frameworks */,
 				326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */,
+				32C5E0A12C193D9C00152CDF /* libglm.dylib in Frameworks */,
 				323A00E32C0AA4360056BAD1 /* libglfw.3.4.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -112,6 +120,7 @@
 		326A8BE62C0A28E300E30250 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				32C5E0A02C193D9C00152CDF /* libglm.dylib */,
 				322E52FE2C140339002AFB73 /* libsfml-system.2.6.1.dylib */,
 				322E52FF2C14033A002AFB73 /* libsfml-window.2.6.1.dylib */,
 				322E52FB2C13FD88002AFB73 /* libSDL2-2.0.0.dylib */,
@@ -156,6 +165,8 @@
 				322E53082C1532E6002AFB73 /* primitive.hpp */,
 				32948FAB2C157E65007A0078 /* glexception.cpp */,
 				32948FAC2C157E65007A0078 /* glexception.hpp */,
+				32C5E0A32C19464E00152CDF /* camera.cpp */,
+				32C5E0A42C19464E00152CDF /* camera.hpp */,
 			);
 			path = GV_Core_with_OpenGL;
 			sourceTree = "<group>";
@@ -248,6 +259,7 @@
 				32C5E09A2C18A14E00152CDF /* imgui_draw.cpp in Sources */,
 				32C5E09F2C18A14E00152CDF /* imgui.cpp in Sources */,
 				32C5E09C2C18A14E00152CDF /* imgui_impl_opengl3.cpp in Sources */,
+				32C5E0A52C19464E00152CDF /* camera.cpp in Sources */,
 				32948FAD2C157E65007A0078 /* glexception.cpp in Sources */,
 				323A00EE2C0AC7440056BAD1 /* commander.cpp in Sources */,
 				32C5E09E2C18A14E00152CDF /* imgui_widgets.cpp in Sources */,
@@ -394,6 +406,7 @@
 					/opt/homebrew/Cellar/glfw/3.4/lib,
 					/opt/homebrew/Cellar/sdl2/2.30.3/lib,
 					/opt/homebrew/Cellar/sfml/2.6.1/lib,
+					/opt/homebrew/Cellar/glm/1.0.1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYSTEM_HEADER_SEARCH_PATHS = (
@@ -402,6 +415,7 @@
 					"${glfw_header-3.4}",
 					"${sdl2_header}",
 					"${sfml_header-2.6}",
+					"${glm_header-1.0}",
 				);
 			};
 			name = Debug;
@@ -418,6 +432,7 @@
 					/opt/homebrew/Cellar/glfw/3.4/lib,
 					/opt/homebrew/Cellar/sdl2/2.30.3/lib,
 					/opt/homebrew/Cellar/sfml/2.6.1/lib,
+					/opt/homebrew/Cellar/glm/1.0.1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYSTEM_HEADER_SEARCH_PATHS = (
@@ -426,6 +441,7 @@
 					"${glfw_header-3.4}",
 					"${sdl2_header}",
 					"${sfml_header-2.6}",
+					"${glm_header-1.0}",
 				);
 			};
 			name = Release;

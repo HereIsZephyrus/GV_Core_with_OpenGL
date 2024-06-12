@@ -5,12 +5,13 @@
 //  Created by ChanningTong on 6/1/24.
 //
 #define GL_SILENCE_DEPRECATION
-#include "commander.hpp"
-#include "window.hpp"
-#include "primitive.hpp"
 #include <iostream>
 #include <memory>
 #include <vector>
+#include "commander.hpp"
+#include "window.hpp"
+#include "primitive.hpp"
+#include "camera.hpp"
 
 void Records::initIObuffer(){
     memset(keyRecord, GL_FALSE, sizeof(keyRecord));
@@ -184,6 +185,8 @@ void mouseModsToggle(GLFWwindow* window, int button, int action, int mods){
     }
 }
 void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
+    Camera2D* camera = static_cast<Camera2D*>(glfwGetWindowUserPointer(window));
+    camera->processMouseScroll(static_cast<float>(yoffset));
     Records& record = Records::getState();
     if (record.pressCtrl){//if conflict, ctrl first
         if (yoffset > 0){

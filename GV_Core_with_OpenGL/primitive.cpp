@@ -10,7 +10,8 @@
 #include "glexception.hpp"
 #include "commander.hpp"
 #include "window.hpp"
-Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):type{DrawType::Array},shape(shape),indexLen(0),stride(stride){
+Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):
+type{DrawType::Array},shape(shape),indexLen(0),stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
     this->vertices = vertices;
@@ -22,7 +23,8 @@ Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):type{Draw
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
 }
-Primitive::Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen):type{DrawType::Index},shape(shape),indexLen(indlen),stride(stride){
+Primitive::Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen):
+type{DrawType::Index},shape(shape),indexLen(indlen),stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
     this->vertices = vertices;
@@ -52,8 +54,10 @@ void Primitive::draw(){
         std::cerr<<"havn't bind shader";
         return;
     }
-    else
+    else{
+        
         shader ->rend();
+    }
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentBuffer);
     if (currentBuffer != VBO){
         //std::cout<<currentBuffer<<' '<<VBO<<std::endl;

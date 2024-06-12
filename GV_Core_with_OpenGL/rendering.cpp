@@ -13,6 +13,9 @@ const Shader* defaultShader;
 
 std::string singleVertices = "#version 410 core\n"
 "layout (location = 0) in vec3 position;\n"
+"uniform mat4 projection;"
+"uniform mat4 view;"
+"uniform mat4 model;"
 "void main(){gl_Position = vec4( position.x,position.y,position.z, 1.0);}\n";
 
 std::string fillYellow = "#version 410 core\n"
