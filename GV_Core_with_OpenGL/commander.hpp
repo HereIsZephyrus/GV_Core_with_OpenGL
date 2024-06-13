@@ -61,5 +61,6 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorFocusCallback(GLFWwindow* window, int entered);
+void windowPosCallback(GLFWwindow* window, int xpos, int ypos);
 
 #endif /* commander_hpp */

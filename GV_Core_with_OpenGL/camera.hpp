@@ -49,7 +49,7 @@ public:
     void loadSavedPara(const CameraPara2D* para);
     glm::mat4 getProjectionMatrix() const {return projectionMatrix;}
     glm::mat4 getViewMatrix() const {return viewMatrix;}
-
+    float getZoom() const {return zoom;}
 private:
     Camera2D();
     glm::vec2 position;
@@ -59,14 +59,7 @@ private:
     glm::mat4 projectionMatrix;
     glm::mat4 viewMatrix;
 
-    void updateProjectionMatrix() {
-        GLfloat left = -screenWidth / 2.0f * zoom;
-        GLfloat right = screenWidth / 2.0f * zoom;
-        GLfloat bottom = -screenHeight / 2.0f * zoom;
-        GLfloat top = screenHeight / 2.0f * zoom;
-        projectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-    }
-
+    void updateProjectionMatrix();
     void updateViewMatrix() {
         viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-position, 0.0f));
     }

@@ -33,18 +33,10 @@ public:
     GLint SCREEN_WIDTH,SCREEN_HEIGHT;
     GLfloat xScale,yScale;
     const GLfloat deltaTime = 0.016f; // 60FPS
-    GLfloat screen2normalX(GLdouble screenX){
-        return  (2.0f * static_cast<GLfloat>(screenX / WINDOW_WIDTH)) - 1.0f;
-    }
-    GLfloat screen2normalY(GLdouble screenY){
-        return 1.0f - (2.0f * static_cast<GLfloat>(screenY / WINDOW_HEIGHT));
-    }
-    GLdouble normal2screenX(GLfloat normalX){
-        return static_cast<GLdouble>((normalX + 1.0f) * WINDOW_WIDTH / 2.0f);
-    }
-    GLdouble normal2screenY(GLfloat normalY){
-        return static_cast<GLdouble>((1.0f - normalY) * WINDOW_HEIGHT / 2.0f);
-    }
+    GLfloat screen2normalX(GLdouble screenX);
+    GLfloat screen2normalY(GLdouble screenY);
+    GLfloat normal2orthoX(GLfloat normalX);
+    GLfloat normal2orthoY(GLfloat normalY);
 private:
     WindowParas() {}
 };
@@ -53,6 +45,7 @@ namespace gui {
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
 void DrawGUI();
+void spiltUI();
 }
 
 #endif /* window_hpp */

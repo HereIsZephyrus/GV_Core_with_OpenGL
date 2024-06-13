@@ -77,6 +77,7 @@ int initImGUI(GLFWwindow *window) {
 
 int initInterect(GLFWwindow* &window){
     Records::getState().initIObuffer();
+    glfwSetWindowPosCallback(window, windowPosCallback);
     glfwSetKeyCallback(window, keyBasicCallback);
     glfwSetMouseButtonCallback(window, mouseViewCallback);
     glfwSetScrollCallback(window, scrollCallback);

@@ -35,13 +35,15 @@ void Take::addPoint(){
     WindowParas& windowPara = WindowParas::getInstance();
     GLdouble cursorX, cursorY;
     glfwGetCursorPos(windowPara.window, &cursorX, &cursorY);
-    std::cout<<"x = "<<cursorX<<','<<" y = "<<cursorY<<std::endl;
-    // depracted
-    //drawingVertices.push_back(windowPara.screen2normalX(cursorX));
-    //drawingVertices.push_back(windowPara.screen2normalY(cursorY));
-    //ortho way
-    drawingVertices.push_back(static_cast<GLfloat>(cursorX));
-    drawingVertices.push_back(static_cast<GLfloat>(cursorY));
+    //std::cout<<"cursorX = "<<cursorX<<" cursorY = "<<cursorY<<std::endl;
+    const GLfloat normalX = windowPara.screen2normalX(cursorX);
+    const GLfloat normalY = windowPara.screen2normalY(cursorY);
+    //std::cout<<"normalX = "<<normalX<<" normalY = "<<normalY<<std::endl;
+    const GLfloat x = windowPara.normal2orthoX(normalX);
+    const GLfloat y = windowPara.normal2orthoY(normalY);
+    //std::cout<<"x = "<<x<<','<<" y = "<<y<<std::endl;
+    drawingVertices.push_back(x);
+    drawingVertices.push_back(y);
     drawingVertices.push_back(0.0f); // flat draw
 }
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -77,6 +79,9 @@ void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos){
     
     return;
 }
+void windowPosCallback(GLFWwindow* window, int xpos, int ypos){
+    gui::spiltUI();
+}
 void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos){
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
     if (Records::getState().drawingPrimitive){//generate preview
@@ -88,12 +93,15 @@ void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos){
         tempVertices.push_back(*(it+2));    //last x
         tempVertices.push_back(*(it+1));    //last y
         tempVertices.push_back(*(it));        //last z
-        //deprecated
-        //tempVertices.push_back(windowPara.screen2normalX(xpos));    //cursor x
-        //tempVertices.push_back(windowPara.screen2normalY(ypos));    //cursor y
-        //ortho way
-        tempVertices.push_back(static_cast<GLfloat>(xpos));    //cursor x
-        tempVertices.push_back(static_cast<GLfloat>(ypos));    //cursor y
+        //std::cout<<"cursorX = "<<xpos<<" cursorY = "<<ypos<<std::endl;
+        const GLfloat normalX = windowPara.screen2normalX(xpos);
+        const GLfloat normalY = windowPara.screen2normalY(ypos);
+        //std::cout<<"normalX = "<<normalX<<" normalY = "<<normalY<<std::endl;
+        const GLfloat x = windowPara.normal2orthoX(normalX);
+        const GLfloat y = windowPara.normal2orthoY(normalY);
+        //std::cout<<"x = "<<x<<','<<" y = "<<y<<std::endl;
+        tempVertices.push_back(x);    //cursor x
+        tempVertices.push_back(y);   //cursor y
         tempVertices.push_back(0.0f);    //cursor z
         //generate preview primitive
         pPrimitive previewPrimitive(new Primitive(tempVertices,GL_LINES,3));

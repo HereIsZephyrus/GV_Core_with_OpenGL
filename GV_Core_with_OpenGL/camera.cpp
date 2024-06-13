@@ -46,8 +46,8 @@ void Camera2D::zoomInOut(float yOffset) {
 }
 Camera2D::Camera2D() : position(0.0f, 0.0f), zoom(1.0f){
     WindowParas& windowPara = WindowParas::getInstance();
-    screenWidth = windowPara.WINDOW_WIDTH;
-    screenHeight = windowPara.WINDOW_HEIGHT;
+    screenWidth = windowPara.SCREEN_WIDTH;
+    screenHeight = windowPara.SCREEN_HEIGHT;
     updateProjectionMatrix();
     updateViewMatrix();
 }
@@ -60,6 +60,14 @@ void Camera2D::loadSavedPara(const CameraPara2D* para){
     this->viewMatrix = para->viewMatrix;
     updateProjectionMatrix();
     updateViewMatrix();
+}
+void Camera2D::updateProjectionMatrix(){
+    WindowParas& windowPara = WindowParas::getInstance();
+    GLfloat left = -screenWidth / windowPara.xScale / 2.0f * zoom;
+    GLfloat right = screenWidth / windowPara.xScale / 2.0f * zoom;
+    GLfloat bottom = -screenHeight / windowPara.xScale / 2.0f * zoom;
+    GLfloat top = screenHeight / windowPara.xScale / 2.0f * zoom;
+    projectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 }
 
 namespace cm {

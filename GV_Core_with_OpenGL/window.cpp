@@ -9,6 +9,24 @@
 #include "window.hpp"
 #include "camera.hpp"
 
+GLfloat WindowParas::screen2normalX(GLdouble screenX){
+    return  (2.0f * static_cast<GLfloat>((screenX + SIDEBAR_WIDTH/2)/ SCREEN_WIDTH * xScale)) - 1.0f;
+}
+GLfloat WindowParas::screen2normalY(GLdouble screenY){
+    return 1.0f - (2.0f * static_cast<GLfloat>(screenY / SCREEN_HEIGHT * yScale));
+}
+GLfloat WindowParas::normal2orthoX(GLfloat normalX){
+    const float zoom = Camera2D::getView().getZoom();
+    GLfloat left = -SCREEN_WIDTH / xScale / 2.0f * zoom;
+    GLfloat right = SCREEN_WIDTH / xScale / 2.0f * zoom;
+    return  left + (right - left) * (normalX + 1) / 2;
+}
+GLfloat WindowParas::normal2orthoY(GLfloat normalY){
+    const float zoom = Camera2D::getView().getZoom();
+    GLfloat button = -SCREEN_HEIGHT / yScale / 2.0f * zoom;
+    GLfloat top = SCREEN_HEIGHT / yScale / 2.0f * zoom;
+    return  button + (top - button) * (normalY + 1) / 2;
+}
 int initOpenGL(GLFWwindow *&window) {
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -41,15 +59,13 @@ int initOpenGL(GLFWwindow *&window) {
     }
     glfwGetWindowContentScale(window, &windowPara.xScale, &windowPara.yScale);
     std::cout<<"This Screen xScale is"<<windowPara.xScale<<",yScale is"<<windowPara.yScale<<std::endl;
-    glfwGetFramebufferSize(window, &windowPara.SCREEN_WIDTH, &windowPara.SCREEN_HEIGHT);
-    windowPara.SCREEN_WIDTH = windowPara.SCREEN_WIDTH - windowPara.SIDEBAR_WIDTH * windowPara.xScale;
     glfwMakeContextCurrent(window); // to draw at this window
     glewExperimental = GL_TRUE;
     if (GLEW_OK != glewInit()){
         std::cerr << "Failed to initialize GLEW"<<std::endl;
         return -2;
     }
-    glViewport(windowPara.SIDEBAR_WIDTH * windowPara.xScale, 0, windowPara.SCREEN_WIDTH, windowPara.SCREEN_HEIGHT);
+    gui::spiltUI();
     
     glfwSetWindowUserPointer(window, &Camera2D::getView());
     const GLubyte* version = glGetString(GL_VERSION);
@@ -87,6 +103,12 @@ void DrawGUI() {
     drawList->ChannelsMerge();
     ImGui::Render();
     return;
+}
+void spiltUI(){
+    WindowParas& windowPara = WindowParas::getInstance();
+    glfwGetFramebufferSize(windowPara.window, &windowPara.SCREEN_WIDTH, &windowPara.SCREEN_HEIGHT);
+    windowPara.SCREEN_WIDTH = windowPara.SCREEN_WIDTH - windowPara.SIDEBAR_WIDTH * windowPara.xScale;
+    glViewport(0, 0, windowPara.SCREEN_WIDTH, windowPara.SCREEN_HEIGHT);
 }
 static void projectMenu() {
     if (ImGui::MenuItem("New", "CTRL N")){
@@ -179,7 +201,7 @@ void renderMenu(GLFWwindow *&window) {
 
 void renderSiderbar(){
     WindowParas& windowPara = WindowParas::getInstance();
-    ImGui::SetNextWindowPos(ImVec2(0, menuBarHeight), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, menuBarHeight), ImGuiCond_Always);
     float sidebarHeight = (windowPara.SCREEN_HEIGHT / 2)*(1 + (panelStackNum==0))/windowPara.yScale;
     ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH,sidebarHeight - menuBarHeight), ImGuiCond_Always);
     ImGui::Begin("sidebar",nullptr,ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
@@ -190,7 +212,7 @@ void renderEditPanel(){
     Records& record = Records::getState();
     ShaderStyle& style = ShaderStyle::getStyle();
     WindowParas& windowPara = WindowParas::getInstance();
-    ImGui::SetNextWindowPos(ImVec2(0, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::Begin("Edit Panel",nullptr, ImGuiWindowFlags_NoMove |ImGuiWindowFlags_NoResize);
     ImGui::Text("This is a edit panel");
@@ -206,6 +228,8 @@ void renderSelectPanel(){
     Records& record = Records::getState();
     GLenum& drawType = Take::holdon().drawType;
     bool& holdonToDraw = Take::holdon().holdonToDraw;
+    WindowParas& windowPara = WindowParas::getInstance();
+    ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::Begin("Create Element", &record.showCreateElementWindow, ImGuiWindowFlags_AlwaysAutoResize);
     
     if (ImGui::Button("Points")){
