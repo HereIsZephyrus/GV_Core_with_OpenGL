@@ -21,11 +21,11 @@
 struct CameraPara2D{
     glm::vec2 position;
     float zoom;
-    float screenWidth;
-    float screenHeight;
+    GLfloat screenWidth;
+    GLfloat screenHeight;
     glm::mat4 projectionMatrix;
     glm::mat4 viewMatrix;
-    CameraPara2D(glm::vec2 position,float zoom,float screenWidth,float screenHeight){
+    CameraPara2D(glm::vec2 position,float zoom,GLfloat screenWidth,GLfloat screenHeight){
         this->position = position;
         this->zoom = zoom;
         this->screenWidth = screenWidth;
@@ -43,7 +43,8 @@ public:
         static Camera2D instance;
         return instance;
     }
-    void processKeyboard(GLFWwindow* window, float deltaTime);
+    void processKeyboard(GLFWwindow* window);
+    void processScroll(GLFWwindow* window, double xoffset, double yoffset, bool pressCtrl, bool pressAlt);
     void zoomInOut(float yOffset);
     void loadSavedPara(const CameraPara2D* para);
     glm::mat4 getProjectionMatrix() const {return projectionMatrix;}
@@ -53,16 +54,16 @@ private:
     Camera2D();
     glm::vec2 position;
     float zoom;
-    float screenWidth;
-    float screenHeight;
+    GLfloat screenWidth;
+    GLfloat screenHeight;
     glm::mat4 projectionMatrix;
     glm::mat4 viewMatrix;
 
     void updateProjectionMatrix() {
-        float left = -screenWidth / 2.0f * zoom;
-        float right = screenWidth / 2.0f * zoom;
-        float bottom = -screenHeight / 2.0f * zoom;
-        float top = screenHeight / 2.0f * zoom;
+        GLfloat left = -screenWidth / 2.0f * zoom;
+        GLfloat right = screenWidth / 2.0f * zoom;
+        GLfloat bottom = -screenHeight / 2.0f * zoom;
+        GLfloat top = screenHeight / 2.0f * zoom;
         projectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
     }
 

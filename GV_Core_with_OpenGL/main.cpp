@@ -119,7 +119,7 @@ int initStyle(){
 }
 
 int InterectResponseCheck(GLFWwindow* &window){
-    Camera2D::getView().processKeyboard(window, WindowParas::getInstance().deltaTime);
+    Camera2D::getView().processKeyboard(window);
     return 0;
 }
 

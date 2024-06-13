@@ -36,8 +36,12 @@ void Take::addPoint(){
     GLdouble cursorX, cursorY;
     glfwGetCursorPos(windowPara.window, &cursorX, &cursorY);
     std::cout<<"x = "<<cursorX<<','<<" y = "<<cursorY<<std::endl;
-    drawingVertices.push_back(windowPara.screen2normalX(cursorX));
-    drawingVertices.push_back(windowPara.screen2normalY(cursorY));
+    // depracted
+    //drawingVertices.push_back(windowPara.screen2normalX(cursorX));
+    //drawingVertices.push_back(windowPara.screen2normalY(cursorY));
+    //ortho way
+    drawingVertices.push_back(static_cast<GLfloat>(cursorX));
+    drawingVertices.push_back(static_cast<GLfloat>(cursorY));
     drawingVertices.push_back(0.0f); // flat draw
 }
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -84,9 +88,13 @@ void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos){
         tempVertices.push_back(*(it+2));    //last x
         tempVertices.push_back(*(it+1));    //last y
         tempVertices.push_back(*(it));        //last z
-        tempVertices.push_back(windowPara.screen2normalX(xpos));    //cursor x
-        tempVertices.push_back(windowPara.screen2normalY(ypos));    //cursor y
-        tempVertices.push_back(0.0f);        //cursor z
+        //deprecated
+        //tempVertices.push_back(windowPara.screen2normalX(xpos));    //cursor x
+        //tempVertices.push_back(windowPara.screen2normalY(ypos));    //cursor y
+        //ortho way
+        tempVertices.push_back(static_cast<GLfloat>(xpos));    //cursor x
+        tempVertices.push_back(static_cast<GLfloat>(ypos));    //cursor y
+        tempVertices.push_back(0.0f);    //cursor z
         //generate preview primitive
         pPrimitive previewPrimitive(new Primitive(tempVertices,GL_LINES,3));
         previewPrimitive -> bindShader(rd::shaders["singleWhite"].get());
@@ -155,17 +163,19 @@ void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mod
 void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods){
     Records& record = Records::getState();
     if (action == GLFW_PRESS){
+        //std::cout<<"press "<<key<<std::endl;
         record.keyRecord[key] = GL_TRUE;
-        if (mods & GLFW_MOD_CONTROL) record.pressCtrl = GL_TRUE;
-        if (mods & GLFW_MOD_SHIFT)  record.pressShift = GL_TRUE;
-        if (mods & GLFW_MOD_ALT)    record.pressAlt = GL_TRUE;
+        if (record.keyRecord[GLFW_KEY_LEFT_CONTROL] || record.keyRecord[GLFW_KEY_RIGHT_CONTROL]) record.pressCtrl = GL_TRUE;
+        if (record.keyRecord[GLFW_KEY_LEFT_SHIFT] || record.keyRecord[GLFW_KEY_RIGHT_SHIFT])  record.pressShift = GL_TRUE;
+        if (record.keyRecord[GLFW_KEY_LEFT_ALT] || record.keyRecord[GLFW_KEY_RIGHT_ALT])    record.pressAlt = GL_TRUE;
         
     }
     if (action == GLFW_RELEASE){
+        //std::cout<<"release "<<key<<std::endl;
         record.keyRecord[key] = GL_FALSE;
-        if (mods & GLFW_MOD_CONTROL) record.pressCtrl = GL_FALSE;
-        if (mods & GLFW_MOD_SHIFT)  record.pressShift = GL_FALSE;
-        if (mods & GLFW_MOD_ALT)    record.pressAlt = GL_FALSE;
+        if (!record.keyRecord[GLFW_KEY_LEFT_CONTROL] && !record.keyRecord[GLFW_KEY_RIGHT_CONTROL]) record.pressCtrl = GL_FALSE;
+        if (!record.keyRecord[GLFW_KEY_LEFT_SHIFT] && !record.keyRecord[GLFW_KEY_RIGHT_SHIFT])  record.pressShift = GL_FALSE;
+        if (!record.keyRecord[GLFW_KEY_LEFT_ALT] && !record.keyRecord[GLFW_KEY_RIGHT_ALT])    record.pressAlt = GL_FALSE;
     }
 }
 void mouseModsToggle(GLFWwindow* window, int button, int action, int mods){
@@ -184,33 +194,7 @@ void mouseModsToggle(GLFWwindow* window, int button, int action, int mods){
     }
 }
 void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
-    Camera2D* camera = static_cast<Camera2D*>(glfwGetWindowUserPointer(window));
-    Records& record = Records::getState();
-    if (record.pressCtrl){//if conflict, ctrl first
-        if (yoffset > 0){
-            //scroll up
-        }
-        if (yoffset < 0){
-            //scroll down
-        }
-    }
-    else if (record.pressAlt){//if conflict, then alt
-        if (yoffset > 0){
-            //scroll right
-        }
-        if (yoffset < 0){
-            //scroll left
-        }
-    }
-    else{
-        if (xoffset > 0){
-            //scroll right
-        }
-        if (xoffset < 0){
-            //scroll left
-        }
-        camera->zoomInOut(static_cast<float>(yoffset));
-    }
+    Camera2D::getView().processScroll(window, xoffset, yoffset, Records::getState().pressCtrl, Records::getState().pressAlt);
 }
 static bool startDrawCheck(GLFWwindow* window, int button, int action, int mods){
     Records& record = Records::getState();

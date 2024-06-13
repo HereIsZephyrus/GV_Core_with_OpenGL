@@ -9,9 +9,9 @@
 #include "commander.hpp"
 #include "window.hpp"
 
-void Camera2D::processKeyboard(GLFWwindow* window, float deltaTime) {
+void Camera2D::processKeyboard(GLFWwindow* window) {
     Records& record = Records::getState();
-    const float cameraSpeed = 400.0f * deltaTime;
+    const GLfloat cameraSpeed = 400.0f * WindowParas::getInstance().deltaTime;
     if (record.pressAlt || record.pressCtrl|| record.pressShift)//ignore function input
         return;
     if (record.keyRecord[GLFW_KEY_W])
@@ -24,14 +24,25 @@ void Camera2D::processKeyboard(GLFWwindow* window, float deltaTime) {
         position.x += cameraSpeed;
     updateViewMatrix();
 }
+void Camera2D::processScroll(GLFWwindow* window, double xoffset, double yoffset, bool pressCtrl, bool pressAlt){
+    const GLfloat cameraSpeed = 200.0f *  WindowParas::getInstance().deltaTime;
+    if (pressCtrl)//if conflict, ctrl first:yscroll
+            position.y += cameraSpeed * yoffset;
+    else if (pressAlt)//if conflict, then alt:xscroll
+            position.x -= cameraSpeed * yoffset;
+    else{
+        position.x -= cameraSpeed * xoffset;
+        zoomInOut(static_cast<float>(yoffset));
+    }
+    updateProjectionMatrix();
+    updateViewMatrix();
+}
 void Camera2D::zoomInOut(float yOffset) {
     zoom -= yOffset * 0.1f;
     if (zoom < 0.01f)
         zoom = 0.01f;
     if (zoom > 10.0f)
         zoom = 10.0f;
-    updateProjectionMatrix();
-    updateViewMatrix();
 }
 Camera2D::Camera2D() : position(0.0f, 0.0f), zoom(1.0f){
     WindowParas& windowPara = WindowParas::getInstance();
