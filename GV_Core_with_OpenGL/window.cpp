@@ -10,7 +10,7 @@
 #include "camera.hpp"
 
 GLfloat WindowParas::screen2normalX(GLdouble screenX){
-    return  (2.0f * static_cast<GLfloat>((screenX + SIDEBAR_WIDTH/2)/ SCREEN_WIDTH * xScale)) - 1.0f;
+    return  (2.0f * static_cast<GLfloat>(screenX/ SCREEN_WIDTH * xScale)) - 1.0f;
 }
 GLfloat WindowParas::screen2normalY(GLdouble screenY){
     return 1.0f - (2.0f * static_cast<GLfloat>(screenY / SCREEN_HEIGHT * yScale));
@@ -19,13 +19,13 @@ GLfloat WindowParas::normal2orthoX(GLfloat normalX){
     const float zoom = Camera2D::getView().getZoom();
     GLfloat left = -SCREEN_WIDTH / xScale / 2.0f * zoom;
     GLfloat right = SCREEN_WIDTH / xScale / 2.0f * zoom;
-    return  left + (right - left) * (normalX + 1) / 2;
+    return  left + (right - left) * (normalX + 1) / 2 + Camera2D::getView().getPosition().x;
 }
 GLfloat WindowParas::normal2orthoY(GLfloat normalY){
     const float zoom = Camera2D::getView().getZoom();
     GLfloat button = -SCREEN_HEIGHT / yScale / 2.0f * zoom;
     GLfloat top = SCREEN_HEIGHT / yScale / 2.0f * zoom;
-    return  button + (top - button) * (normalY + 1) / 2;
+    return  button + (top - button) * (normalY + 1) / 2 + Camera2D::getView().getPosition().y;
 }
 int initOpenGL(GLFWwindow *&window) {
     if (!glfwInit()) {

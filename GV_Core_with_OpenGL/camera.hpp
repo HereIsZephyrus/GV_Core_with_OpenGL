@@ -50,6 +50,7 @@ public:
     glm::mat4 getProjectionMatrix() const {return projectionMatrix;}
     glm::mat4 getViewMatrix() const {return viewMatrix;}
     float getZoom() const {return zoom;}
+    glm::vec2 getPosition() const {return position;}
 private:
     Camera2D();
     glm::vec2 position;
