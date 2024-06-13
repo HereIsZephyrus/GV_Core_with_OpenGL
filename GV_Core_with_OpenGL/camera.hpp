@@ -10,21 +10,33 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+struct CameraPara2D{
+    glm::vec2 position;
+    float zoom;
+    float screenWidth;
+    float screenHeight;
+    glm::mat4 projectionMatrix;
+    glm::mat4 viewMatrix;
+    CameraPara2D(glm::vec2 position,float zoom,float screenWidth,float screenHeight){
+        this->position = position;
+        this->zoom = zoom;
+        this->screenWidth = screenWidth;
+        this->screenHeight = screenHeight;
+    }
+};
+typedef std::unique_ptr<CameraPara2D> pCamera2D;
 namespace cm {
-const GLfloat SPEED      =  3.0f;
-const GLfloat SENSITIVTY =  0.25f;
-const GLfloat NORMAL_ZOOM       =  45.0f;
+extern const pCamera2D zeroCamera;
+extern std::vector<pCamera2D> cameras;
 }
-// Default camera values
-
-// An abstract camera class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL
-
 class Camera2D {
 public:
     static Camera2D& getView(){
@@ -33,7 +45,7 @@ public:
     }
     void processKeyboard(GLFWwindow* window, float deltaTime);
     void zoomInOut(float yOffset);
-
+    void loadSavedPara(const CameraPara2D* para);
     glm::mat4 getProjectionMatrix() const {return projectionMatrix;}
     glm::mat4 getViewMatrix() const {return viewMatrix;}
 

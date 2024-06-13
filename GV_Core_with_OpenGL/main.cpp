@@ -35,11 +35,6 @@ int main(int argc, const char * argv[]) {
     initImGUI(window);
     initInterect(window);
     initStyle();
-//    this is a demo
-    pr::triangle-> bindShader(rd::shaders["singleYellow"].get());
-    pr::primitives.push_back(std::move(pr::triangle));
-    pr::rectangle->bindShader(rd::shaders["singleWhite"].get());
-    pr::primitives.push_back(std::move(pr::rectangle));
     
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -112,6 +107,14 @@ int initStyle(){
     pShader singleWhite (new Shader(filePath("singleVertices.vs"),filePath("fillWhite.frag")));
     rd::shaders["singleWhite"] = std::move(singleWhite);
     rd::defaultShader = rd::shaders["singleYellow"].get();
+    
+    //init camera
+    Camera2D::getView().loadSavedPara(cm::zeroCamera.get());
+    //    this is a demo
+    pr::triangle-> bindShader(rd::shaders["singleYellow"].get());
+    pr::primitives.push_back(std::move(pr::triangle));
+    pr::rectangle->bindShader(rd::shaders["singleWhite"].get());
+    pr::primitives.push_back(std::move(pr::rectangle));
     return 0;
 }
 

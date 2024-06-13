@@ -40,3 +40,19 @@ Camera2D::Camera2D() : position(0.0f, 0.0f), zoom(1.0f){
     updateProjectionMatrix();
     updateViewMatrix();
 }
+void Camera2D::loadSavedPara(const CameraPara2D* para){
+    this->position = para->position;
+    this->zoom = para->zoom;
+    this->screenWidth = para->screenWidth;
+    this->screenHeight = para->screenHeight;
+    this->projectionMatrix = para->projectionMatrix;
+    this->viewMatrix = para->viewMatrix;
+    updateProjectionMatrix();
+    updateViewMatrix();
+}
+
+namespace cm {
+const pCamera2D zeroCamera(new CameraPara2D(glm::vec2(0.0f, 0.0f),1.0f,
+                                                   WindowParas::getInstance().WINDOW_WIDTH,WindowParas::getInstance().WINDOW_HEIGHT));
+std::vector<pCamera2D> cameras;
+}
