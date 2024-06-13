@@ -99,6 +99,9 @@
 		32C5E0A02C193D9C00152CDF /* libglm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglm.dylib; path = ../../../../opt/homebrew/Cellar/glm/1.0.1/lib/libglm.dylib; sourceTree = "<group>"; };
 		32C5E0A32C19464E00152CDF /* camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = camera.cpp; sourceTree = "<group>"; };
 		32C5E0A42C19464E00152CDF /* camera.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = camera.hpp; sourceTree = "<group>"; };
+		32C5E0A82C1987E000152CDF /* singleVertices.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = singleVertices.vs; sourceTree = "<group>"; };
+		32C5E0A92C19886800152CDF /* fillYellow.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillYellow.frag; sourceTree = "<group>"; };
+		32C5E0AA2C19889600152CDF /* fillWhite.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillWhite.frag; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +138,7 @@
 		3278B0B52C097C5500DF6489 = {
 			isa = PBXGroup;
 			children = (
+				32C5E0A72C1987AE00152CDF /* resources */,
 				32C5E0982C18A14E00152CDF /* ImGUIopengl3 */,
 				3278B0C02C097C5500DF6489 /* GV_Core_with_OpenGL */,
 				3278B0BF2C097C5500DF6489 /* Products */,
@@ -192,6 +196,16 @@
 				32C5E0972C18A14E00152CDF /* imstb_truetype.h */,
 			);
 			path = ImGUIopengl3;
+			sourceTree = "<group>";
+		};
+		32C5E0A72C1987AE00152CDF /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				32C5E0A82C1987E000152CDF /* singleVertices.vs */,
+				32C5E0A92C19886800152CDF /* fillYellow.frag */,
+				32C5E0AA2C19889600152CDF /* fillWhite.frag */,
+			);
+			path = resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

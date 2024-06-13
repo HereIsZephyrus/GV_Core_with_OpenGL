@@ -88,19 +88,19 @@ void createPrimitiveTo(std::vector<pPrimitive >& primitiveList){
     return;
 }
 static const vertexArray tranVertex = {
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.0f,  0.5f, 0.0f
+    -500.0f, -500.0f, 0.0f,
+    500.0f, -500.0f, 0.0f,
+    0.0f,  500.0f, 0.0f
 };
 static const indexArray indices ={
     0, 1, 3,
     1, 2, 3
 };
 static const vertexArray rectVertex ={
-    0.4f, 0.4f, 0.0f,
-    0.4f, -0.4f, 0.0f,
-    -0.4f, -0.4f, 0.0f,
-     -0.4f, 0.4f, 0.0f
+    400.0f, 400.0f, 0.0f,
+    400.0f, -400.0f, 0.0f,
+    -400.0f, -400.0f, 0.0f,
+     -400.0f, 400.0f, 0.0f
 };
 std::unique_ptr<Primitive> rectangle(new Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6));
 //Primitive rectangle = Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6);

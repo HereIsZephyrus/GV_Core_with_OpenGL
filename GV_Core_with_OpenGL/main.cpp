@@ -7,6 +7,7 @@
 
 //#define GL_SILENCE_DEPRECATION
 #include <iostream>
+#include <filesystem>
 #include <memory>
 //#include <SDL2/SDL.h>
 #define GLEW_STATIC
@@ -34,15 +35,14 @@ int main(int argc, const char * argv[]) {
     initInterect(window);
     initStyle();
     
-    
-    Camera2D camera(800, 600);
+    Camera2D camera(WindowParas::getInstance().WINDOW_WIDTH, WindowParas::getInstance().WINDOW_WIDTH);
     glfwSetWindowUserPointer(window, &camera);
 //    this is a demo
-    pr::triangle-> bindShader(rd::defaultShader);
-    pr::rectangle->bindShader(rd::defaultShader);
+    pr::triangle-> bindShader(rd::shaders["singleYellow"].get());
+    pr::rectangle->bindShader(rd::shaders["singleWhite"].get());
     pr::primitives.push_back(std::move(pr::triangle));
     pr::primitives.push_back(std::move(pr::rectangle));
-    
+    std::cout<<pr::primitives.size()<<std::endl;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         gui::DrawGUI();
@@ -52,8 +52,8 @@ int main(int argc, const char * argv[]) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
-        Shader* shaderProgram = rd::shaders["singleYellow"].get();
-        glm::mat4 projection = camera.getProjectionMatrix();
+      Shader* shaderProgram = rd::shaders["singleWhite"].get();
+       glm::mat4 projection = camera.getProjectionMatrix();
        glm::mat4 view = camera.getViewMatrix();
        glm::mat4 model = glm::mat4(1.0f);
 
@@ -61,7 +61,7 @@ int main(int argc, const char * argv[]) {
        GLuint viewLoc = glGetUniformLocation(shaderProgram->getProgram(), "view");
        GLuint modelLoc = glGetUniformLocation(shaderProgram->getProgram(), "model");
 
-       glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+      glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         for (auto it = pr::primitives.begin(); it!= pr::primitives.end(); it++)
@@ -102,9 +102,28 @@ int initInterect(GLFWwindow* &window){
     glfwSetCursorEnterCallback(window, cursorFocusCallback);
     return 0;
 }
+static GLchar* filePath(const char* fileName){
+    namespace fs = std::filesystem;
+    fs::path cwd = fs::current_path();
+
+    // 检查其他路径对当前路径的相对路径
+    fs::path otherPath = "/Users/channingtong/Program/GV_Core_with_OpenGL/resources";
+    fs::path relativePath = relative(otherPath, cwd);
+
+    //std::cout << "Current directory: " << cwd << std::endl;
+    //std::cout << "Other path: " << otherPath << std::endl;
+    //std::cout << "Relative path: " << relativePath << std::endl;
+    const char * searchPath ="../../../../../../../../Program/GV_Core_with_OpenGL/resources/";
+    GLchar* resource = new char[strlen(searchPath) + strlen(fileName) + 1];
+    strcpy(resource, searchPath);
+    strcat(resource, fileName);
+    //std::cout<<resource<<std::endl;
+    return resource;
+}
 int initStyle(){
     //init shader
     pShader singleYellow (new Shader(rd::singleVertices, rd::fillYellow));
+    //pShader singleYellow (new Shader(filePath("singleVertices.vs"),filePath("fillYellow.frag")));
     rd::shaders["singleYellow"] = std::move(singleYellow);
     pShader singleWhithe (new Shader(rd::singleVertices, rd::fillWhite));
     rd::shaders["singleWhite"] = std::move(singleWhithe);

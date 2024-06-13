@@ -4,19 +4,20 @@
 //
 //  Created by ChanningTong on 6/8/24.
 //
-
 #include "rendering.hpp"
 #include "window.hpp"
 namespace rd{
 std::map<std::string,pShader > shaders;
 const Shader* defaultShader;
 
-std::string singleVertices = "#version 410 core\n"
-"layout (location = 0) in vec3 position;\n"
-"uniform mat4 projection;"
-"uniform mat4 view;"
-"uniform mat4 model;"
-"void main(){gl_Position = vec4( position.x,position.y,position.z, 1.0);}\n";
+std::string singleVertices = "#version 330 core\n"
+"layout(location = 0) in vec3 aPos;\n"
+"uniform mat4 projection;\n"
+"uniform mat4 view;\n"
+"uniform mat4 model;\n"
+"void main() {\n"
+"    gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
+"}\n";
 
 std::string fillYellow = "#version 410 core\n"
 "out vec4 color;\n"
@@ -29,6 +30,8 @@ std::string fillWhite = "#version 410 core\n"
 Shader::Shader(std::string vertexShader,std::string fragmentShader){
     const GLchar* vShaderCode = vertexShader.c_str();
     const GLchar * fShaderCode = fragmentShader.c_str();
+    std::cout<<vShaderCode<<std::endl;
+    //std::cout<<fShaderCode<<std::endl;
     // 2. Compile shaders
     GLuint vertex, fragment;
     GLint success;
@@ -69,9 +72,6 @@ Shader::Shader(std::string vertexShader,std::string fragmentShader){
     glDeleteShader(fragment);
 }
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath){
-    if (!HAS_INIT_OPENGL_CONTEXT)
-        initOpenGL(WindowParas::getInstance().window);
-    // 1. Retrieve the vertex/fragment source code from filePath
     std::string vertexShader;
     std::string fragmentShader;
     std::ifstream vShaderFile;
@@ -82,7 +82,11 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath){
     try{
         // Open files
         vShaderFile.open(vertexPath);
+        if (!vShaderFile.is_open())
+            std::cerr << "Failed to open vShaderFile." << std::endl;
         fShaderFile.open(fragmentPath);
+        if (!fShaderFile.is_open())
+            std::cerr << "Failed to open fShaderFile." << std::endl;
         std::stringstream vShaderStream, fShaderStream;
         // Read file's buffer contents into streams
         vShaderStream << vShaderFile.rdbuf();
