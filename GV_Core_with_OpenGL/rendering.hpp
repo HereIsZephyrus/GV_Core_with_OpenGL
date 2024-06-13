@@ -58,7 +58,7 @@ extern std::string fillYellow;
 extern std::string fillWhite;
 extern std::map<std::string,pShader > shaders;
 //extern Shader* defaultShader;
-extern const Shader* defaultShader;
+extern Shader* defaultShader;
 };
 
 #endif /* rendering_hpp */

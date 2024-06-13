@@ -41,7 +41,7 @@ public:
         if (type == DrawType::Index)
             glDeleteBuffers(1,&EBO);
     }
-    void bindShader(const Shader* tobind){shader = tobind;}
+    void bindShader(Shader* tobind){shader = tobind;}
     void draw();
     void load();
 private:
@@ -51,7 +51,7 @@ private:
     DrawType type;
     vertexArray vertices;
     indexArray indices;
-    const Shader* shader;
+    Shader* shader;
     inline const GLsizei getVertexNum(){
         return static_cast<GLsizei>(vertices.size() / stride);
     }

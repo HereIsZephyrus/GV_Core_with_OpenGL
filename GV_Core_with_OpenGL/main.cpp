@@ -27,6 +27,7 @@ static int initImGUI(GLFWwindow *window);
 static int initInterect(GLFWwindow* &window);
 static int initStyle();
 static int releaseResources(GLFWwindow* &window);
+static int InterectResponseCheck(GLFWwindow* &window);
 int main(int argc, const char * argv[]) {
     GLFWwindow *& window = WindowParas::getInstance().window;
     if (!HAS_INIT_OPENGL_CONTEXT && initOpenGL(window) != 0)
@@ -34,36 +35,20 @@ int main(int argc, const char * argv[]) {
     initImGUI(window);
     initInterect(window);
     initStyle();
-    
-    Camera2D camera(WindowParas::getInstance().WINDOW_WIDTH, WindowParas::getInstance().WINDOW_WIDTH);
-    glfwSetWindowUserPointer(window, &camera);
 //    this is a demo
     pr::triangle-> bindShader(rd::shaders["singleYellow"].get());
     pr::rectangle->bindShader(rd::shaders["singleWhite"].get());
     pr::primitives.push_back(std::move(pr::triangle));
     pr::primitives.push_back(std::move(pr::rectangle));
-    std::cout<<pr::primitives.size()<<std::endl;
+    
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         gui::DrawGUI();
-        float deltaTime = 0.016f; // 假设每帧约 60FPS
-
-        camera.processKeyboard(window, deltaTime);
+        
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
-      Shader* shaderProgram = rd::shaders["singleWhite"].get();
-       glm::mat4 projection = camera.getProjectionMatrix();
-       glm::mat4 view = camera.getViewMatrix();
-       glm::mat4 model = glm::mat4(1.0f);
-
-       GLuint projectionLoc = glGetUniformLocation(shaderProgram->getProgram(), "projection");
-       GLuint viewLoc = glGetUniformLocation(shaderProgram->getProgram(), "view");
-       GLuint modelLoc = glGetUniformLocation(shaderProgram->getProgram(), "model");
-
-      glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-       glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-       glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        InterectResponseCheck(window);
         for (auto it = pr::primitives.begin(); it!= pr::primitives.end(); it++)
             (*it)->draw();
         if (pr::drawPreviewPrimitive != nullptr)
@@ -130,6 +115,11 @@ int initStyle(){
     rd::defaultShader = rd::shaders["singleYellow"].get();
     
     //init camera
+    return 0;
+}
+
+int InterectResponseCheck(GLFWwindow* &window){
+    Camera2D::getView().processKeyboard(window, WindowParas::getInstance().deltaTime);
     return 0;
 }
 

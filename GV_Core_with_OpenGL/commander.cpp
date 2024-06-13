@@ -40,7 +40,6 @@ void Take::addPoint(){
     drawingVertices.push_back(windowPara.screen2normalY(cursorY));
     drawingVertices.push_back(0.0f); // flat draw
 }
-
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     MeauCallback(window, key, scancode, action, mods);
@@ -186,7 +185,6 @@ void mouseModsToggle(GLFWwindow* window, int button, int action, int mods){
 }
 void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
     Camera2D* camera = static_cast<Camera2D*>(glfwGetWindowUserPointer(window));
-    camera->processMouseScroll(static_cast<float>(yoffset));
     Records& record = Records::getState();
     if (record.pressCtrl){//if conflict, ctrl first
         if (yoffset > 0){
@@ -211,12 +209,7 @@ void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
         if (xoffset < 0){
             //scroll left
         }
-        if (yoffset > 0){
-            //zoom in
-        }
-        if (yoffset < 0){
-            //zoom out
-        }
+        camera->zoomInOut(static_cast<float>(yoffset));
     }
 }
 static bool startDrawCheck(GLFWwindow* window, int button, int action, int mods){

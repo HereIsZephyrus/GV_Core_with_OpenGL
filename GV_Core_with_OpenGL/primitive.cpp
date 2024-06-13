@@ -10,6 +10,7 @@
 #include "glexception.hpp"
 #include "commander.hpp"
 #include "window.hpp"
+#include "camera.hpp"
 Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):
 type{DrawType::Array},shape(shape),indexLen(0),stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
@@ -47,6 +48,21 @@ void Primitive::load(){
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
     glEnableVertexAttribArray(0);
 }
+static void bindCameraProjection(Shader* shader){
+    Camera2D& camera = Camera2D::getView();
+    glm::mat4 projection = camera.getProjectionMatrix();
+    glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 model = glm::mat4(1.0f);
+
+    GLuint projectionLoc = glGetUniformLocation(shader->getProgram(), "projection");
+    GLuint viewLoc = glGetUniformLocation(shader->getProgram(), "view");
+    GLuint modelLoc = glGetUniformLocation(shader->getProgram(), "model");
+    
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    return;
+}
 void Primitive::draw(){
     //std::cout<<"Draw is running"<<std::endl;
     GLint currentBuffer;
@@ -55,7 +71,7 @@ void Primitive::draw(){
         return;
     }
     else{
-        
+        bindCameraProjection(shader);
         shader ->rend();
     }
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentBuffer);
@@ -88,21 +104,20 @@ void createPrimitiveTo(std::vector<pPrimitive >& primitiveList){
     return;
 }
 static const vertexArray tranVertex = {
-    -500.0f, -500.0f, 0.0f,
-    500.0f, -500.0f, 0.0f,
-    0.0f,  500.0f, 0.0f
+    -250.0f, -250.0f, 0.0f,
+    250.0f, -250.0f, 0.0f,
+    0.0f,  250.0f, 0.0f
 };
 static const indexArray indices ={
     0, 1, 3,
     1, 2, 3
 };
 static const vertexArray rectVertex ={
-    400.0f, 400.0f, 0.0f,
-    400.0f, -400.0f, 0.0f,
-    -400.0f, -400.0f, 0.0f,
-     -400.0f, 400.0f, 0.0f
+    200.0f, 200.0f, 0.0f,
+    200.0f, -200.0f, 0.0f,
+    -200.0f, -200.0f, 0.0f,
+     -200.0f, 200.0f, 0.0f
 };
 std::unique_ptr<Primitive> rectangle(new Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6));
-//Primitive rectangle = Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6);
 std::unique_ptr<Primitive> triangle(new Primitive(tranVertex, GL_TRIANGLES,  3));
 }

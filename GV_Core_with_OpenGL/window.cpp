@@ -7,6 +7,7 @@
 #include <iostream>
 #include "commander.hpp"
 #include "window.hpp"
+#include "camera.hpp"
 
 int initOpenGL(GLFWwindow *&window) {
     if (!glfwInit()) {
@@ -46,6 +47,8 @@ int initOpenGL(GLFWwindow *&window) {
         return -2;
     }
     glViewport(0, 0, windowPara.SCREEN_WIDTH, windowPara.SCREEN_HEIGHT);
+    
+    glfwSetWindowUserPointer(window, &Camera2D::getView());
     const GLubyte* version = glGetString(GL_VERSION);
     std::cout<<version<<std::endl;
     HAS_INIT_OPENGL_CONTEXT = true;

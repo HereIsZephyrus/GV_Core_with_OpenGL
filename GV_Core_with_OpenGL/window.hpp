@@ -30,6 +30,7 @@ public:
     const GLint WINDOW_WIDTH = 960;
     const GLint WINDOW_HEIGHT = 720;
     GLint SCREEN_WIDTH,SCREEN_HEIGHT;
+    const GLfloat deltaTime = 0.016f; // 60FPS
     GLfloat screen2normalX(GLdouble screenX){
         return  (2.0f * static_cast<GLfloat>(screenX / WINDOW_WIDTH)) - 1.0f;
     }

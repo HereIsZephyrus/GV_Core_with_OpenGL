@@ -27,44 +27,18 @@ const GLfloat NORMAL_ZOOM       =  45.0f;
 
 class Camera2D {
 public:
-    Camera2D(float screenWidth, float screenHeight)
-        : position(0.0f, 0.0f), zoom(1.0f), screenWidth(screenWidth), screenHeight(screenHeight) {
-        updateProjectionMatrix();
-        updateViewMatrix();
+    static Camera2D& getView(){
+        static Camera2D instance;
+        return instance;
     }
+    void processKeyboard(GLFWwindow* window, float deltaTime);
+    void zoomInOut(float yOffset);
 
-    void processKeyboard(GLFWwindow* window, float deltaTime) {
-        const float cameraSpeed = 200.0f * deltaTime;
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            position.y += cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            position.y -= cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            position.x -= cameraSpeed;
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            position.x += cameraSpeed;
-        updateViewMatrix();
-    }
-
-    void processMouseScroll(float yOffset) {
-        zoom -= yOffset * 0.1f;
-        if (zoom < 0.1f)
-            zoom = 0.1f;
-        if (zoom > 10.0f)
-            zoom = 10.0f;
-        updateProjectionMatrix();
-        updateViewMatrix();
-    }
-
-    glm::mat4 getProjectionMatrix() const {
-        return projectionMatrix;
-    }
-
-    glm::mat4 getViewMatrix() const {
-        return viewMatrix;
-    }
+    glm::mat4 getProjectionMatrix() const {return projectionMatrix;}
+    glm::mat4 getViewMatrix() const {return viewMatrix;}
 
 private:
+    Camera2D();
     glm::vec2 position;
     float zoom;
     float screenWidth;

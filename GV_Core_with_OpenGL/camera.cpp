@@ -6,35 +6,37 @@
 //
 
 #include "camera.hpp"
-/*
-Camera2D::Camera2D(GLfloat zoom):
-    position (glm::vec3(0.0f, 0.0f, 0.0f)),
-    movementSpeed(cm::SPEED),
-    zoom(zoom),
-    worldUp(glm::vec3(0.0f, 1.0f, 0.0f)),
-    front(glm::vec3(0.0f, 0.0f, -1.0f))
-    {this->updateCameraVectors();}
+#include "commander.hpp"
+#include "window.hpp"
 
-void Camera::ProcessKeyCommand(CameraMovement direction, GLfloat deltaTime){
-    
-    // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-     
-    GLfloat velocity = this->MovementSpeed * deltaTime;
-    switch (direction){
-        case CameraMovement::left:
-            this->position -= this->right * velocity;
-            break;
-        case CameraMovement::right:
-            this->position += this->right * velocity;
-            break;
-        case CameraMovement::up:
-            this->position += this->up * velocity;
-            break;
-        case CameraMovement::down:
-            this -> position -= this -> up * velocity;
-            break;
-        default:
-            std::cerr<<"CAMERAMOVEMENT::non exist case!"<<std::endl;
-    }
+void Camera2D::processKeyboard(GLFWwindow* window, float deltaTime) {
+    Records& record = Records::getState();
+    const float cameraSpeed = 400.0f * deltaTime;
+    if (record.pressAlt || record.pressCtrl|| record.pressShift)//ignore function input
+        return;
+    if (record.keyRecord[GLFW_KEY_W])
+        position.y += cameraSpeed;
+    if (record.keyRecord[GLFW_KEY_S])
+        position.y -= cameraSpeed;
+    if (record.keyRecord[GLFW_KEY_A])
+        position.x -= cameraSpeed;
+    if (record.keyRecord[GLFW_KEY_D])
+        position.x += cameraSpeed;
+    updateViewMatrix();
 }
-*/
+void Camera2D::zoomInOut(float yOffset) {
+    zoom -= yOffset * 0.1f;
+    if (zoom < 0.01f)
+        zoom = 0.01f;
+    if (zoom > 10.0f)
+        zoom = 10.0f;
+    updateProjectionMatrix();
+    updateViewMatrix();
+}
+Camera2D::Camera2D() : position(0.0f, 0.0f), zoom(1.0f){
+    WindowParas& windowPara = WindowParas::getInstance();
+    screenWidth = windowPara.WINDOW_WIDTH;
+    screenHeight = windowPara.WINDOW_HEIGHT;
+    updateProjectionMatrix();
+    updateViewMatrix();
+}

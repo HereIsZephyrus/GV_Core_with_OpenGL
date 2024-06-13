@@ -8,7 +8,7 @@
 #include "window.hpp"
 namespace rd{
 std::map<std::string,pShader > shaders;
-const Shader* defaultShader;
+Shader* defaultShader;
 
 std::string singleVertices = "#version 330 core\n"
 "layout(location = 0) in vec3 aPos;\n"
