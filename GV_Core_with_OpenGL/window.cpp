@@ -65,9 +65,9 @@ int initOpenGL(GLFWwindow *&window) {
         std::cerr << "Failed to initialize GLEW"<<std::endl;
         return -2;
     }
-    gui::spiltUI();
-    
     glfwSetWindowUserPointer(window, &Camera2D::getView());
+    windowPara.defaultAlpha = glfwGetWindowOpacity(window);
+    
     const GLubyte* version = glGetString(GL_VERSION);
     std::cout<<version<<std::endl;
     HAS_INIT_OPENGL_CONTEXT = true;
@@ -87,6 +87,8 @@ static void renderSelectPanel();
 void DrawGUI() {
     GLFWwindow *& window = WindowParas::getInstance().window;
     Records& record = Records::getState();
+    if (glfwGetWindowOpacity(window) != WindowParas::getInstance().defaultAlpha)
+        spiltUI();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();

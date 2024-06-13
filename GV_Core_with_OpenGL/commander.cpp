@@ -82,6 +82,9 @@ void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos){
 void windowPosCallback(GLFWwindow* window, int xpos, int ypos){
     gui::spiltUI();
 }
+void windowSizeCallback(GLFWwindow* window, int width, int height){
+    gui::spiltUI();
+}
 void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos){
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
     if (Records::getState().drawingPrimitive){//generate preview

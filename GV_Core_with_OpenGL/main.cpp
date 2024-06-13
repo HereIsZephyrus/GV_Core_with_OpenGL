@@ -65,7 +65,7 @@ int initImGUI(GLFWwindow *window) {
     
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");
-    
+    gui::spiltUI();
     ShaderStyle& style = ShaderStyle::getStyle();
     style.drawColor =  ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
     style.thickness = 1.0f;
@@ -78,6 +78,7 @@ int initImGUI(GLFWwindow *window) {
 int initInterect(GLFWwindow* &window){
     Records::getState().initIObuffer();
     glfwSetWindowPosCallback(window, windowPosCallback);
+    glfwSetWindowSizeCallback(window, windowSizeCallback);
     glfwSetKeyCallback(window, keyBasicCallback);
     glfwSetMouseButtonCallback(window, mouseViewCallback);
     glfwSetScrollCallback(window, scrollCallback);

@@ -33,6 +33,7 @@ public:
     GLint SCREEN_WIDTH,SCREEN_HEIGHT;
     GLfloat xScale,yScale;
     const GLfloat deltaTime = 0.016f; // 60FPS
+    GLfloat defaultAlpha;
     GLfloat screen2normalX(GLdouble screenX);
     GLfloat screen2normalY(GLdouble screenY);
     GLfloat normal2orthoX(GLfloat normalX);
