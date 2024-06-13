@@ -62,6 +62,7 @@ int initImGUI(GLFWwindow *window) {
     ImGui::StyleColorsDark();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");
     
@@ -70,6 +71,7 @@ int initImGUI(GLFWwindow *window) {
     style.thickness = 1.0f;
     Take& take = Take::holdon();
     take.drawType = GL_POINT; //set as blank style
+    gui::menuBarHeight = ImGui::GetFrameHeightWithSpacing() * WindowParas::getInstance().yScale;
     return  0;
 }
 

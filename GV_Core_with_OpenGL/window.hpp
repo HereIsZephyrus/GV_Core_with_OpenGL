@@ -50,9 +50,8 @@ private:
 };
 
 namespace gui {
-extern bool show_demo_window;
-extern bool show_another_window;
-extern ImVec4 clear_color;
+extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
+extern float menuBarHeight;
 void DrawGUI();
 }
 

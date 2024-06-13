@@ -58,6 +58,11 @@ int initOpenGL(GLFWwindow *&window) {
     return 0;
 }
 
+namespace gui {
+unsigned int panelStackNum = 0;
+float menuBarHeight;
+}
+
 namespace gui{
 static void renderMenu(GLFWwindow *&window);
 static void renderEditPanel();
@@ -70,10 +75,16 @@ void DrawGUI() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     
-    renderMenu(window);
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    drawList->ChannelsSplit(3);
+    drawList->ChannelsSetCurrent(0);
     renderSiderbar();
+    drawList->ChannelsSetCurrent(1);
+    renderMenu(window);
+    drawList->ChannelsSetCurrent(2);
     if (record.state == interectState::drawing) renderEditPanel();
-    if (record.showCreateElementWindow)             renderSelectPanel();
+    if (record.showCreateElementWindow)         renderSelectPanel();
+    drawList->ChannelsMerge();
     ImGui::Render();
     return;
 }
@@ -103,11 +114,13 @@ static void editMenu() {
     }
     if (record.state == interectState::toselect && ImGui::MenuItem("Start edit")){
         record.state = interectState::drawing;
+        panelStackNum ++;
         glfwSetMouseButtonCallback(WindowParas::getInstance().window, mouseDrawCallback);
     }
     
     if (record.state == interectState::drawing && ImGui::MenuItem("Stop edit")){
         record.state = interectState::toselect;
+        panelStackNum --;
         glfwSetMouseButtonCallback(WindowParas::getInstance().window, mouseViewCallback);
     }
     
@@ -166,16 +179,20 @@ void renderMenu(GLFWwindow *&window) {
 
 void renderSiderbar(){
     WindowParas& windowPara = WindowParas::getInstance();
-    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH, windowPara.SCREEN_HEIGHT), ImGuiCond_Always);
-    ImGui::Begin("Sidebar", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+    ImGui::SetNextWindowPos(ImVec2(0, menuBarHeight), ImGuiCond_Always);
+    float sidebarHeight = (windowPara.SCREEN_HEIGHT / 2)*(1 + (panelStackNum==0))/windowPara.yScale;
+    ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH,sidebarHeight - menuBarHeight), ImGuiCond_Always);
+    ImGui::Begin("sidebar",nullptr,ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
     ImGui::Text("This is the main sidebar");
     ImGui::End();
 }
 void renderEditPanel(){
     Records& record = Records::getState();
     ShaderStyle& style = ShaderStyle::getStyle();
-    ImGui::Begin("Edit Panel");
+    WindowParas& windowPara = WindowParas::getInstance();
+    ImGui::SetNextWindowPos(ImVec2(0, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
+    ImGui::Begin("Edit Panel",nullptr, ImGuiWindowFlags_NoMove |ImGuiWindowFlags_NoResize);
     ImGui::Text("This is a edit panel");
     if (ImGui::Button("Create Element"))
         record.showCreateElementWindow = true;
