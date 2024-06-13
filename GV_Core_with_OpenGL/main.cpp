@@ -37,8 +37,8 @@ int main(int argc, const char * argv[]) {
     initStyle();
 //    this is a demo
     pr::triangle-> bindShader(rd::shaders["singleYellow"].get());
-    pr::rectangle->bindShader(rd::shaders["singleWhite"].get());
     pr::primitives.push_back(std::move(pr::triangle));
+    pr::rectangle->bindShader(rd::shaders["singleWhite"].get());
     pr::primitives.push_back(std::move(pr::rectangle));
     
     while (!glfwWindowShouldClose(window)) {
@@ -87,34 +87,31 @@ int initInterect(GLFWwindow* &window){
     glfwSetCursorEnterCallback(window, cursorFocusCallback);
     return 0;
 }
-static GLchar* filePath(const char* fileName){
+static void checkSourceRelevantPath(){
     namespace fs = std::filesystem;
     fs::path cwd = fs::current_path();
-
-    // 检查其他路径对当前路径的相对路径
     fs::path otherPath = "/Users/channingtong/Program/GV_Core_with_OpenGL/resources";
     fs::path relativePath = relative(otherPath, cwd);
-
-    //std::cout << "Current directory: " << cwd << std::endl;
-    //std::cout << "Other path: " << otherPath << std::endl;
-    //std::cout << "Relative path: " << relativePath << std::endl;
-    const char * searchPath ="../../../../../../../../Program/GV_Core_with_OpenGL/resources/";
-    GLchar* resource = new char[strlen(searchPath) + strlen(fileName) + 1];
-    strcpy(resource, searchPath);
+    std::cout << "Current directory: " << cwd << std::endl;
+    std::cout << "Other path: " << otherPath << std::endl;
+    std::cout << "Relative path: " << relativePath << std::endl;
+}
+static GLchar* filePath(const char* fileName){
+    //checkSourceRelevantPath();
+    const char * tcbsearchPath ="../../../../../../../../Program/GV_Core_with_OpenGL/resources/";
+    GLchar* resource = new char[strlen(tcbsearchPath) + strlen(fileName) + 1];
+    strcpy(resource, tcbsearchPath);
     strcat(resource, fileName);
     //std::cout<<resource<<std::endl;
     return resource;
 }
 int initStyle(){
     //init shader
-    pShader singleYellow (new Shader(rd::singleVertices, rd::fillYellow));
-    //pShader singleYellow (new Shader(filePath("singleVertices.vs"),filePath("fillYellow.frag")));
+    pShader singleYellow (new Shader(filePath("singleVertices.vs"),filePath("fillYellow.frag")));
     rd::shaders["singleYellow"] = std::move(singleYellow);
-    pShader singleWhithe (new Shader(rd::singleVertices, rd::fillWhite));
-    rd::shaders["singleWhite"] = std::move(singleWhithe);
+    pShader singleWhite (new Shader(filePath("singleVertices.vs"),filePath("fillWhite.frag")));
+    rd::shaders["singleWhite"] = std::move(singleWhite);
     rd::defaultShader = rd::shaders["singleYellow"].get();
-    
-    //init camera
     return 0;
 }
 
