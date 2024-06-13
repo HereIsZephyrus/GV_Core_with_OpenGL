@@ -39,14 +39,17 @@ int initOpenGL(GLFWwindow *&window) {
         glfwTerminate();
         return -1;
     }
+    glfwGetWindowContentScale(window, &windowPara.xScale, &windowPara.yScale);
+    std::cout<<"This Screen xScale is"<<windowPara.xScale<<",yScale is"<<windowPara.yScale<<std::endl;
     glfwGetFramebufferSize(window, &windowPara.SCREEN_WIDTH, &windowPara.SCREEN_HEIGHT);
+    windowPara.SCREEN_WIDTH = windowPara.SCREEN_WIDTH - windowPara.SIDEBAR_WIDTH * windowPara.xScale;
     glfwMakeContextCurrent(window); // to draw at this window
     glewExperimental = GL_TRUE;
     if (GLEW_OK != glewInit()){
         std::cerr << "Failed to initialize GLEW"<<std::endl;
         return -2;
     }
-    glViewport(0, 0, windowPara.SCREEN_WIDTH, windowPara.SCREEN_HEIGHT);
+    glViewport(windowPara.SIDEBAR_WIDTH * windowPara.xScale, 0, windowPara.SCREEN_WIDTH, windowPara.SCREEN_HEIGHT);
     
     glfwSetWindowUserPointer(window, &Camera2D::getView());
     const GLubyte* version = glGetString(GL_VERSION);
@@ -58,6 +61,7 @@ int initOpenGL(GLFWwindow *&window) {
 namespace gui{
 static void renderMenu(GLFWwindow *&window);
 static void renderEditPanel();
+static void renderSiderbar();
 static void renderSelectPanel();
 void DrawGUI() {
     GLFWwindow *& window = WindowParas::getInstance().window;
@@ -67,6 +71,7 @@ void DrawGUI() {
     ImGui::NewFrame();
     
     renderMenu(window);
+    renderSiderbar();
     if (record.state == interectState::drawing) renderEditPanel();
     if (record.showCreateElementWindow)             renderSelectPanel();
     ImGui::Render();
@@ -159,7 +164,14 @@ void renderMenu(GLFWwindow *&window) {
     }
 }
 
-
+void renderSiderbar(){
+    WindowParas& windowPara = WindowParas::getInstance();
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH, windowPara.SCREEN_HEIGHT), ImGuiCond_Always);
+    ImGui::Begin("Sidebar", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+    ImGui::Text("This is the main sidebar");
+    ImGui::End();
+}
 void renderEditPanel(){
     Records& record = Records::getState();
     ShaderStyle& style = ShaderStyle::getStyle();

@@ -63,7 +63,6 @@ void Camera2D::loadSavedPara(const CameraPara2D* para){
 }
 
 namespace cm {
-const pCamera2D zeroCamera(new CameraPara2D(glm::vec2(0.0f, 0.0f),1.0f,
-                                                   WindowParas::getInstance().WINDOW_WIDTH,WindowParas::getInstance().WINDOW_HEIGHT));
+pCamera2D zeroCamera;
 std::vector<pCamera2D> cameras;
 }

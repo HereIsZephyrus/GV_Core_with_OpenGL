@@ -27,9 +27,11 @@ public:
     WindowParas(const WindowParas&) = delete;
     void operator=(const WindowParas&) = delete;
     GLFWwindow * window;
-    const GLint WINDOW_WIDTH = 960;
+    const GLint WINDOW_WIDTH = 1260; //960 + 300
     const GLint WINDOW_HEIGHT = 720;
+    const GLint SIDEBAR_WIDTH = 300;
     GLint SCREEN_WIDTH,SCREEN_HEIGHT;
+    GLfloat xScale,yScale;
     const GLfloat deltaTime = 0.016f; // 60FPS
     GLfloat screen2normalX(GLdouble screenX){
         return  (2.0f * static_cast<GLfloat>(screenX / WINDOW_WIDTH)) - 1.0f;

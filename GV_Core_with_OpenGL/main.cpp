@@ -109,6 +109,10 @@ int initStyle(){
     rd::defaultShader = rd::shaders["singleYellow"].get();
     
     //init camera
+    WindowParas& windowPara = WindowParas::getInstance();
+    pCamera2D tempZeroCamera = pCamera2D(new CameraPara2D(glm::vec2(windowPara.SIDEBAR_WIDTH/2, 0.0f),1.0f,
+                                                 WindowParas::getInstance().SCREEN_WIDTH,WindowParas::getInstance().SCREEN_HEIGHT));
+    cm::zeroCamera = std::move(tempZeroCamera);
     Camera2D::getView().loadSavedPara(cm::zeroCamera.get());
     //    this is a demo
     pr::triangle-> bindShader(rd::shaders["singleYellow"].get());

@@ -34,7 +34,7 @@ struct CameraPara2D{
 };
 typedef std::unique_ptr<CameraPara2D> pCamera2D;
 namespace cm {
-extern const pCamera2D zeroCamera;
+extern pCamera2D zeroCamera;
 extern std::vector<pCamera2D> cameras;
 }
 class Camera2D {
