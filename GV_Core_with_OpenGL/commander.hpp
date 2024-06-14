@@ -30,8 +30,9 @@ public:
     Records(const Records&) = delete;
     void operator = (const Records&) = delete;
     GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
-    GLboolean dragingMode,drawingPrimitive;
+    bool dragingMode,drawingPrimitive;
     bool showCreateElementWindow;
+    GLfloat pointSize;
     interectState state;
     void initIObuffer();
 private:
@@ -48,12 +49,16 @@ public:
     Primitive* obj; // for now only one primitive can be selected
     Shader* drawingShader;
     vertexArray drawingVertices;
-    void addPoint();
-    GLenum drawType;
+    Shape drawType;
     bool holdonToDraw; // hold on to draw or click to draw
 private:
     Take(){}
 };
+void addPoint(vertexArray& array,const GLdouble cursorX, const GLdouble cursorY);
+void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY);
+void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY);
+void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY);
+
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);
 void mouseViewCallback(GLFWwindow* window, int button, int action, int mods);

@@ -25,10 +25,21 @@ enum class DrawType{
     Array,
     Index,
 };
+enum class Shape{
+    NONE,
+    POINTS,
+    LINES,
+    TRIANGLE,
+    STRIPE,
+    RECTANGLE,
+    CIRCLE,
+    LOOP,
+    POLYGEN
+};
 class Primitive{
 public:
-    Primitive(vertexArray vertices,GLenum shape,GLsizei stride);
-    Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen);
+    Primitive(vertexArray vertices,Shape shape,GLsizei stride);
+    //Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen);
     //Primitive(){}
     Primitive(const Primitive&) = delete;
     void operator=(const Primitive&) = delete;
@@ -47,6 +58,7 @@ public:
 private:
     GLuint VAO,VBO,EBO;
     GLenum shape;
+    //Shape shape;
     GLsizei stride,indexLen;
     DrawType type;
     vertexArray vertices;
@@ -62,7 +74,6 @@ extern pPrimitive drawPreviewPrimitive;
 extern std::vector<pPrimitive >primitives;
 extern pPrimitive rectangle;
 extern pPrimitive triangle;
-void createPrimitiveTo(std::vector<pPrimitive >& primitiveList);
 }
 
 #endif /* primitive_hpp */

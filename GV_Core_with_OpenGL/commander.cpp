@@ -31,21 +31,39 @@ static void mouseModsToggle(GLFWwindow* window, int button, int action, int mods
 static void drawModsToggle(GLFWwindow* window, int button, int action, int mods);
 static void viewScroll(GLFWwindow* window, double xoffset, double yoffset);
 
-void Take::addPoint(){
+void addPoint(vertexArray& array,const GLdouble cursorX,const GLdouble cursorY){
     WindowParas& windowPara = WindowParas::getInstance();
-    GLdouble cursorX, cursorY;
-    glfwGetCursorPos(windowPara.window, &cursorX, &cursorY);
-    //std::cout<<"cursorX = "<<cursorX<<" cursorY = "<<cursorY<<std::endl;
     const GLfloat normalX = windowPara.screen2normalX(cursorX);
     const GLfloat normalY = windowPara.screen2normalY(cursorY);
-    //std::cout<<"normalX = "<<normalX<<" normalY = "<<normalY<<std::endl;
     const GLfloat x = windowPara.normal2orthoX(normalX);
     const GLfloat y = windowPara.normal2orthoY(normalY);
-    //std::cout<<"x = "<<x<<','<<" y = "<<y<<std::endl;
-    drawingVertices.push_back(x);
-    drawingVertices.push_back(y);
-    drawingVertices.push_back(0.0f); // flat draw
+    array.push_back(x);
+    array.push_back(y);
+    array.push_back(0.0f); // flat draw
+    std::cout<<"add control point"<<std::endl;
 }
+void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY){
+    array.push_back(orthoX);
+    array.push_back(orthoY);
+    array.push_back(0.0f); // flat draw
+}
+void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY){
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat normalY = windowPara.screen2normalY(cursorY);
+    const GLfloat y = windowPara.normal2orthoY(normalY);
+    array.push_back(orthoX);
+    array.push_back(y);
+    array.push_back(0.0f); // flat draw
+}
+void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY){
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat normalX = windowPara.screen2normalX(cursorX);
+    const GLfloat x = windowPara.normal2orthoX(normalX);
+    array.push_back(x);
+    array.push_back(orthoY);
+    array.push_back(0.0f); // flat draw
+}
+
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     MeauCallback(window, key, scancode, action, mods);
@@ -58,8 +76,11 @@ void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
     drawModsToggle(window, button, action, mods);
     //tackle ondraw behavior
     Records& record = Records::getState();
-    if (!Take::holdon().holdonToDraw && action == GLFW_PRESS && record.drawingPrimitive && record.pressLeft)
-            Take::holdon().addPoint();
+    if (!Take::holdon().holdonToDraw && action == GLFW_PRESS && record.drawingPrimitive && record.pressLeft){
+        GLdouble cursorX, cursorY;
+        glfwGetCursorPos(window, &cursorX, &cursorY);
+        addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+    }
     //holdon draw method will not add middle points, which means the primitives drawed by this way has only two control points. So this situation is handled in cursorcallback
     return;
 }
@@ -85,29 +106,36 @@ void windowPosCallback(GLFWwindow* window, int xpos, int ypos){
 void windowSizeCallback(GLFWwindow* window, int width, int height){
     gui::spiltUI();
 }
+static Shape mapPreviewStyle(Shape drawType){
+    //if (drawType == Shape::RECTANGLE)
+    //    return Shape::LOOP;
+    return drawType;
+}
 void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos){
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+    //std::cout<<Records::getState().drawingPrimitive<<std::endl;
     if (Records::getState().drawingPrimitive){//generate preview
         //take the last point
-        vertexArray& vertices = Take::holdon().drawingVertices;
-        vertexArray::const_reverse_iterator it = vertices.rbegin();
-        WindowParas& windowPara = WindowParas::getInstance();
+        //WindowParas& windowPara = WindowParas::getInstance();
+        Take& take = Take::holdon();
         vertexArray tempVertices;
-        tempVertices.push_back(*(it+2));    //last x
-        tempVertices.push_back(*(it+1));    //last y
-        tempVertices.push_back(*(it));        //last z
-        //std::cout<<"cursorX = "<<xpos<<" cursorY = "<<ypos<<std::endl;
-        const GLfloat normalX = windowPara.screen2normalX(xpos);
-        const GLfloat normalY = windowPara.screen2normalY(ypos);
-        //std::cout<<"normalX = "<<normalX<<" normalY = "<<normalY<<std::endl;
-        const GLfloat x = windowPara.normal2orthoX(normalX);
-        const GLfloat y = windowPara.normal2orthoY(normalY);
-        //std::cout<<"x = "<<x<<','<<" y = "<<y<<std::endl;
-        tempVertices.push_back(x);    //cursor x
-        tempVertices.push_back(y);   //cursor y
-        tempVertices.push_back(0.0f);    //cursor z
+        vertexArray::const_reverse_iterator it = Take::holdon().drawingVertices.rbegin();
+        if (take.holdonToDraw){
+            if (take.drawType == Shape::LINES){
+                std::cout<<"draw line"<<std::endl;
+                addPoint(tempVertices,*(it+2), *(it+1));
+                addPoint(tempVertices,xpos,ypos);
+            }
+            else if (take.drawType == Shape::RECTANGLE){
+                std::cout<<"draw rectangle"<<std::endl;
+                addPoint(tempVertices,*(it+2), *(it+1));
+                addPoint(tempVertices,xpos, *(it+1));
+                addPoint(tempVertices,xpos, ypos);
+                addPoint(tempVertices,*(it+2), ypos);
+            }
+        }
         //generate preview primitive
-        pPrimitive previewPrimitive(new Primitive(tempVertices,GL_LINES,3));
+        pPrimitive previewPrimitive(new Primitive(tempVertices,mapPreviewStyle(Take::holdon().drawType),3));
         previewPrimitive -> bindShader(rd::shaders["singleWhite"].get());
         pr::drawPreviewPrimitive = std::move(previewPrimitive);
     }
@@ -210,7 +238,7 @@ void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
 static bool startDrawCheck(GLFWwindow* window, int button, int action, int mods){
     Records& record = Records::getState();
     if (action != GLFW_PRESS || !record.pressLeft) return false; // check left click
-    if ( record.state != interectState::drawing || Take::holdon().drawType == GL_POINT) return false; //check ready to start
+    if ( record.state != interectState::drawing || Take::holdon().drawType == Shape::NONE) return false; //check ready to start
     return !record.drawingPrimitive; //check aleady started
 }
 static bool finishDrawCheck(GLFWwindow* window, int button, int action, int mods){
@@ -236,14 +264,34 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         //generate a new primitive
         std::cout<<"start draw"<<std::endl;
         take.drawingVertices.clear();
-        take.addPoint();
+        GLdouble cursorX, cursorY;
+        glfwGetCursorPos(window, &cursorX, &cursorY);
+        addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
     }
     if (finishDrawCheck(window,button,action,mods)){
         record.drawingPrimitive = false;
         //finish the draw and push into the formal primitive render queue
-        take.addPoint();
+        if (take.holdonToDraw){
+            GLdouble cursorX, cursorY;
+            glfwGetCursorPos(window, &cursorX, &cursorY);
+            if (take.drawType == Shape::LINES){
+                std::cout<<"draw line"<<std::endl;
+                addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+            }
+            else if (take.drawType == Shape::RECTANGLE){
+                std::cout<<"draw rectangle"<<std::endl;
+                vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
+                addPoint(Take::holdon().drawingVertices,cursorX, *(it+1));
+                addPoint(Take::holdon().drawingVertices,cursorX, cursorY);
+                addPoint(Take::holdon().drawingVertices,*(it+2), cursorY);
+            }
+        }
         std::cout<<"finish draw"<<std::endl;
-        pr::createPrimitiveTo(pr::primitives);
-        take.drawType = GL_POINT;
+        Take& take = Take::holdon();
+        pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
+        newPrimitive->bindShader(rd::defaultShader);
+        pr::primitives.push_back(std::move(newPrimitive));
+        //pr::createPrimitiveTo(pr::primitives);
+        take.drawType = Shape::NONE;
     }
 }

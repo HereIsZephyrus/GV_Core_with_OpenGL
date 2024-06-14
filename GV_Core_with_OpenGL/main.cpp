@@ -46,8 +46,10 @@ int main(int argc, const char * argv[]) {
         InterectResponseCheck(window);
         for (auto it = pr::primitives.begin(); it!= pr::primitives.end(); it++)
             (*it)->draw();
-        if (pr::drawPreviewPrimitive != nullptr)
+        if (pr::drawPreviewPrimitive != nullptr){
             pr::drawPreviewPrimitive -> draw();
+            //std::cout<<"existed"<<std::endl;
+        }
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
@@ -70,7 +72,7 @@ int initImGUI(GLFWwindow *window) {
     style.drawColor =  ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
     style.thickness = 1.0f;
     Take& take = Take::holdon();
-    take.drawType = GL_POINT; //set as blank style
+    take.drawType = Shape::NONE; //set as blank style
     gui::menuBarHeight = ImGui::GetFrameHeightWithSpacing() * WindowParas::getInstance().yScale;
     return  0;
 }
@@ -118,11 +120,15 @@ int initStyle(){
                                                  WindowParas::getInstance().SCREEN_WIDTH,WindowParas::getInstance().SCREEN_HEIGHT));
     cm::zeroCamera = std::move(tempZeroCamera);
     Camera2D::getView().loadSavedPara(cm::zeroCamera.get());
+    //init primitive paras
+    Records& record = Records::getState();
+    record.pointSize = 5.0f;
+    glPointSize(record.pointSize);
     //    this is a demo
-    pr::triangle-> bindShader(rd::shaders["singleYellow"].get());
-    pr::primitives.push_back(std::move(pr::triangle));
-    pr::rectangle->bindShader(rd::shaders["singleWhite"].get());
-    pr::primitives.push_back(std::move(pr::rectangle));
+    //pr::triangle-> bindShader(rd::shaders["singleYellow"].get());
+    //pr::primitives.push_back(std::move(pr::triangle));
+    //pr::rectangle->bindShader(rd::shaders["singleWhite"].get());
+    //pr::primitives.push_back(std::move(pr::rectangle));
     return 0;
 }
 

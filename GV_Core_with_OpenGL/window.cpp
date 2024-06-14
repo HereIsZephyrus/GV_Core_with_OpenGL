@@ -139,13 +139,17 @@ static void editMenu() {
     if (record.state == interectState::toselect && ImGui::MenuItem("Start edit")){
         record.state = interectState::drawing;
         panelStackNum ++;
-        glfwSetMouseButtonCallback(WindowParas::getInstance().window, mouseDrawCallback);
+        GLFWwindow *& window = WindowParas::getInstance().window;
+        glfwSetMouseButtonCallback(window, mouseDrawCallback);
+        glfwSetCursorPosCallback(window, cursorDrawCallback);
     }
     
     if (record.state == interectState::drawing && ImGui::MenuItem("Stop edit")){
         record.state = interectState::toselect;
         panelStackNum --;
-        glfwSetMouseButtonCallback(WindowParas::getInstance().window, mouseViewCallback);
+        GLFWwindow *& window = WindowParas::getInstance().window;
+        glfwSetMouseButtonCallback(window, mouseViewCallback);
+        glfwSetCursorPosCallback(window, cursorSelectCallback);
     }
     
     if (ImGui::MenuItem("Add Data", "CTRL A")){
@@ -228,49 +232,49 @@ void renderEditPanel(){
 
 void renderSelectPanel(){
     Records& record = Records::getState();
-    GLenum& drawType = Take::holdon().drawType;
+    Shape& drawType = Take::holdon().drawType;
     bool& holdonToDraw = Take::holdon().holdonToDraw;
     WindowParas& windowPara = WindowParas::getInstance();
     ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::Begin("Create Element", &record.showCreateElementWindow, ImGuiWindowFlags_AlwaysAutoResize);
     
     if (ImGui::Button("Points")){
-        drawType = GL_POINTS;
+        drawType = Shape::POINTS;
         holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
     ImGui::SameLine();
     if (ImGui::Button("Lines")){
-        drawType = GL_LINES;
+        drawType = Shape::LINES;
         holdonToDraw = true;
         record.showCreateElementWindow = false;
     }
     ImGui::SameLine();
     if (ImGui::Button("Strip")){
-        drawType = GL_LINE_STRIP;
+        drawType = Shape::STRIPE;
         holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
     if (ImGui::Button("Polygen")){
         if (ShaderStyle::getStyle().toFill)
-            drawType = GL_TRIANGLE_FAN;
+            drawType = Shape::POLYGEN;
         else
-            drawType = GL_LINE_LOOP;
+            drawType = Shape::LOOP;
         holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
     if (ImGui::Button("Trangles")){
-        drawType = GL_TRIANGLES;
+        drawType = Shape::TRIANGLE;
         holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
     if (ImGui::Button("Rectangle")){
-        drawType = GL_TRIANGLE_STRIP;
+        drawType = Shape::RECTANGLE;
         holdonToDraw = true;
         record.showCreateElementWindow = false;
     }
     if (ImGui::Button("Circle")){
-        drawType = GL_TRIANGLE_FAN;
+        drawType = Shape::CIRCLE;
         holdonToDraw = true;
         record.showCreateElementWindow = false;
     }

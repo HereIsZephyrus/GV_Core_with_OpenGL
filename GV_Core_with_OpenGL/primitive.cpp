@@ -11,12 +11,53 @@
 #include "commander.hpp"
 #include "window.hpp"
 #include "camera.hpp"
-Primitive::Primitive(vertexArray vertices,GLenum shape,GLsizei stride):
-type{DrawType::Array},shape(shape),indexLen(0),stride(stride){
+Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
     this->vertices = vertices;
-    this->indices = {};
+    switch (shape) {
+        case Shape::POINTS:{
+            this->shape = GL_POINTS;
+            this->type = DrawType::Array;
+            break;
+        }
+        case Shape::LINES:{
+            this->shape = GL_LINES;
+            this->type = DrawType::Array;
+            break;
+        }
+        case Shape::TRIANGLE:{
+            this->shape = GL_TRIANGLES;
+            this->type = DrawType::Array;
+            break;
+        }
+        case Shape::RECTANGLE:{
+            this->shape = GL_TRIANGLE_FAN;
+            this->type = DrawType::Array;
+            break;
+        }
+        case Shape::CIRCLE:{ //not achieved
+            this->shape = GL_TRIANGLE_STRIP;
+            this->type = DrawType::Index;
+            //this->indices = pr
+            break;
+        }
+        case Shape::LOOP:{
+            this->shape = GL_LINE_LOOP;
+            this->type = DrawType::Array;
+            break;
+        }
+        case Shape::POLYGEN:{//not achieved
+            this->shape = GL_LINE_LOOP;
+            this->type = DrawType::Array;
+            break;;
+        }
+        default:{
+            this->shape = GL_POINT;
+            this->type = DrawType::Array;
+            break;
+        }
+    }
     shader = nullptr;
     glGenVertexArrays(1,&VAO);
     glBindVertexArray(VAO);
@@ -24,7 +65,8 @@ type{DrawType::Array},shape(shape),indexLen(0),stride(stride){
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
 }
-Primitive::Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen):
+/*
+Primitive::Primitive(vertexArray vertices,indexArray indices,Shape shape,GLsizei stride,GLsizei indlen):
 type{DrawType::Index},shape(shape),indexLen(indlen),stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
@@ -40,6 +82,7 @@ type{DrawType::Index},shape(shape),indexLen(indlen),stride(stride){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(indices.size() * sizeof(GLuint)), static_cast<const void*>(indices.data()), GL_STATIC_DRAW);
 }
+ */
 void Primitive::load(){
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -81,6 +124,7 @@ void Primitive::draw(){
     }
     glEnableVertexAttribArray(0);
     glBindVertexArray(VAO);
+    //std::cout<<VAO<<std::endl;
     if (type == DrawType::Array){
         glDrawArrays(shape, 0, getVertexNum());
        // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
@@ -96,21 +140,14 @@ void Primitive::draw(){
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >primitives;
 pPrimitive drawPreviewPrimitive = nullptr;
-void createPrimitiveTo(std::vector<pPrimitive >& primitiveList){
-    Take& take = Take::holdon();
-    pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
-    newPrimitive->bindShader(rd::defaultShader);
-    pr::primitives.push_back(std::move(newPrimitive));
-    return;
-}
 static const vertexArray tranVertex = {
     -250.0f, -250.0f, 0.0f,
     250.0f, -250.0f, 0.0f,
     0.0f,  250.0f, 0.0f
 };
-static const indexArray indices ={
-    0, 1, 3,
-    1, 2, 3
+static const indexArray rectIndex ={
+    0, 1, 3,//right-top,right-button,left-top
+    1, 2, 3//right-button,left-button,left-top
 };
 static const vertexArray rectVertex ={
     200.0f, 200.0f, 0.0f,
@@ -118,6 +155,6 @@ static const vertexArray rectVertex ={
     -200.0f, -200.0f, 0.0f,
      -200.0f, 200.0f, 0.0f
 };
-std::unique_ptr<Primitive> rectangle(new Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6));
-std::unique_ptr<Primitive> triangle(new Primitive(tranVertex, GL_TRIANGLES,  3));
+//std::unique_ptr<Primitive> rectangle(new Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6));
+//std::unique_ptr<Primitive> triangle(new Primitive(tranVertex, GL_TRIANGLES,  3));
 }
