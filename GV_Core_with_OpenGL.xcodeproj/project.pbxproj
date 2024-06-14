@@ -10,8 +10,6 @@
 		322E52F62C13EE17002AFB73 /* libGLEW.2.2.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 322E52F52C13EE17002AFB73 /* libGLEW.2.2.0.dylib */; };
 		322E52F72C13EE17002AFB73 /* libGLEW.2.2.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 322E52F52C13EE17002AFB73 /* libGLEW.2.2.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		322E52FA2C13F6E2002AFB73 /* window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E52F82C13F6E2002AFB73 /* window.cpp */; };
-		322E52FC2C13FD88002AFB73 /* libSDL2-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 322E52FB2C13FD88002AFB73 /* libSDL2-2.0.0.dylib */; };
-		322E52FD2C13FD88002AFB73 /* libSDL2-2.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 322E52FB2C13FD88002AFB73 /* libSDL2-2.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		322E53062C14A5CF002AFB73 /* rendering.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E53042C14A5CF002AFB73 /* rendering.cpp */; };
 		322E53092C1532E6002AFB73 /* primitive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E53072C1532E6002AFB73 /* primitive.cpp */; };
 		323A00E32C0AA4360056BAD1 /* libglfw.3.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */; };
@@ -40,7 +38,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				322E52FD2C13FD88002AFB73 /* libSDL2-2.0.0.dylib in Embed Libraries */,
 				32C5E0A22C193D9C00152CDF /* libglm.dylib in Embed Libraries */,
 				323A00E42C0AA4360056BAD1 /* libglfw.3.4.dylib in Embed Libraries */,
 				322E52F72C13EE17002AFB73 /* libGLEW.2.2.0.dylib in Embed Libraries */,
@@ -78,6 +75,7 @@
 		326A8BE72C0A28E300E30250 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		3278B0BE2C097C5500DF6489 /* GV_Core_with_OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GV_Core_with_OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		3278B0C12C097C5500DF6489 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		328DF9B52C1C95000092223F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		32948FAB2C157E65007A0078 /* glexception.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = glexception.cpp; sourceTree = "<group>"; };
 		32948FAC2C157E65007A0078 /* glexception.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = glexception.hpp; sourceTree = "<group>"; };
 		32C5E0882C18A14E00152CDF /* imconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imconfig.h; sourceTree = "<group>"; };
@@ -109,7 +107,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				322E52FC2C13FD88002AFB73 /* libSDL2-2.0.0.dylib in Frameworks */,
 				322E52F62C13EE17002AFB73 /* libGLEW.2.2.0.dylib in Frameworks */,
 				326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */,
 				32C5E0A12C193D9C00152CDF /* libglm.dylib in Frameworks */,
@@ -138,6 +135,7 @@
 		3278B0B52C097C5500DF6489 = {
 			isa = PBXGroup;
 			children = (
+				328DF9B52C1C95000092223F /* README.md */,
 				32C5E0A72C1987AE00152CDF /* resources */,
 				32C5E0982C18A14E00152CDF /* ImGUIopengl3 */,
 				3278B0C02C097C5500DF6489 /* GV_Core_with_OpenGL */,
@@ -418,8 +416,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					/opt/homebrew/Cellar/glew/2.2.0_1/lib,
 					/opt/homebrew/Cellar/glfw/3.4/lib,
-					/opt/homebrew/Cellar/sdl2/2.30.3/lib,
-					/opt/homebrew/Cellar/sfml/2.6.1/lib,
 					/opt/homebrew/Cellar/glm/1.0.1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -427,8 +423,6 @@
 					"${glew_header-2.2}",
 					"${glad_header-4.1}",
 					"${glfw_header-3.4}",
-					"${sdl2_header}",
-					"${sfml_header-2.6}",
 					"${glm_header-1.0}",
 				);
 			};
@@ -444,8 +438,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					/opt/homebrew/Cellar/glew/2.2.0_1/lib,
 					/opt/homebrew/Cellar/glfw/3.4/lib,
-					/opt/homebrew/Cellar/sdl2/2.30.3/lib,
-					/opt/homebrew/Cellar/sfml/2.6.1/lib,
 					/opt/homebrew/Cellar/glm/1.0.1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -453,8 +445,6 @@
 					"${glew_header-2.2}",
 					"${glad_header-4.1}",
 					"${glfw_header-3.4}",
-					"${sdl2_header}",
-					"${sfml_header-2.6}",
 					"${glm_header-1.0}",
 				);
 			};

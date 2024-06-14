@@ -264,20 +264,6 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
                 addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
             }
             else if (take.drawType == Shape::RECTANGLE){
-                //std::cout<<"draw rectangle"<<std::endl;
-                //vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
-                //std::cout<<*it<<' '<<*(it+1)<<' '<<*(it+2)<<std::endl;
-                //addPoint(Take::holdon().drawingVertices,cursorX, *(it+1));
-                //addPoint(Take::holdon().drawingVertices,cursorX, cursorY);
-                //addPoint(Take::holdon().drawingVertices,*(it+2), cursorY);
-                //std::cout<<"Now the vertex array size is "<<take.drawingVertices.size()<<std::endl;
-                //std::cout<<"so the array rbegin changed"<<std::endl;
-                //std::cout<<*it<<' '<<*(it+1)<<' '<<*(it+2)<<std::endl;
-                //std::cout<<std::endl;
-                //std::cout<<Take::holdon().drawingVertices[0]<<' //'<<Take::holdon().drawingVertices[1]<<std::endl;
-                //std::cout<<Take::holdon().drawingVertices[3]<<' //'<<Take::holdon().drawingVertices[4]<<std::endl;
-                //std::cout<<Take::holdon().drawingVertices[6]<<' //'<<Take::holdon().drawingVertices[7]<<std::endl;
-                //std::cout<<Take::holdon().drawingVertices[9]<<' //'<<Take::holdon().drawingVertices[10]<<std::endl;
                 vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
                 const GLfloat startX = *(it+2),startY = *(it+1);
                 std::cout<<std::endl;

@@ -51,7 +51,7 @@ int initOpenGL(GLFWwindow *&window) {
     //settings.attributeFlags = sf::ContextSettings::Core;
     
     WindowParas& windowPara = WindowParas::getInstance();
-    window = glfwCreateWindow(windowPara.WINDOW_WIDTH, windowPara.WINDOW_HEIGHT, "TCBOpenGL学习", nullptr, nullptr);
+    window = glfwCreateWindow(windowPara.WINDOW_WIDTH, windowPara.WINDOW_HEIGHT, "2024Spring计算机图形学", nullptr, nullptr);
     if (window == nullptr) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
