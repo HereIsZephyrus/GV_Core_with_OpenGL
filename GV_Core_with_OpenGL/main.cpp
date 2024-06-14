@@ -42,8 +42,8 @@ int main(int argc, const char * argv[]) {
         
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
- 
         InterectResponseCheck(window);
+        //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
         for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++)
             (*it)->draw();
         if (pr::drawPreviewPrimitive != nullptr){
@@ -122,7 +122,8 @@ static bool checkCursorFocus(){
     WindowParas& windowPara = WindowParas::getInstance();
     GLdouble cursorX,cursorY;
     glfwGetCursorPos(windowPara.window, &cursorX, &cursorY);
-    if (cursorX >= 0 && cursorX <= windowPara.SCREEN_WIDTH && cursorY>= 0 && cursorY <= windowPara.SCREEN_HEIGHT)
+    //std::cout<<cursorX<<' '<<cursorY<<std::endl;
+    if (cursorX >= 0 && cursorX <= windowPara.SCREEN_WIDTH/windowPara.xScale && cursorY>= 0 && cursorY <= windowPara.SCREEN_HEIGHT/windowPara.yScale)
         return  true;
     return false;
 }

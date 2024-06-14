@@ -64,6 +64,8 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     glGenBuffers(1,&VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 /*
 Primitive::Primitive(vertexArray vertices,indexArray indices,Shape shape,GLsizei stride,GLsizei indlen):
@@ -102,8 +104,8 @@ static void bindCameraProjection(Shader* shader){
     GLuint modelLoc = glGetUniformLocation(shader->getProgram(), "model");
     
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     return;
 }
 void Primitive::draw(){

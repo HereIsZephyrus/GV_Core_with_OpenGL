@@ -265,10 +265,25 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
             }
             else if (take.drawType == Shape::RECTANGLE){
                 //std::cout<<"draw rectangle"<<std::endl;
+                //vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
+                //std::cout<<*it<<' '<<*(it+1)<<' '<<*(it+2)<<std::endl;
+                //addPoint(Take::holdon().drawingVertices,cursorX, *(it+1));
+                //addPoint(Take::holdon().drawingVertices,cursorX, cursorY);
+                //addPoint(Take::holdon().drawingVertices,*(it+2), cursorY);
+                //std::cout<<"Now the vertex array size is "<<take.drawingVertices.size()<<std::endl;
+                //std::cout<<"so the array rbegin changed"<<std::endl;
+                //std::cout<<*it<<' '<<*(it+1)<<' '<<*(it+2)<<std::endl;
+                //std::cout<<std::endl;
+                //std::cout<<Take::holdon().drawingVertices[0]<<' //'<<Take::holdon().drawingVertices[1]<<std::endl;
+                //std::cout<<Take::holdon().drawingVertices[3]<<' //'<<Take::holdon().drawingVertices[4]<<std::endl;
+                //std::cout<<Take::holdon().drawingVertices[6]<<' //'<<Take::holdon().drawingVertices[7]<<std::endl;
+                //std::cout<<Take::holdon().drawingVertices[9]<<' //'<<Take::holdon().drawingVertices[10]<<std::endl;
                 vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
-                addPoint(Take::holdon().drawingVertices,cursorX, *(it+1));
+                const GLfloat startX = *(it+2),startY = *(it+1);
+                std::cout<<std::endl;
+                addPoint(Take::holdon().drawingVertices,cursorX, startY);
                 addPoint(Take::holdon().drawingVertices,cursorX, cursorY);
-                addPoint(Take::holdon().drawingVertices,*(it+2), cursorY);
+                addPoint(Take::holdon().drawingVertices,startX, cursorY);
             }
         }
         std::cout<<"finish draw"<<std::endl;
@@ -295,18 +310,19 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
         Take& take = Take::holdon();
         vertexArray tempVertices;
         vertexArray::const_reverse_iterator it = Take::holdon().drawingVertices.rbegin();
+        const GLfloat startX = *(it+2),startY = *(it+1);
         if (take.holdonToDraw){
             if (take.drawType == Shape::LINES){
                 //std::cout<<"draw line"<<std::endl;
-                addPoint(tempVertices,*(it+2), *(it+1));
+                addPoint(tempVertices,startX,startY);
                 addPoint(tempVertices,xpos,ypos);
             }
             else if (take.drawType == Shape::RECTANGLE){
                 //std::cout<<"draw rectangle"<<std::endl;
-                addPoint(tempVertices,*(it+2), *(it+1));
-                addPoint(tempVertices,xpos, *(it+1));
+                addPoint(tempVertices,startX,startY);
+                addPoint(tempVertices,xpos, startY);
                 addPoint(tempVertices,xpos, ypos);
-                addPoint(tempVertices,*(it+2), ypos);
+                addPoint(tempVertices,startX, ypos);
             }
         }
         //generate preview primitive
