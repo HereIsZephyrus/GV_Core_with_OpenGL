@@ -7,8 +7,29 @@
 #include "rendering.hpp"
 #include "window.hpp"
 namespace rd{
-std::map<std::string,pShader > shaders;
+std::map<std::string,pShader > namedShader;
+std::vector<pShader> mainShaderList;
 Shader* defaultShader;
+
+GLchar* filePath(const char* fileName){
+    //checkSourceRelevantPath();
+    const char * tcbsearchPath ="../../../../../../../../Program/GV_Core_with_OpenGL/resources/";
+    GLchar* resource = new char[strlen(tcbsearchPath) + strlen(fileName) + 1];
+    strcpy(resource, tcbsearchPath);
+    strcat(resource, fileName);
+    //std::cout<<resource<<std::endl;
+    return resource;
+}
+std::string geneateColorShader(const ImVec4& color){
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(1) << color.x<<"f,"<<color.y<<"f,"<<color.z<<"f,"<<color.w;
+    std::string  shaderCode = "#version 410 core\n"
+    "out vec4 color;\n"
+    "void main( ){\n"
+    "color = vec4( " + ss.str() + ");\n}";
+    std::cout<<shaderCode<<std::endl;
+    return shaderCode;
+}
 
 std::string singleVertices = "#version 410 core\n"
 "layout(location = 0) in vec3 aPos;\n"
@@ -27,7 +48,6 @@ std::string fillWhite = "#version 410 core\n"
 "out vec4 color;\n"
 "void main( ){color = vec4( 1.0f, 1.0f, 1.0f, 1.0f );}";
 };
-static void generateProgram(const GLchar* vShaderCode,const GLchar * fShaderCode,GLuint& program);
 Shader::Shader(std::string vertexShader,std::string fragmentShader){
     const GLchar* vShaderCode = vertexShader.c_str();
     const GLchar * fShaderCode = fragmentShader.c_str();
@@ -35,42 +55,46 @@ Shader::Shader(std::string vertexShader,std::string fragmentShader){
     generateProgram(vShaderCode,fShaderCode,this->Program);
 }
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath){
-    std::string vertexShader;
-    std::string fragmentShader;
-    std::ifstream vShaderFile;
-    std::ifstream fShaderFile;
-    // ensures ifstream objects can throw exceptions:
-    vShaderFile.exceptions (std::ifstream::badbit);
-    fShaderFile.exceptions (std::ifstream::badbit);
-    try{
-        // Open files
-        vShaderFile.open(vertexPath);
-        if (!vShaderFile.is_open())
-            std::cerr << "ERROR::SHADER::Failed to open vShaderFile." << std::endl;
-        fShaderFile.open(fragmentPath);
-        if (!fShaderFile.is_open())
-            std::cerr << "ERROR::SHADER::Failed to open fShaderFile." << std::endl;
-        std::stringstream vShaderStream, fShaderStream;
-        // Read file's buffer contents into streams
-        vShaderStream << vShaderFile.rdbuf();
-        fShaderStream << fShaderFile.rdbuf();
-        // close file handlers
-        vShaderFile.close();
-        fShaderFile.close();
-        // Convert stream into string
-        vertexShader = vShaderStream.str();
-        fragmentShader = fShaderStream.str();
-    }
-    catch (std::ifstream::failure e){
-        std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-    }
+    std::string vertexShader = readGLSLfile(vertexPath);
+    std::string fragmentShader = readGLSLfile(fragmentPath);
     const GLchar* vShaderCode = vertexShader.c_str();
     const GLchar * fShaderCode = fragmentShader.c_str();
     this->Program = glCreateProgram();
     generateProgram(vShaderCode,fShaderCode,this->Program);
 }
+Shader::Shader(const GLchar* vertexPath,std::string fragmentShader){
+    std::string vertexShader = readGLSLfile(vertexPath);
+    const GLchar* vShaderCode = vertexShader.c_str();
+    const GLchar * fShaderCode = fragmentShader.c_str();
+    this->Program = glCreateProgram();
+    generateProgram(vShaderCode,fShaderCode,this->Program);
+}
+Shader::Shader(std::string vertexShader,const GLchar* fragmentPath){
+    std::string fragmentShader = readGLSLfile(fragmentPath);
+    const GLchar* vShaderCode = vertexShader.c_str();
+    const GLchar * fShaderCode = fragmentShader.c_str();
+    this->Program = glCreateProgram();
+    generateProgram(vShaderCode,fShaderCode,this->Program);
+}
+std::string Shader::readGLSLfile(const GLchar* filePath){
+    std::string fileString;
+    std::ifstream fileStream;
+    fileStream.exceptions(std::ifstream::badbit);
+    try {
+        fileStream.open(filePath);
+        if (!fileStream.is_open())
+            std::cerr << "ERROR::SHADER::Failed_TO_READ_SHADERFILE." << std::endl;
+        std::stringstream shaderStream;
+        shaderStream << fileStream.rdbuf();
+        fileStream.close();
+        return shaderStream.str();
+    } catch (std::ifstream::failure e) {
+        std::cerr<<"ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+    }
+    return "";
+}
 
-void generateProgram(const GLchar* vShaderCode,const GLchar * fShaderCode,GLuint& program){
+void Shader::generateProgram(const GLchar* vShaderCode,const GLchar * fShaderCode,GLuint& program){
     // 2. Compile shaders
     GLuint vertex, fragment;
     GLint success;

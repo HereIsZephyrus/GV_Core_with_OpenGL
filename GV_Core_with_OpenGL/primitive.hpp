@@ -71,9 +71,7 @@ private:
 typedef std::unique_ptr<Primitive> pPrimitive;
 namespace pr {
 extern pPrimitive drawPreviewPrimitive;
-extern std::vector<pPrimitive >primitives;
-extern pPrimitive rectangle;
-extern pPrimitive triangle;
+extern std::vector<pPrimitive >mainPrimitiveList;
 }
 
 #endif /* primitive_hpp */

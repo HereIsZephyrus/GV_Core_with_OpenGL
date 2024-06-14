@@ -138,23 +138,10 @@ void Primitive::draw(){
 }
 
 namespace pr {
-std::vector<std::unique_ptr<Primitive> >primitives;
+std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;
 pPrimitive drawPreviewPrimitive = nullptr;
-static const vertexArray tranVertex = {
-    -250.0f, -250.0f, 0.0f,
-    250.0f, -250.0f, 0.0f,
-    0.0f,  250.0f, 0.0f
-};
 static const indexArray rectIndex ={
     0, 1, 3,//right-top,right-button,left-top
     1, 2, 3//right-button,left-button,left-top
 };
-static const vertexArray rectVertex ={
-    200.0f, 200.0f, 0.0f,
-    200.0f, -200.0f, 0.0f,
-    -200.0f, -200.0f, 0.0f,
-     -200.0f, 200.0f, 0.0f
-};
-//std::unique_ptr<Primitive> rectangle(new Primitive(rectVertex, indices, GL_TRIANGLES, 4,  6));
-//std::unique_ptr<Primitive> triangle(new Primitive(tranVertex, GL_TRIANGLES,  3));
 }

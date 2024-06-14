@@ -26,6 +26,8 @@ public:
     void operator=(const Shader&) = delete;
     Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
     Shader(std::string vertexShader,std::string fragmentShader);
+    Shader(const GLchar* vertexPath,std::string fragmentShader);
+    Shader(std::string vertexShader,const GLchar* fragmentPath);
     //Shader(){}
     void  rend() const{
         //std::cout<<"Render is running"<<std::endl;
@@ -36,6 +38,8 @@ public:
     }
 private:
     GLuint Program;
+    void generateProgram(const GLchar* vShaderCode,const GLchar * fShaderCode,GLuint& program);
+    std::string readGLSLfile(const GLchar* filePath);
 };
 class ShaderStyle{
 public:
@@ -56,9 +60,12 @@ namespace rd{
 extern std::string singleVertices;
 extern std::string fillYellow;
 extern std::string fillWhite;
-extern std::map<std::string,pShader > shaders;
+extern std::map<std::string,pShader > namedShader;
+extern std::vector<pShader> mainShaderList;
 //extern Shader* defaultShader;
 extern Shader* defaultShader;
+GLchar* filePath(const char* fileName);
+std::string geneateColorShader(const ImVec4& color);
 };
 
 #endif /* rendering_hpp */

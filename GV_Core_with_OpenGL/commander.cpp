@@ -136,7 +136,7 @@ void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos){
         }
         //generate preview primitive
         pPrimitive previewPrimitive(new Primitive(tempVertices,mapPreviewStyle(Take::holdon().drawType),3));
-        previewPrimitive -> bindShader(rd::shaders["singleWhite"].get());
+        previewPrimitive -> bindShader(rd::namedShader["singleWhite"].get());
         pr::drawPreviewPrimitive = std::move(previewPrimitive);
     }
     else
@@ -289,9 +289,10 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         std::cout<<"finish draw"<<std::endl;
         Take& take = Take::holdon();
         pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
-        newPrimitive->bindShader(rd::defaultShader);
-        pr::primitives.push_back(std::move(newPrimitive));
-        //pr::createPrimitiveTo(pr::primitives);
+        pShader newShader(new Shader(rd::filePath("singleVertices.vs"),rd::geneateColorShader(ShaderStyle::getStyle().drawColor)));
+        rd::mainShaderList.push_back(std::move(newShader));
+        newPrimitive->bindShader(rd::mainShaderList.back().get());
+        pr::mainPrimitiveList.push_back(std::move(newPrimitive));
         take.drawType = Shape::NONE;
     }
 }

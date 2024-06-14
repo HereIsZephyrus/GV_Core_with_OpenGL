@@ -44,7 +44,7 @@ int main(int argc, const char * argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
         InterectResponseCheck(window);
-        for (auto it = pr::primitives.begin(); it!= pr::primitives.end(); it++)
+        for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++)
             (*it)->draw();
         if (pr::drawPreviewPrimitive != nullptr){
             pr::drawPreviewPrimitive -> draw();
@@ -69,7 +69,7 @@ int initImGUI(GLFWwindow *window) {
     ImGui_ImplOpenGL3_Init("#version 410");
     gui::spiltUI();
     ShaderStyle& style = ShaderStyle::getStyle();
-    style.drawColor =  ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    style.drawColor =  ImVec4(1.0f, 0.5f, 0.2f, 1.0f);
     style.thickness = 1.0f;
     Take& take = Take::holdon();
     take.drawType = Shape::NONE; //set as blank style
@@ -97,38 +97,24 @@ static void checkSourceRelevantPath(){
     std::cout << "Other path: " << otherPath << std::endl;
     std::cout << "Relative path: " << relativePath << std::endl;
 }
-static GLchar* filePath(const char* fileName){
-    //checkSourceRelevantPath();
-    const char * tcbsearchPath ="../../../../../../../../Program/GV_Core_with_OpenGL/resources/";
-    GLchar* resource = new char[strlen(tcbsearchPath) + strlen(fileName) + 1];
-    strcpy(resource, tcbsearchPath);
-    strcat(resource, fileName);
-    //std::cout<<resource<<std::endl;
-    return resource;
-}
+
 int initStyle(){
     //init shader
-    pShader singleYellow (new Shader(filePath("singleVertices.vs"),filePath("fillYellow.frag")));
-    rd::shaders["singleYellow"] = std::move(singleYellow);
-    pShader singleWhite (new Shader(filePath("singleVertices.vs"),filePath("fillWhite.frag")));
-    rd::shaders["singleWhite"] = std::move(singleWhite);
-    rd::defaultShader = rd::shaders["singleYellow"].get();
+    pShader singleYellow (new Shader(rd::filePath("singleVertices.vs"),rd::filePath("fillYellow.frag")));
+    rd::namedShader["singleYellow"] = std::move(singleYellow);
+    pShader singleWhite (new Shader(rd::filePath("singleVertices.vs"),rd::filePath("fillWhite.frag")));
+    rd::namedShader["singleWhite"] = std::move(singleWhite);
+    rd::defaultShader = rd::namedShader["singleYellow"].get();
     
     //init camera
     WindowParas& windowPara = WindowParas::getInstance();
-    pCamera2D tempZeroCamera = pCamera2D(new CameraPara2D(glm::vec2(windowPara.SIDEBAR_WIDTH/2, 0.0f),1.0f,
-                                                 WindowParas::getInstance().SCREEN_WIDTH,WindowParas::getInstance().SCREEN_HEIGHT));
+    pCamera2D tempZeroCamera = pCamera2D(new CameraPara2D(glm::vec2(windowPara.SIDEBAR_WIDTH/2, 0.0f),1.0f,WindowParas::getInstance().SCREEN_WIDTH,WindowParas::getInstance().SCREEN_HEIGHT));
     cm::zeroCamera = std::move(tempZeroCamera);
     Camera2D::getView().loadSavedPara(cm::zeroCamera.get());
     //init primitive paras
     Records& record = Records::getState();
     record.pointSize = 5.0f;
     glPointSize(record.pointSize);
-    //    this is a demo
-    //pr::triangle-> bindShader(rd::shaders["singleYellow"].get());
-    //pr::primitives.push_back(std::move(pr::triangle));
-    //pr::rectangle->bindShader(rd::shaders["singleWhite"].get());
-    //pr::primitives.push_back(std::move(pr::rectangle));
     return 0;
 }
 
