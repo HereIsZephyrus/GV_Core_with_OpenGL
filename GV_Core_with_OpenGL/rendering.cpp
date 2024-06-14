@@ -27,7 +27,7 @@ std::string geneateColorShader(const ImVec4& color){
     "out vec4 color;\n"
     "void main( ){\n"
     "color = vec4( " + ss.str() + ");\n}";
-    std::cout<<shaderCode<<std::endl;
+    //std::cout<<shaderCode<<std::endl;
     return shaderCode;
 }
 

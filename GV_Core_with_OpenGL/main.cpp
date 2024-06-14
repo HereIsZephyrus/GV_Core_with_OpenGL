@@ -118,8 +118,19 @@ int initStyle(){
     return 0;
 }
 
+static bool checkCursorFocus(){
+    WindowParas& windowPara = WindowParas::getInstance();
+    GLdouble cursorX,cursorY;
+    glfwGetCursorPos(windowPara.window, &cursorX, &cursorY);
+    if (cursorX >= 0 && cursorX <= windowPara.SCREEN_WIDTH && cursorY>= 0 && cursorY <= windowPara.SCREEN_HEIGHT)
+        return  true;
+    return false;
+}
+
 int InterectResponseCheck(GLFWwindow* &window){
-    Camera2D::getView().processKeyboard(window);
+    Camera2D& camera = Camera2D::getView();
+    camera.processKeyboard(window);
+    WindowParas::getInstance().mainWindowFocused = checkCursorFocus();
     return 0;
 }
 

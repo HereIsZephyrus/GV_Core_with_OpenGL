@@ -34,6 +34,7 @@ public:
     GLfloat xScale,yScale;
     const GLfloat deltaTime = 0.016f; // 60FPS
     GLfloat defaultAlpha;
+    bool mainWindowFocused;
     GLfloat screen2normalX(GLdouble screenX);
     GLfloat screen2normalY(GLdouble screenY);
     GLfloat normal2orthoX(GLfloat normalX);

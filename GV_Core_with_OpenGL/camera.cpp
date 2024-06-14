@@ -12,6 +12,7 @@
 void Camera2D::processKeyboard(GLFWwindow* window) {
     Records& record = Records::getState();
     const GLfloat cameraSpeed = 400.0f * WindowParas::getInstance().deltaTime;
+    const bool moveCursor = record.drawingPrimitive;
     if (record.pressAlt || record.pressCtrl|| record.pressShift)//ignore function input
         return;
     if (record.keyRecord[GLFW_KEY_W])
@@ -20,10 +21,12 @@ void Camera2D::processKeyboard(GLFWwindow* window) {
         position.y -= cameraSpeed;
     if (record.keyRecord[GLFW_KEY_A])
         position.x -= cameraSpeed;
+    
     if (record.keyRecord[GLFW_KEY_D])
         position.x += cameraSpeed;
     updateViewMatrix();
 }
+
 void Camera2D::processScroll(GLFWwindow* window, double xoffset, double yoffset, bool pressCtrl, bool pressAlt){
     const GLfloat cameraSpeed = 200.0f *  WindowParas::getInstance().deltaTime;
     if (pressCtrl)//if conflict, ctrl first:yscroll
