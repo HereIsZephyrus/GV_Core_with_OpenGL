@@ -4,6 +4,7 @@
 //
 //  Created by ChanningTong on 6/8/24.
 //
+#include <iomanip>
 #include "rendering.hpp"
 #include "window.hpp"
 namespace rd{
@@ -15,8 +16,8 @@ GLchar* filePath(const char* fileName){
     //checkSourceRelevantPath();
     const char * tcbsearchPath ="../../../../../../../../Program/GV_Core_with_OpenGL/resources/";
     GLchar* resource = new char[strlen(tcbsearchPath) + strlen(fileName) + 1];
-    strcpy(resource, tcbsearchPath);
-    strcat(resource, fileName);
+    strcpy_s(resource,sizeof(resource), tcbsearchPath);
+    strcat_s(resource, sizeof(resource), fileName);
     //std::cout<<resource<<std::endl;
     return resource;
 }
