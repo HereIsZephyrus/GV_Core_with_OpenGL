@@ -278,11 +278,12 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         Take& take = Take::holdon();
         ShaderStyle& style = ShaderStyle::getStyle();
         pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
-        pShader newShader(new Shader(rd::filePath("singleVertices.vs"),rd::geneateColorShader(ShaderStyle::getStyle().drawColor)));
-        if (take.drawType == Shape::POINTS||take.drawType == Shape::LINES || take.drawType == Shape::LOOP || !style.toFill)
-            newShader->thickness = style.thickness;
-            
+        pShader newShader(new Shader(style));
+        newShader->attchVertexShader(rd::filePath("singleVertices.vs"));
+        newShader->attchFragmentShader(rd::geneateColorShader(ShaderStyle::getStyle().drawColor));
+        newShader->linkProgram();
         rd::mainShaderList.push_back(std::move(newShader));
+        
         newPrimitive->bindShader(rd::mainShaderList.back().get());
         pr::mainPrimitiveList.push_back(std::move(newPrimitive));
         take.drawType = Shape::NONE;

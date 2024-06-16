@@ -109,12 +109,6 @@ static void checkStyleBoundary() {
 }
 
 int initStyle(){
-    //init shader
-    pShader singleYellow (new Shader(rd::filePath("singleVertices.vs"),rd::filePath("fillYellow.frag")));
-    rd::namedShader["singleYellow"] = std::move(singleYellow);
-    pShader singleWhite (new Shader(rd::filePath("singleVertices.vs"),rd::filePath("fillWhite.frag")));
-    rd::namedShader["singleWhite"] = std::move(singleWhite);
-    rd::defaultShader = rd::namedShader["singleYellow"].get();
     
     //init camera
     WindowParas& windowPara = WindowParas::getInstance();
@@ -131,6 +125,18 @@ int initStyle(){
     style.thickness = 1.0f;
     glLineWidth(style.thickness);
     
+    //init shader
+    pShader singleYellow (new Shader(style));
+    singleYellow->attchVertexShader(rd::filePath("singleVertices.vs"));
+    singleYellow->attchFragmentShader(rd::filePath("fillWhite.frag"));
+    singleYellow->linkProgram();
+    rd::namedShader["singleYellow"] = std::move(singleYellow);
+    pShader singleWhite (new Shader(style));
+    singleWhite->attchVertexShader(rd::filePath("singleVertices.vs"));
+    singleWhite->attchFragmentShader(rd::filePath("fillWhite.frag"));
+    singleWhite->linkProgram();
+    rd::namedShader["singleWhite"] = std::move(singleWhite);
+    rd::defaultShader = rd::namedShader["singleYellow"].get();
     return 0;
 }
 

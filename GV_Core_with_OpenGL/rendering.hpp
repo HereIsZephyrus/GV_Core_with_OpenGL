@@ -20,29 +20,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-class Shader{
-public:
-   Shader(const Shader&) = delete;
-    void operator=(const Shader&) = delete;
-    Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
-    Shader(std::string vertexShader,std::string fragmentShader);
-    Shader(const GLchar* vertexPath,std::string fragmentShader);
-    Shader(std::string vertexShader,const GLchar* fragmentPath);
-    //Shader(){}
-    void  rend() const{
-        //std::cout<<"Render is running"<<std::endl;
-        glLineWidth(thickness);
-        glUseProgram(this->Program);
-    }
-    GLuint getProgram(){
-        return Program;
-    }
-    GLfloat thickness;
-private:
-    GLuint Program;
-    void generateProgram(const GLchar* vShaderCode,const GLchar * fShaderCode,GLuint& program);
-    std::string readGLSLfile(const GLchar* filePath);
-};
 class ShaderStyle{
 public:
     static ShaderStyle& getStyle(){
@@ -57,6 +34,35 @@ public:
 private:
     ShaderStyle(){}
 };
+class Shader{
+public:
+   Shader(const Shader&) = delete;
+    void operator=(const Shader&) = delete;
+    //Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+    //Shader(std::string vertexShader,std::string fragmentShader);
+    //Shader(const GLchar* vertexPath,std::string fragmentShader);
+    //Shader(std::string vertexShader,const GLchar* fragmentPath);
+    Shader(ShaderStyle& style);
+    void  rend() const{
+        //std::cout<<"Render is running"<<std::endl;
+        glLineWidth(thickness);
+        glUseProgram(this->program);
+    }
+    GLuint getProgram(){
+        return program;
+    }
+    void attchVertexShader(std::string vertexShader);
+    void attchVertexShader(const GLchar* vertexPath);
+    void attchFragmentShader(std::string fragmentShader);
+    void attchFragmentShader(const GLchar* fragmentPath);
+    void linkProgram();
+private:
+    GLfloat thickness;
+    GLuint program;
+    std::string readGLSLfile(const GLchar* filePath);
+};
+
+
 typedef std::unique_ptr<Shader> pShader;
 namespace rd{
 extern std::string singleVertices;
