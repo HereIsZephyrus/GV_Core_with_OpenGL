@@ -65,6 +65,7 @@ public:
     friend class pr::Point;
     friend class pr::Line;
     friend class pr::Face;
+    void noAntialising();
 private:
     primitiveIdentifier identifier;
     GLenum shape;

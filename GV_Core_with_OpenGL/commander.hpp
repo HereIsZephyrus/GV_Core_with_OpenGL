@@ -57,6 +57,8 @@ void addPoint(vertexArray& array,const GLdouble cursorX, const GLdouble cursorY)
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY);
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY);
 void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY);
+void addBlock(vertexArray& array,const GLdouble cursorX, const GLdouble cursorY,GLfloat thickness);
+void addBlock(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY,GLfloat thickness);
 
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);

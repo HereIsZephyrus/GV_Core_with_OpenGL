@@ -64,6 +64,45 @@ void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY){
     array.push_back(orthoY);
     array.push_back(0.0f); // flat draw
 }
+void addBlock(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY,GLfloat thickness){
+    const int range = (thickness + 0.5)/2;
+    array.push_back(orthoX);
+    array.push_back(orthoY);
+    array.push_back(0.0f);
+    //for (int i = -range; i<= range; i++)
+        for (int j = -range; j<=range; j++){
+            array.push_back(orthoX);
+            array.push_back(orthoY+j);
+            array.push_back(0.0f); // flat draw
+        }
+}
+static void drawLine(vertexArray& array,const float &sX,const float &sY,const float &cursorX,const float &cursorY) {
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat normalX = windowPara.screen2normalX(cursorX);
+    const GLfloat normalY = windowPara.screen2normalY(cursorY);
+    const GLfloat tX = windowPara.normal2orthoX(normalX);
+    const GLfloat tY = windowPara.normal2orthoY(normalY);
+    glClear(GL_COLOR_BUFFER_BIT);
+    //std::cout<<sX << ' '<<sY<<' '<<tX << ' '<<tY<<std::endl;
+    float dx = tX - sX,dy = tY - sY;
+    int steps = 0;
+    if (std::abs(dx) >= std::abs(dy)){
+        steps = (std::abs(dx) + 1.0f) / 2.0f * windowPara.SCREEN_WIDTH;
+    }
+    else{
+        steps = (1.0f - std::abs(dy) ) / 2.0f * windowPara.SCREEN_HEIGHT;
+    }
+    float xinc = dx / steps;
+    float yinc = dy / steps;
+    float x = sX,y = sY;
+    //std::cout<<x<<y<<std::endl;
+    const GLfloat thickness = ShaderStyle::getStyle().thickness;
+    for (int i = 0; i <= steps; i++) {
+        x += xinc;
+        y += yinc;
+        addBlock(array,x,y,thickness);
+    }
+}
 
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
@@ -261,14 +300,16 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         if (take.holdonToDraw){
             GLdouble cursorX, cursorY;
             glfwGetCursorPos(window, &cursorX, &cursorY);
+            vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
+            const GLfloat startX = *(it+2),startY = *(it+1);
             if (take.drawType == Shape::LINES){
                 //std::cout<<"draw line"<<std::endl;
-                addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+                //addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+                drawLine(Take::holdon().drawingVertices,startX,startY,cursorX,cursorY);
             }
             else if (take.drawType == Shape::RECTANGLE){
                 vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
                 const GLfloat startX = *(it+2),startY = *(it+1);
-                std::cout<<std::endl;
                 addPoint(Take::holdon().drawingVertices,cursorX, startY);
                 addPoint(Take::holdon().drawingVertices,cursorX, cursorY);
                 addPoint(Take::holdon().drawingVertices,startX, cursorY);
@@ -306,10 +347,13 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
         vertexArray::const_reverse_iterator it = Take::holdon().drawingVertices.rbegin();
         const GLfloat startX = *(it+2),startY = *(it+1);
         addPoint(tempVertices,startX,startY);
+        
         if (take.holdonToDraw){
             if (take.drawType == Shape::LINES){
                 //std::cout<<"draw line"<<std::endl;
-                addPoint(tempVertices,xpos,ypos);
+                //addPoint(tempVertices,xpos,ypos);
+                //addBlock(tempVertices,xpos,ypos,ShaderStyle::getStyle().thickness);
+                drawLine(tempVertices,startX,startY,xpos,ypos);
             }
             else if (take.drawType == Shape::RECTANGLE){
                 //std::cout<<"draw rectangle"<<std::endl;

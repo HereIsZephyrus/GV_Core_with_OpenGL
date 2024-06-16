@@ -103,7 +103,11 @@ void Primitive::draw(){
     //std::cout<<VAO<<std::endl;
     if (type == DrawType::Array){
         //glDrawArrays(shape, 0,( getVertexNum()-1)*6);
-        glDrawArrays(shape, 0, getVertexNum());
+        //glDrawArrays(shape, 0, getVertexNum());
+        if (shape == GL_LINES)
+            glDrawArrays(GL_POINTS, 0, getVertexNum());//manually draw
+        else
+            glDrawArrays(shape, 0, getVertexNum());
        // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
     }
     if (type == DrawType::Index){
