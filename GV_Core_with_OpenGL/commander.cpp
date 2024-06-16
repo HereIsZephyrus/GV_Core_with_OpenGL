@@ -323,8 +323,7 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         if (take.holdonToDraw){
             GLdouble cursorX, cursorY;
             glfwGetCursorPos(window, &cursorX, &cursorY);
-            vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
-            const GLfloat startX = *(it+2),startY = *(it+1);
+            const GLfloat startX = take.drawingVertices[0],startY = take.drawingVertices[1];
             if (take.drawType == Shape::LINES){
                 //std::cout<<"draw line"<<std::endl;
                 //addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
@@ -377,8 +376,7 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
         //WindowParas& windowPara = WindowParas::getInstance();
         Take& take = Take::holdon();
         vertexArray tempVertices;
-        vertexArray::const_reverse_iterator it = Take::holdon().drawingVertices.rbegin();
-        const GLfloat startX = *(it+2),startY = *(it+1);
+        const GLfloat startX = take.drawingVertices[0],startY = take.drawingVertices[1];
         
         if (take.holdonToDraw){
             if (take.drawType == Shape::LINES){

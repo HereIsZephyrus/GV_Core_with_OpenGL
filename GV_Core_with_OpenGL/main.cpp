@@ -39,8 +39,9 @@ int main(int argc, const char * argv[]) {
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         gui::DrawGUI();
-        
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
+        //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(backgroundColor.x,backgroundColor.y, backgroundColor.z, backgroundColor.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         InterectResponseCheck(window);
         //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
@@ -117,6 +118,7 @@ int initStyle(){
     Camera2D::getView().loadSavedPara(cm::zeroCamera.get());
     //init primitive paras
     glEnable(GL_LINE_SMOOTH);
+    windowPara.backgroundColor = {0.1f, 0.1f, 0.1f, 1.0f};
     checkStyleBoundary();
     
     ShaderStyle& style = ShaderStyle::getStyle();
