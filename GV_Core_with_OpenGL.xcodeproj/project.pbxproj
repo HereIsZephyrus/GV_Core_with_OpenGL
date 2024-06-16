@@ -76,7 +76,8 @@
 		3278B0BE2C097C5500DF6489 /* GV_Core_with_OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GV_Core_with_OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		3278B0C12C097C5500DF6489 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		328DF9B52C1C95000092223F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		328DF9B62C1E91600092223F /* linewidthcontroller.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = linewidthcontroller.frag; sourceTree = "<group>"; };
+		328DF9B62C1E91600092223F /* lineWidth.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = lineWidth.frag; sourceTree = "<group>"; };
+		328DF9B72C1EB1510092223F /* fillColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillColor.frag; sourceTree = "<group>"; };
 		32948FAB2C157E65007A0078 /* glexception.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = glexception.cpp; sourceTree = "<group>"; };
 		32948FAC2C157E65007A0078 /* glexception.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = glexception.hpp; sourceTree = "<group>"; };
 		32C5E0882C18A14E00152CDF /* imconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imconfig.h; sourceTree = "<group>"; };
@@ -203,7 +204,8 @@
 				32C5E0A82C1987E000152CDF /* singleVertices.vs */,
 				32C5E0A92C19886800152CDF /* fillYellow.frag */,
 				32C5E0AA2C19889600152CDF /* fillWhite.frag */,
-				328DF9B62C1E91600092223F /* linewidthcontroller.frag */,
+				328DF9B62C1E91600092223F /* lineWidth.frag */,
+				328DF9B72C1EB1510092223F /* fillColor.frag */,
 			);
 			path = resources;
 			sourceTree = "<group>";

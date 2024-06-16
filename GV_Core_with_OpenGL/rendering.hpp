@@ -15,7 +15,12 @@
 #include <map>
 #include <memory>
 
+#define GLEW_STATIC
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -43,13 +48,9 @@ public:
     //Shader(const GLchar* vertexPath,std::string fragmentShader);
     //Shader(std::string vertexShader,const GLchar* fragmentPath);
     Shader(ShaderStyle& style);
-    void  rend() const{
-        //std::cout<<"Render is running"<<std::endl;
-        glLineWidth(thickness);
-        glUseProgram(this->program);
-    }
-    GLuint getProgram(){
-        return program;
+    void  rend() ;
+    void use(){
+        glUseProgram(program);
     }
     void attchVertexShader(std::string vertexShader);
     void attchVertexShader(const GLchar* vertexPath);
@@ -58,6 +59,7 @@ public:
     void linkProgram();
 private:
     GLfloat thickness;
+    glm::vec4 color;
     GLuint program;
     std::string readGLSLfile(const GLchar* filePath);
 };

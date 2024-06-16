@@ -8,6 +8,7 @@
 #include "camera.hpp"
 #include "commander.hpp"
 #include "window.hpp"
+#include "camera.hpp"
 
 void Camera2D::processKeyboard(GLFWwindow* window) {
     Records& record = Records::getState();

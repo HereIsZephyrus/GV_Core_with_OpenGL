@@ -96,21 +96,6 @@ void Primitive::load(){
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
     glEnableVertexAttribArray(0);
 }
-static void bindCameraProjection(Shader* shader){
-    Camera2D& camera = Camera2D::getView();
-    glm::mat4 projection = camera.getProjectionMatrix();
-    glm::mat4 view = camera.getViewMatrix();
-    glm::mat4 model = glm::mat4(1.0f);
-
-    GLuint projectionLoc = glGetUniformLocation(shader->getProgram(), "projection");
-    GLuint viewLoc = glGetUniformLocation(shader->getProgram(), "view");
-    GLuint modelLoc = glGetUniformLocation(shader->getProgram(), "model");
-    
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    return;
-}
 void Primitive::draw(){
     //std::cout<<"Draw is running"<<std::endl;
     GLint currentBuffer;
@@ -118,10 +103,8 @@ void Primitive::draw(){
         std::cerr<<"havn't bind shader";
         return;
     }
-    else{
-        bindCameraProjection(shader);
-        shader ->rend();
-    }
+    else
+        shader ->use();
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentBuffer);
     if (currentBuffer != VBO){
         //std::cout<<currentBuffer<<' '<<VBO<<std::endl;
@@ -131,6 +114,7 @@ void Primitive::draw(){
     glBindVertexArray(VAO);
     //std::cout<<VAO<<std::endl;
     if (type == DrawType::Array){
+        //glDrawArrays(shape, 0,( getVertexNum()-1)*6);
         glDrawArrays(shape, 0, getVertexNum());
        // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
     }
@@ -138,6 +122,7 @@ void Primitive::draw(){
         glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0);
         //CHECK_GL_ERROR( glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0));
     }
+    shader->rend();
     glBindVertexArray(0);
     return;
 }
