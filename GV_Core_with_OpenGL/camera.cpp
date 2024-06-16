@@ -11,7 +11,7 @@
 
 void Camera2D::processKeyboard(GLFWwindow* window) {
     Records& record = Records::getState();
-    const GLfloat cameraSpeed = 400.0f * WindowParas::getInstance().deltaTime;
+    const GLfloat cameraSpeed = getCameraSpeed(400.0f);
     if (record.pressAlt || record.pressCtrl|| record.pressShift)//ignore function input
         return;
     if (record.keyRecord[GLFW_KEY_W])
@@ -26,7 +26,7 @@ void Camera2D::processKeyboard(GLFWwindow* window) {
 }
 
 void Camera2D::processScroll(GLFWwindow* window, double xoffset, double yoffset, bool pressCtrl, bool pressAlt){
-    const GLfloat cameraSpeed = 200.0f *  WindowParas::getInstance().deltaTime;
+    const GLfloat cameraSpeed = getCameraSpeed(200.0f);
     if (pressCtrl)//if conflict, ctrl first:yscroll
             position.y += cameraSpeed * yoffset;
     else if (pressAlt)//if conflict, then alt:xscroll
@@ -42,8 +42,8 @@ void Camera2D::zoomInOut(float yOffset) {
     zoom -= yOffset * 0.1f;
     if (zoom < 0.01f)
         zoom = 0.01f;
-    if (zoom > 10.0f)
-        zoom = 10.0f;
+    if (zoom > 100.0f)
+        zoom = 100.0f;
 }
 Camera2D::Camera2D() : position(0.0f, 0.0f), zoom(1.0f){
     WindowParas& windowPara = WindowParas::getInstance();

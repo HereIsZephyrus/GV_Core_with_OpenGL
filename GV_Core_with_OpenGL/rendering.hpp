@@ -31,11 +31,13 @@ public:
     //Shader(){}
     void  rend() const{
         //std::cout<<"Render is running"<<std::endl;
+        glLineWidth(thickness);
         glUseProgram(this->Program);
     }
     GLuint getProgram(){
         return Program;
     }
+    GLfloat thickness;
 private:
     GLuint Program;
     void generateProgram(const GLchar* vShaderCode,const GLchar * fShaderCode,GLuint& program);
@@ -51,7 +53,7 @@ public:
     void operator = (const ShaderStyle&) = delete;
     bool toFill;
     ImVec4 drawColor;
-    float thickness;
+    float thickness,pointSize;
 private:
     ShaderStyle(){}
 };

@@ -16,8 +16,10 @@ GLchar* filePath(const char* fileName){
     //checkSourceRelevantPath();
     const char * tcbsearchPath ="../../../../../../../../Program/GV_Core_with_OpenGL/resources/";
     GLchar* resource = new char[strlen(tcbsearchPath) + strlen(fileName) + 1];
-    strcpy_s(resource,sizeof(resource), tcbsearchPath);
-    strcat_s(resource, sizeof(resource), fileName);
+    //strcpy_s(resource,sizeof(resource), tcbsearchPath);
+    //strcat_s(resource, sizeof(resource), fileName);
+    strcpy(resource, tcbsearchPath);
+    strcat(resource, fileName);
     //std::cout<<resource<<std::endl;
     return resource;
 }

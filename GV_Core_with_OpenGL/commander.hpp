@@ -32,7 +32,6 @@ public:
     GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
     bool dragingMode,drawingPrimitive;
     bool showCreateElementWindow;
-    GLfloat pointSize;
     interectState state;
     void initIObuffer();
 private:

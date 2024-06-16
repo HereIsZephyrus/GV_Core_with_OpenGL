@@ -47,8 +47,11 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
             this->type = DrawType::Array;
             break;
         }
-        case Shape::POLYGEN:{//not achieved
-            this->shape = GL_LINE_LOOP;
+        case Shape::POLYGEN:{
+            if (ShaderStyle::getStyle().toFill)
+                this->shape = GL_TRIANGLE_FAN;
+            else
+                this->shape = GL_LINE_LOOP;
             this->type = DrawType::Array;
             break;;
         }

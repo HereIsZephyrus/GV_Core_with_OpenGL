@@ -51,6 +51,7 @@ public:
     glm::mat4 getViewMatrix() const {return viewMatrix;}
     float getZoom() const {return zoom;}
     glm::vec2 getPosition() const {return position;}
+    GLfloat getCameraSpeed(GLfloat speed) const {return speed * deltaTime * zoom;}
 private:
     Camera2D();
     glm::vec2 position;
@@ -59,7 +60,7 @@ private:
     GLfloat screenHeight;
     glm::mat4 projectionMatrix;
     glm::mat4 viewMatrix;
-
+    const GLfloat deltaTime = 0.016f; // 60FPS
     void updateProjectionMatrix();
     void updateViewMatrix() {
         viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-position, 0.0f));

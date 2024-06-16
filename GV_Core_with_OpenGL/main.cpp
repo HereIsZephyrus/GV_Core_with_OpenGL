@@ -98,6 +98,16 @@ static void checkSourceRelevantPath(){
     std::cout << "Relative path: " << relativePath << std::endl;
 }
 
+static void checkStyleBoundary() {
+    GLfloat lineWidthRange[2];
+    glGetFloatv(GL_LINE_WIDTH_RANGE, lineWidthRange);
+    std::cout << "Supported line width range: " << lineWidthRange[0] << " to " << lineWidthRange[1] << std::endl;
+    GLfloat minPointSize, maxPointSize;
+    glGetFloatv(GL_POINT_SIZE_RANGE, &minPointSize);
+    glGetFloatv(GL_POINT_SIZE_MAX, &maxPointSize);
+    std::cout << "Supported point size range: " << minPointSize << " to " << maxPointSize<< std::endl;
+}
+
 int initStyle(){
     //init shader
     pShader singleYellow (new Shader(rd::filePath("singleVertices.vs"),rd::filePath("fillYellow.frag")));
@@ -112,9 +122,15 @@ int initStyle(){
     cm::zeroCamera = std::move(tempZeroCamera);
     Camera2D::getView().loadSavedPara(cm::zeroCamera.get());
     //init primitive paras
-    Records& record = Records::getState();
-    record.pointSize = 5.0f;
-    glPointSize(record.pointSize);
+    glEnable(GL_LINE_SMOOTH);
+    checkStyleBoundary();
+    
+    ShaderStyle& style = ShaderStyle::getStyle();
+    style.pointSize = 5.0f;
+    glPointSize(style.pointSize);
+    style.thickness = 1.0f;
+    glLineWidth(style.thickness);
+    
     return 0;
 }
 

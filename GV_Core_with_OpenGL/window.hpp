@@ -32,7 +32,6 @@ public:
     const GLint SIDEBAR_WIDTH = 300;
     GLint SCREEN_WIDTH,SCREEN_HEIGHT;
     GLfloat xScale,yScale;
-    const GLfloat deltaTime = 0.016f; // 60FPS
     GLfloat defaultAlpha;
     bool mainWindowFocused;
     GLfloat screen2normalX(GLdouble screenX);

@@ -70,10 +70,11 @@ void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int
     MeauCallback(window, key, scancode, action, mods);
     keyModsToggle(window, key, scancode, action, mods);
     //process view move
+    /*
     Records& record = Records::getState();
     double xpos,ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
-    const GLfloat cameraSpeed = 400.0f * WindowParas::getInstance().deltaTime;
+    const GLfloat cameraSpeed = Camera2D::getView().getCameraSpeed(400.0f);
     if (record.keyRecord[GLFW_KEY_W])
         ypos += cameraSpeed;
     if (record.keyRecord[GLFW_KEY_S])
@@ -83,6 +84,7 @@ void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int
     if (record.keyRecord[GLFW_KEY_D])
         xpos -= cameraSpeed;
     glfwSetCursorPos(window, xpos, ypos);
+     */
     return;
 }
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
@@ -274,8 +276,12 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         }
         std::cout<<"finish draw"<<std::endl;
         Take& take = Take::holdon();
+        ShaderStyle& style = ShaderStyle::getStyle();
         pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
         pShader newShader(new Shader(rd::filePath("singleVertices.vs"),rd::geneateColorShader(ShaderStyle::getStyle().drawColor)));
+        if (take.drawType == Shape::POINTS||take.drawType == Shape::LINES || take.drawType == Shape::LOOP || !style.toFill)
+            newShader->thickness = style.thickness;
+            
         rd::mainShaderList.push_back(std::move(newShader));
         newPrimitive->bindShader(rd::mainShaderList.back().get());
         pr::mainPrimitiveList.push_back(std::move(newPrimitive));
@@ -284,7 +290,7 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
 }
 
 static Shape mapPreviewStyle(Shape drawType){
-    if (drawType == Shape::RECTANGLE)
+    if (drawType == Shape::RECTANGLE || drawType == Shape::POLYGEN || drawType ==Shape::TRIANGLE)
         return Shape::LOOP;
     return drawType;
 }
@@ -297,20 +303,24 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
         vertexArray tempVertices;
         vertexArray::const_reverse_iterator it = Take::holdon().drawingVertices.rbegin();
         const GLfloat startX = *(it+2),startY = *(it+1);
+        addPoint(tempVertices,startX,startY);
         if (take.holdonToDraw){
             if (take.drawType == Shape::LINES){
                 //std::cout<<"draw line"<<std::endl;
-                addPoint(tempVertices,startX,startY);
                 addPoint(tempVertices,xpos,ypos);
             }
             else if (take.drawType == Shape::RECTANGLE){
                 //std::cout<<"draw rectangle"<<std::endl;
-                addPoint(tempVertices,startX,startY);
                 addPoint(tempVertices,xpos, startY);
                 addPoint(tempVertices,xpos, ypos);
                 addPoint(tempVertices,startX, ypos);
             }
         }
+        else{
+            tempVertices = take.drawingVertices;
+            addPoint(tempVertices,xpos,ypos);
+        }
+            
         //generate preview primitive
         pPrimitive previewPrimitive(new Primitive(tempVertices,mapPreviewStyle(Take::holdon().drawType),3));
         previewPrimitive -> bindShader(rd::namedShader["singleWhite"].get());
