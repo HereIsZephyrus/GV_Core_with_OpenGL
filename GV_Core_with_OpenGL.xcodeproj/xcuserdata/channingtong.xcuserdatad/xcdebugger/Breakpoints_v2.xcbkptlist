@@ -160,7 +160,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "104"
             endingLineNumber = "104"
-            landmarkName = "Primitive::draw()"
+            landmarkName = "Primitive::updateVertex()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

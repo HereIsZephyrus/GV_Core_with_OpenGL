@@ -15,37 +15,30 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
     this->vertices = vertices;
-    this->indices.clear();
     switch (shape) {
         case Shape::POINTS:{
             this->shape = GL_POINTS;
-            this->type = DrawType::Array;
             break;
         }
         case Shape::LINES:{
             this->shape = GL_LINES;
-            this->type = DrawType::Array;
             break;
         }
         case Shape::TRIANGLE:{
             this->shape = GL_TRIANGLES;
-            this->type = DrawType::Array;
             break;
         }
         case Shape::RECTANGLE:{
             this->shape = GL_TRIANGLE_FAN;
-            this->type = DrawType::Array;
             break;
         }
         case Shape::CIRCLE:{ //not achieved
             this->shape = GL_TRIANGLE_STRIP;
-            this->type = DrawType::Index;
             //this->indices = pr
             break;
         }
         case Shape::LOOP:{
             this->shape = GL_LINE_LOOP;
-            this->type = DrawType::Array;
             break;
         }
         case Shape::POLYGEN:{
@@ -53,12 +46,10 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
                 this->shape = GL_TRIANGLE_FAN;
             else
                 this->shape = GL_LINE_LOOP;
-            this->type = DrawType::Array;
             break;;
         }
         default:{
             this->shape = GL_POINT;
-            this->type = DrawType::Array;
             break;
         }
     }
@@ -121,8 +112,4 @@ void Primitive::updateVertex(){
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;
 pPrimitive drawPreviewPrimitive = nullptr;
-static const indexArray rectIndex ={
-    0, 1, 3,//right-top,right-button,left-top
-    1, 2, 3//right-button,left-button,left-top
-};
 }
