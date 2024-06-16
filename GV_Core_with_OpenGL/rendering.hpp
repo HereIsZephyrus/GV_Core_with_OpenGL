@@ -25,6 +25,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 namespace pr {
+class Element;
 class Point;
 class Line;
 class Face;
@@ -52,7 +53,7 @@ public:
     //Shader(const GLchar* vertexPath,std::string fragmentShader);
     //Shader(std::string vertexShader,const GLchar* fragmentPath);
     Shader(ShaderStyle& style);
-    void  rend() ;
+    void rend() ;
     void use(){
         glUseProgram(program);
     }
@@ -61,6 +62,7 @@ public:
     void attchFragmentShader(std::string fragmentShader);
     void attchFragmentShader(const GLchar* fragmentPath);
     void linkProgram();
+    friend class pr::Element;
     friend class pr::Point;
     friend class pr::Line;
     friend class pr::Face;

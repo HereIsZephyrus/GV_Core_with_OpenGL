@@ -22,25 +22,41 @@
 
 typedef std::shared_ptr<vertexArray> pVertexArray;
 namespace pr {
-//don't rearrange point/line/face num -- don't need to tackle so much elements for now.
-//extern GLuint pointNum;
-//extern GLuint lineNum;
-//extern GLuint faceNum;
+//don't recycle point/line/face index -- don't need to tackle so much elements for now.
 extern GLuint elementNum;
 class Element{
 public:
+    void draw();
+    void load();
+    Element(const Primitive* primitive){
+        refVertex = std::make_shared<vertexArray>(primitive->vertices);
+        identifier = primitive->getIdentifier();
+        shader = primitive->shader;
+        glGenBuffers(1, &EBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(vertexIndex.size() * sizeof(GLuint)), static_cast<const void*>(vertexIndex.data()), GL_STATIC_DRAW);
+    }
 protected:
     virtual void calcGeoCenter()=0;
-    std::vector<int> vertexIndex;
+    indexArray vertexIndex;
     pVertexArray refVertex;
     glm::vec2 centerLocation;
+    bool visable;
+    GLuint EBO;
+    const primitiveIdentifier* identifier;
+    Shader* shader;
+    GLenum shape;
 };
-class Point:  Element{
+typedef std::shared_ptr<Element> pElement;
+extern std::vector<pElement > elements;
+
+class Point: Element{
 public:
-    Point(const Primitive* primitive,int startIndex):
+    Point(const Primitive* primitive,GLuint startIndex):
+    Element(primitive),
     pointSize(primitive->shader->thickness),
     color(primitive->shader->color){
-        refVertex = std::make_shared<vertexArray>(primitive->vertices);
+        shape = GL_POINTS;
         vertexIndex = {startIndex};
         calcGeoCenter();
         id  = ++elementNum;
@@ -58,10 +74,11 @@ private:
 };
 class Line: Element{
 public:
-    Line(const Primitive* primitive,int startIndex):
+    Line(const Primitive* primitive,GLuint startIndex):
+    Element(primitive),
     lineWidth(primitive->shader->thickness),
     color(primitive->shader->color){
-        refVertex = std::make_shared<vertexArray>(primitive->vertices);
+        shape = GL_LINES;
         vertexIndex = {startIndex,startIndex+1};
         point[0] = std::make_shared<Point>(primitive,vertexIndex[0]);
         point[1] = std::make_shared<Point>(primitive,vertexIndex[1]);
@@ -87,8 +104,9 @@ typedef std::shared_ptr<Line> pLine;
 class Face: Element{
 public:
     Face(const Primitive* primitive):
+    Element(primitive),
     color(primitive->shader->color){
-        refVertex = std::make_shared<vertexArray>(primitive->vertices);
+        shape = primitive->shape;
         const GLsizei stride = primitive->stride;
         for (int i = 0; i<(*refVertex).size()/stride; i++){
             vertexIndex.push_back(i);
