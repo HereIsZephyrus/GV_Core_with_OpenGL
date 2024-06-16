@@ -48,7 +48,7 @@ class Primitive{
 public:
     Primitive(vertexArray vertices,Shape shape,GLsizei stride);
     Primitive(const Primitive&) = delete;
-    void operator=(const Primitive&) = delete;
+    //void operator=(const Primitive&) = delete;
     //Shader* shader;
     ~Primitive(){
         vertices.clear();
@@ -66,12 +66,12 @@ public:
     friend class pr::Line;
     friend class pr::Face;
     void noAntialising();
+    vertexArray vertices;
 private:
     primitiveIdentifier identifier;
     GLenum shape;
     GLsizei stride,indexLen;
     DrawType type;
-    vertexArray vertices;
     indexArray indices;
     Shader* shader;
     inline const GLsizei getVertexNum(){

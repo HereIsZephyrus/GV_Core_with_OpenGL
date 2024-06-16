@@ -11,6 +11,37 @@
 #include "commander.hpp"
 #include "window.hpp"
 #include "camera.hpp"
+static void DDA(vertexArray& array,float sX,float sY,float tX,float tY){
+    float dx = tX - sX,dy = tY - sY;
+    int steps = 0;
+    if (std::abs(dx) >= std::abs(dy)){
+        steps = std::abs(dx);
+    }
+    else{
+        steps = std::abs(dy);
+    }
+    float xinc = dx / steps;
+    float yinc = dy / steps;
+    float x = sX,y = sY;
+    //std::cout<<x<<y<<std::endl;
+
+    for (int i = 0; i <= steps; i++) {
+        x += xinc;
+        y += yinc;
+        array.push_back(x);
+        array.push_back(y);
+        array.push_back(0.0f);
+    }
+}
+static void drawLine(vertexArray& array) {
+    const GLfloat thickness = ShaderStyle::getStyle().thickness;
+    const GLfloat sX = array[0],sY = array[1], tX = array[3],tY = array[4];
+    std::cout<<sX << ' '<<sY<<' '<<tX << ' '<<tY<<std::endl;
+    const int range = (thickness + 0.5)/2;
+    for (int i = -range; i<= range; i++)
+        for (int j = -range; j<=range; j++)
+            DDA(array,sX+i,sY+j,tX+i,tY+j);
+}
 Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
@@ -63,6 +94,13 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
         }
     }
     shader = nullptr;
+    //if (this->shape == GL_LINES){
+    //    std::cout<<"it is working"<<vertices.size()<<std::endl;
+    //    for (auto it = vertices.begin(); it!=vertices.end(); it++)
+    //        std::cout<<*it<<' ';
+    //    std::cout<<std::endl;
+    //    drawLine(this->vertices);
+    //}
     glGenVertexArrays(1,&identifier.VAO);
     glBindVertexArray(identifier.VAO);
     glGenBuffers(1,&identifier.VBO);
@@ -81,8 +119,17 @@ void Primitive::load(){
     glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
     if (type == DrawType::Index)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, identifier.EBO);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
-    glEnableVertexAttribArray(0);
+    if (stride == 8){
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+        // 颜色属性
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(3* sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+    }
+    else if (stride ==3){
+        glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,stride * sizeof (GLfloat),(GLvoid *)0);
+        glEnableVertexAttribArray(0);
+    }
 }
 void Primitive::draw(){
     //std::cout<<"Draw is running"<<std::endl;

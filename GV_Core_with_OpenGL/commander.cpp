@@ -69,39 +69,54 @@ void addBlock(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY,GLfl
     array.push_back(orthoX);
     array.push_back(orthoY);
     array.push_back(0.0f);
-    //for (int i = -range; i<= range; i++)
+    for (int i = -range; i<= range; i++)
         for (int j = -range; j<=range; j++){
-            array.push_back(orthoX);
+            array.push_back(orthoX+i);
             array.push_back(orthoY+j);
             array.push_back(0.0f); // flat draw
         }
 }
-static void drawLine(vertexArray& array,const float &sX,const float &sY,const float &cursorX,const float &cursorY) {
-    WindowParas& windowPara = WindowParas::getInstance();
-    const GLfloat normalX = windowPara.screen2normalX(cursorX);
-    const GLfloat normalY = windowPara.screen2normalY(cursorY);
-    const GLfloat tX = windowPara.normal2orthoX(normalX);
-    const GLfloat tY = windowPara.normal2orthoY(normalY);
-    glClear(GL_COLOR_BUFFER_BIT);
-    //std::cout<<sX << ' '<<sY<<' '<<tX << ' '<<tY<<std::endl;
+static void DDA(vertexArray& array,float sX,float sY,float tX,float tY,bool antialising){
     float dx = tX - sX,dy = tY - sY;
     int steps = 0;
     if (std::abs(dx) >= std::abs(dy)){
-        steps = (std::abs(dx) + 1.0f) / 2.0f * windowPara.SCREEN_WIDTH;
+        steps = std::abs(dx);
     }
     else{
-        steps = (1.0f - std::abs(dy) ) / 2.0f * windowPara.SCREEN_HEIGHT;
+        steps = std::abs(dy);
     }
     float xinc = dx / steps;
     float yinc = dy / steps;
     float x = sX,y = sY;
     //std::cout<<x<<y<<std::endl;
-    const GLfloat thickness = ShaderStyle::getStyle().thickness;
+    const ImVec4 color = ShaderStyle::getStyle().drawColor;
     for (int i = 0; i <= steps; i++) {
         x += xinc;
         y += yinc;
-        addBlock(array,x,y,thickness);
+        array.push_back(x);
+        array.push_back(y);
+        array.push_back(0.0f);
+        if (antialising){
+            array.push_back(1.0f);
+            array.push_back(color.x);
+            array.push_back(color.y);
+            array.push_back(color.z);
+            array.push_back(color.w);
+        }
     }
+}
+static void drawLine(vertexArray& array,const GLfloat &sX,const GLfloat &sY,const GLdouble &cursorX,const GLdouble &cursorY,bool antialising) {
+    const GLfloat thickness = ShaderStyle::getStyle().thickness;
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat normalX = windowPara.screen2normalX(cursorX);
+    const GLfloat normalY = windowPara.screen2normalY(cursorY);
+    const GLfloat tX = windowPara.normal2orthoX(normalX);
+    const GLfloat tY = windowPara.normal2orthoY(normalY);
+    //std::cout<<"this is right."<<sX << ' '<<sY<<' '<<tX << ' '<<tY<<std::endl;
+    const int range = (thickness + 0.5)/2;
+    for (int i = -range; i<= range; i++)
+        for (int j = -range; j<=range; j++)
+            DDA(array,sX+i,sY+j,tX+i,tY+j,antialising);
 }
 
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -288,11 +303,19 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
     if (startDrawCheck(window, button, action, mods)){
         record.drawingPrimitive = true;
         //generate a new primitive
-        std::cout<<"start draw"<<std::endl;
         take.drawingVertices.clear();
+        std::cout<<"start draw"<<std::endl;
         GLdouble cursorX, cursorY;
         glfwGetCursorPos(window, &cursorX, &cursorY);
-        addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+        addPoint(take.drawingVertices,cursorX,cursorY);
+        if (take.drawType == Shape::LINES){
+            const ImVec4 color = ShaderStyle::getStyle().drawColor;
+            take.drawingVertices.push_back(1.0f);
+            take.drawingVertices.push_back(color.x);
+            take.drawingVertices.push_back(color.y);
+            take.drawingVertices.push_back(color.z);
+            take.drawingVertices.push_back(color.w);
+        }
     }
     if (finishDrawCheck(window,button,action,mods)){
         record.drawingPrimitive = false;
@@ -305,11 +328,11 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
             if (take.drawType == Shape::LINES){
                 //std::cout<<"draw line"<<std::endl;
                 //addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
-                drawLine(Take::holdon().drawingVertices,startX,startY,cursorX,cursorY);
+                drawLine(Take::holdon().drawingVertices,startX,startY,cursorX,cursorY,true);
             }
             else if (take.drawType == Shape::RECTANGLE){
-                vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
-                const GLfloat startX = *(it+2),startY = *(it+1);
+                //vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
+                //const GLfloat startX = *(it+2),startY = *(it+1);
                 addPoint(Take::holdon().drawingVertices,cursorX, startY);
                 addPoint(Take::holdon().drawingVertices,cursorX, cursorY);
                 addPoint(Take::holdon().drawingVertices,startX, cursorY);
@@ -318,16 +341,26 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         std::cout<<"finish draw"<<std::endl;
         Take& take = Take::holdon();
         ShaderStyle& style = ShaderStyle::getStyle();
-        pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
-        pShader newShader(new Shader(style));
-        newShader->attchVertexShader(rd::filePath("singleVertices.vs"));
-        //newShader->attchVertexShader(rd::filePath("lineWidth.frag"));
-        newShader->attchFragmentShader(rd::filePath("fillColor.frag"));
-        newShader->linkProgram();
-        rd::mainShaderList.push_back(std::move(newShader));
-        
-        newPrimitive->bindShader(rd::mainShaderList.back().get());
-        pr::mainPrimitiveList.push_back(std::move(newPrimitive));
+        if (take.drawType == Shape::LINES){
+            pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 8));
+            pShader newShader(new Shader(style));
+            newShader->attchVertexShader(rd::filePath("coloredVertices.vs"));
+            newShader->attchFragmentShader(rd::filePath("transColor.frag"));
+            newShader->linkProgram();
+            rd::mainShaderList.push_back(std::move(newShader));
+            newPrimitive->bindShader(rd::mainShaderList.back().get());
+            pr::mainPrimitiveList.push_back(std::move(newPrimitive));
+        }
+        else{
+            pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
+            pShader newShader(new Shader(style));
+            newShader->attchVertexShader(rd::filePath("singleVertices.vs"));
+            newShader->attchFragmentShader(rd::filePath("fillColor.frag"));
+            newShader->linkProgram();
+            rd::mainShaderList.push_back(std::move(newShader));
+            newPrimitive->bindShader(rd::mainShaderList.back().get());
+            pr::mainPrimitiveList.push_back(std::move(newPrimitive));
+        }
         take.drawType = Shape::NONE;
     }
 }
@@ -346,16 +379,16 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
         vertexArray tempVertices;
         vertexArray::const_reverse_iterator it = Take::holdon().drawingVertices.rbegin();
         const GLfloat startX = *(it+2),startY = *(it+1);
-        addPoint(tempVertices,startX,startY);
         
         if (take.holdonToDraw){
             if (take.drawType == Shape::LINES){
                 //std::cout<<"draw line"<<std::endl;
                 //addPoint(tempVertices,xpos,ypos);
                 //addBlock(tempVertices,xpos,ypos,ShaderStyle::getStyle().thickness);
-                drawLine(tempVertices,startX,startY,xpos,ypos);
+                drawLine(tempVertices,startX,startY,xpos,ypos,false);
             }
             else if (take.drawType == Shape::RECTANGLE){
+                addPoint(tempVertices,startX,startY);
                 //std::cout<<"draw rectangle"<<std::endl;
                 addPoint(tempVertices,xpos, startY);
                 addPoint(tempVertices,xpos, ypos);
