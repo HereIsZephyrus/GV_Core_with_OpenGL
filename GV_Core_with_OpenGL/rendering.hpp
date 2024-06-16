@@ -24,7 +24,11 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
+namespace pr {
+class Point;
+class Line;
+class Face;
+}
 class ShaderStyle{
 public:
     static ShaderStyle& getStyle(){
@@ -57,6 +61,9 @@ public:
     void attchFragmentShader(std::string fragmentShader);
     void attchFragmentShader(const GLchar* fragmentPath);
     void linkProgram();
+    friend class pr::Point;
+    friend class pr::Line;
+    friend class pr::Face;
 private:
     GLfloat thickness;
     glm::vec4 color;

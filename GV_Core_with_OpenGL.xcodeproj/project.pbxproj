@@ -18,6 +18,7 @@
 		323A00EE2C0AC7440056BAD1 /* commander.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00EC2C0AC7440056BAD1 /* commander.cpp */; };
 		326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 326A8BE72C0A28E300E30250 /* OpenGL.framework */; };
 		3278B0C22C097C5500DF6489 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3278B0C12C097C5500DF6489 /* main.cpp */; };
+		328DF9BA2C1EE0530092223F /* shape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 328DF9B82C1EE0530092223F /* shape.cpp */; };
 		32948FAD2C157E65007A0078 /* glexception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32948FAB2C157E65007A0078 /* glexception.cpp */; };
 		32C5E0992C18A14E00152CDF /* imgui_demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C5E0892C18A14E00152CDF /* imgui_demo.cpp */; };
 		32C5E09A2C18A14E00152CDF /* imgui_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C5E08A2C18A14E00152CDF /* imgui_draw.cpp */; };
@@ -78,6 +79,8 @@
 		328DF9B52C1C95000092223F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		328DF9B62C1E91600092223F /* lineWidth.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = lineWidth.frag; sourceTree = "<group>"; };
 		328DF9B72C1EB1510092223F /* fillColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillColor.frag; sourceTree = "<group>"; };
+		328DF9B82C1EE0530092223F /* shape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = shape.cpp; sourceTree = "<group>"; };
+		328DF9B92C1EE0530092223F /* shape.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = shape.hpp; sourceTree = "<group>"; };
 		32948FAB2C157E65007A0078 /* glexception.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = glexception.cpp; sourceTree = "<group>"; };
 		32948FAC2C157E65007A0078 /* glexception.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = glexception.hpp; sourceTree = "<group>"; };
 		32C5E0882C18A14E00152CDF /* imconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imconfig.h; sourceTree = "<group>"; };
@@ -171,6 +174,8 @@
 				32948FAC2C157E65007A0078 /* glexception.hpp */,
 				32C5E0A32C19464E00152CDF /* camera.cpp */,
 				32C5E0A42C19464E00152CDF /* camera.hpp */,
+				328DF9B82C1EE0530092223F /* shape.cpp */,
+				328DF9B92C1EE0530092223F /* shape.hpp */,
 			);
 			path = GV_Core_with_OpenGL;
 			sourceTree = "<group>";
@@ -279,6 +284,7 @@
 				32948FAD2C157E65007A0078 /* glexception.cpp in Sources */,
 				323A00EE2C0AC7440056BAD1 /* commander.cpp in Sources */,
 				32C5E09E2C18A14E00152CDF /* imgui_widgets.cpp in Sources */,
+				328DF9BA2C1EE0530092223F /* shape.cpp in Sources */,
 				322E52FA2C13F6E2002AFB73 /* window.cpp in Sources */,
 				32C5E0992C18A14E00152CDF /* imgui_demo.cpp in Sources */,
 				32C5E09D2C18A14E00152CDF /* imgui_tables.cpp in Sources */,

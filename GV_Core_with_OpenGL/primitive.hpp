@@ -36,29 +36,38 @@ enum class Shape{
     LOOP,
     POLYGEN
 };
+struct primitiveIdentifier{
+    GLuint VAO,VBO,EBO;
+};
+namespace pr {
+class Point;
+class Line;
+class Face;
+}
 class Primitive{
 public:
     Primitive(vertexArray vertices,Shape shape,GLsizei stride);
-    //Primitive(vertexArray vertices,indexArray indices,GLenum shape,GLsizei stride,GLsizei indlen);
-    //Primitive(){}
     Primitive(const Primitive&) = delete;
     void operator=(const Primitive&) = delete;
     //Shader* shader;
     ~Primitive(){
         vertices.clear();
         indices.clear();
-        glDeleteVertexArrays(1,&VAO);
-        glDeleteBuffers(1,&VBO);
+        glDeleteVertexArrays(1,&identifier.VAO);
+        glDeleteBuffers(1,&identifier.VBO);
         if (type == DrawType::Index)
-            glDeleteBuffers(1,&EBO);
+            glDeleteBuffers(1,&identifier.EBO);
     }
     void bindShader(Shader* tobind){shader = tobind;}
     void draw();
     void load();
+    const primitiveIdentifier* getIdentifier() const{return &identifier;}
+    friend class pr::Point;
+    friend class pr::Line;
+    friend class pr::Face;
 private:
-    GLuint VAO,VBO,EBO;
+    primitiveIdentifier identifier;
     GLenum shape;
-    //Shape shape;
     GLsizei stride,indexLen;
     DrawType type;
     vertexArray vertices;
@@ -69,6 +78,7 @@ private:
     }
 };
 typedef std::unique_ptr<Primitive> pPrimitive;
+
 namespace pr {
 extern pPrimitive drawPreviewPrimitive;
 extern std::vector<pPrimitive >mainPrimitiveList;
