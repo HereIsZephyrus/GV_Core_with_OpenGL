@@ -44,6 +44,10 @@ private:
 };
 void  ClipByShape();
 
+constexpr GLint left_bit_code = 0x1;
+constexpr GLint right_bit_code = 0x2;
+constexpr GLint button_bit_code = 0x4;
+constexpr GLint top_bit_code = 0x8;
 namespace gui {
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;

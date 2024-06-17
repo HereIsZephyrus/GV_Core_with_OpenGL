@@ -303,30 +303,116 @@ void renderSelectPanel(){
 }
 }//namespace gui
 
+void ClipPoints(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
+    vertexArray newArray;
+    newArray.clear();
+    //std::cout<<"before"<<vertices.size()<<std::endl;
+    
+    for (auto ind = vertices.begin(); ind!=vertices.end(); ind+=stride)
+        if ((*(ind) >= xMin) && (*(ind) <= xMax) && (*(ind+1) >= yMin) && (*(ind+1) <= yMax))
+            newArray.insert(newArray.end(), ind,ind+stride);
+    vertices = newArray;
+    //std::cout<<"after"<<vertices.size()<<std::endl;
+}
+
+static int getRegionCode(const GLfloat& x, const GLfloat& y,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax) {
+    int code = 0;
+    if (x < xMin) code |= left_bit_code; //left
+    if (x > xMax) code |= right_bit_code; //right
+    if (y < yMin) code |= button_bit_code; //button
+    if (y > yMax) code |= top_bit_code; //top
+    return code;
+}
+void ClipCohenSutherLand(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
+    vertexArray newArray;
+    newArray.clear();
+    std::cout<<"before"<<vertices.size()<<std::endl;
+    for (auto ind = vertices.begin(); ind!=vertices.end(); ind+=stride*2){
+        const GLfloat ox1 = *(ind),oy1 = *(ind+1),ox2 = *(ind+stride),oy2 = *(ind+stride+1);
+        int code1 = getRegionCode(ox1, oy1, xMin, xMax, yMin, yMax);
+        int code2 = getRegionCode(ox2, oy2, xMin, xMax, yMin, yMax);
+        
+        if ((code1 & code2) != 0) //completely outside
+            continue;
+        
+        if (code1 == 0 && code2 == 0) //completely inside
+            newArray.insert(newArray.end(), ind,ind + stride*2);
+        
+        GLfloat x=0 , y=0;
+        GLfloat x1 = ox1, x2 = ox2, y1 = oy1, y2 = oy2;
+        while (true) {
+            if (code1 != 0) {
+                if ((code1 & top_bit_code) != 0) {
+                    x = x1 + (x2 - x1) * (yMax - y1) / (y2 - y1);
+                    y = yMax;
+                } else if ((code1 & button_bit_code) != 0) {
+                    x = x1 + (x2 - x1) * (yMin - y1) / (y2 - y1);
+                    y = yMin;
+                } else if ((code1 & right_bit_code) != 0) {
+                    x = xMax;
+                    y = y1 + (y2 - y1) * (xMax - x1) / (x2 - x1);
+                } else if ((code1 & left_bit_code) != 0) {
+                    x = xMin;
+                    y = y1 + (y2 - y1) * (xMin - x1) / (x2 - x1);
+                }
+                x1 = x; y1 = y;
+                code1 = getRegionCode(x1, y1, xMin, xMax, yMin, yMax);
+            } else {
+                if ((code2 & top_bit_code) != 0) {
+                    x = x1 + (x2 - x1) * (yMax - y1) / (y2 - y1);
+                    y = yMax;
+                } else if ((code2 & button_bit_code) != 0) {
+                    x = x1 + (x2 - x1) * (yMin - y1) / (y2 - y1);
+                    y = yMin;
+                } else if ((code2 & right_bit_code) != 0) {
+                    x = xMax;
+                    y = y1 + (y2 - y1) * (xMax - x1) / (x2 - x1);
+                } else if ((code2 & left_bit_code) != 0) {
+                    x = xMin;
+                    y = y1 + (y2 - y1) * (xMin - x1) / (x2 - x1);
+                }
+                x2 = x; y2 = y;
+                code2 = getRegionCode(x2, y2, xMin, xMax, yMin, yMax);
+            }
+            
+            if (code1 == 0 && code2 == 0) {//completely inside
+                newArray.push_back(x1);
+                newArray.push_back(y1);
+                newArray.push_back(0.0f);
+                newArray.push_back(x2);
+                newArray.push_back(y2);
+                newArray.push_back(0.0f);
+                break;
+            } else if ((code1 & code2) != 0) {//completely outside
+                break;
+            }
+            //std::cout<<code1<<' '<<code2<<std::endl;
+        }
+    }
+    vertices = newArray;
+    std::cout<<"after"<<vertices.size()<<std::endl;
+}
 void ClipByShape(){
-    //Records& record = Records::getState();
     Take& take = Take::holdon();
-    //ShaderStyle& style = ShaderStyle::getStyle();
     for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++){
         vertexArray& vertices = (*it) ->vertices;
-        std::cout<<"before"<<vertices.size()<<std::endl;
         const GLsizei stride = (*it)->stride;
-        vertexArray newArray;
-        newArray.clear();
-        if ((*it)->shape == GL_POINTS && take.drawType == Shape::LOOP){
+        if (take.drawType == Shape::LOOP){
             const GLfloat x1 = take.drawingVertices[0],x2 = take.drawingVertices[6];
             const GLfloat y1 = take.drawingVertices[1],y2 = take.drawingVertices[7];
             const GLfloat xMax = std::max(x1,x2),xMin = std::min(x1,x2);
             const GLfloat yMax = std::max(y1,y2),yMin = std::min(y1,y2);
-            //auto ind = vertices.begin();
-            for (auto ind = vertices.begin(); ind!=vertices.end(); ind+=stride){
-                if ((*(ind) >= xMin) && (*(ind) <= xMax) && (*(ind+1) >= yMin) && (*(ind+1) <= yMax)){
-                    newArray.insert(newArray.end(), ind,ind+stride);
-                }
+            if ((*it)->shape == GL_POINTS){
+                ClipPoints(vertices,stride,xMin,xMax,yMin,yMax);
+                (*it)->updateVertex();
             }
-            vertices = newArray;
-            std::cout<<"after"<<vertices.size()<<std::endl;
-            (*it)->updateVertex();
+            if ((*it)->shape == GL_LINES){
+                ClipCohenSutherLand(vertices, stride, xMin, xMax, yMin, yMax);
+                (*it)->updateVertex();
+            }
+        }
+        else{
+            
         }
     }
 }
