@@ -8,6 +8,7 @@
 #include "rendering.hpp"
 #include "window.hpp"
 #include "camera.hpp"
+#include "commander.hpp"
 namespace rd{
 std::map<std::string,pShader > namedShader;
 std::vector<pShader> mainShaderList;
@@ -73,10 +74,11 @@ void  Shader::rend() {
 
 Shader::Shader(ShaderStyle& style){
     thickness = style.thickness;
-    color.x = style.drawColor.x;
-    color.y = style.drawColor.y;
-    color.z = style.drawColor.z;
-    color.w = style.drawColor.w;
+    if (Records::getState().cliping)
+        color = WindowParas::getInstance().backgroundColor;
+    else
+        color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
+    
     this->program = glCreateProgram();
     
     //attchVertexShader(rd::filePath("singleVertices.vs"));

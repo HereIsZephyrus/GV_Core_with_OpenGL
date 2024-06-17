@@ -227,6 +227,25 @@ void renderEditPanel(){
     ImGui::ColorEdit4("Color", (float*)&style.drawColor);
     ImGui::SliderFloat("Thickness", &style.thickness, 1.0f, 10.0f);
     ImGui::Checkbox("Fill", &style.toFill);
+    Shape& drawType = Take::holdon().drawType;
+    bool& holdonToDraw = Take::holdon().holdonToDraw;
+    if (!record.cliping && ImGui::Button("Clip")){
+        record.cliping = true;
+    }
+    if (record.cliping && ImGui::Button("Finish Clip")){
+        record.cliping = false;
+    }
+    if (record.cliping){
+        if (ImGui::Button("Use Rectangle")){
+            drawType = Shape::LOOP;
+            holdonToDraw = true;
+        }
+        if (ImGui::Button("Use Polygon")){
+            drawType = Shape::POLYGEN;
+            holdonToDraw = false;
+        }
+        //std::cout<<(drawType == Shape::RECTANGLE)<<std::endl;
+    }
     ImGui::End();
 }
 
@@ -255,7 +274,7 @@ void renderSelectPanel(){
         holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
-    if (ImGui::Button("Polygen")){
+    if (ImGui::Button("Polygon")){
         if (ShaderStyle::getStyle().toFill)
             drawType = Shape::POLYGEN;
         else

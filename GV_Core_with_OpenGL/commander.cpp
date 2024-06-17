@@ -265,7 +265,7 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
                 //std::cout<<"draw line"<<std::endl;
                 addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
             }
-            else if (take.drawType == Shape::RECTANGLE){
+            else if (take.drawType == Shape::RECTANGLE || take.drawType == Shape::LOOP){
                 vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
                 const GLfloat startX = *(it+2),startY = *(it+1);
                 std::cout<<std::endl;
@@ -311,7 +311,7 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
                 //std::cout<<"draw line"<<std::endl;
                 addPoint(tempVertices,xpos,ypos);
             }
-            else if (take.drawType == Shape::RECTANGLE){
+            else if (take.drawType == Shape::RECTANGLE || take.drawType == Shape::LOOP){
                 //std::cout<<"draw rectangle"<<std::endl;
                 addPoint(tempVertices,xpos, startY);
                 addPoint(tempVertices,xpos, ypos);

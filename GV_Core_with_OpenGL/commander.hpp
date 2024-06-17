@@ -30,7 +30,7 @@ public:
     Records(const Records&) = delete;
     void operator = (const Records&) = delete;
     GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
-    bool dragingMode,drawingPrimitive;
+    bool dragingMode,drawingPrimitive,cliping;
     bool showCreateElementWindow;
     interectState state;
     void initIObuffer();
