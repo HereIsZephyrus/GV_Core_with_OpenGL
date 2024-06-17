@@ -290,7 +290,7 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         }
         else{
             take.clipShape  =std::move(newPrimitive);
-            ClipByShape();
+            clipByShape();
             take.clipShape = nullptr;
         }
         take.drawType = Shape::NONE;

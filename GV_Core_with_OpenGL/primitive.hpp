@@ -66,7 +66,7 @@ public:
     friend class pr::Point;
     friend class pr::Line;
     friend class pr::Face;
-    friend void ClipByShape();
+    friend void clipByShape();
 private:
     primitiveIdentifier identifier;
     GLenum shape;

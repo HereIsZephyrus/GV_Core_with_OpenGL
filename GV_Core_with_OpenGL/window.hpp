@@ -42,7 +42,7 @@ public:
 private:
     WindowParas() {}
 };
-void  ClipByShape();
+void  clipByShape();
 
 constexpr GLint left_bit_code = 0x1;
 constexpr GLint right_bit_code = 0x2;

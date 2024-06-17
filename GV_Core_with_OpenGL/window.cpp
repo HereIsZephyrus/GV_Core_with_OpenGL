@@ -303,7 +303,7 @@ void renderSelectPanel(){
 }
 }//namespace gui
 
-void ClipPoints(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
+void clipPoints(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
     vertexArray newArray;
     newArray.clear();
     //std::cout<<"before"<<vertices.size()<<std::endl;
@@ -323,10 +323,10 @@ static int getRegionCode(const GLfloat& x, const GLfloat& y,const GLfloat& xMin,
     if (y > yMax) code |= top_bit_code; //top
     return code;
 }
-void ClipCohenSutherLand(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
+void clipCohenSutherLand(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
     vertexArray newArray;
     newArray.clear();
-    std::cout<<"before"<<vertices.size()<<std::endl;
+    //std::cout<<"before"<<vertices.size()<<std::endl;
     for (auto ind = vertices.begin(); ind!=vertices.end(); ind+=stride*2){
         const GLfloat ox1 = *(ind),oy1 = *(ind+1),ox2 = *(ind+stride),oy2 = *(ind+stride+1);
         int code1 = getRegionCode(ox1, oy1, xMin, xMax, yMin, yMax);
@@ -386,13 +386,94 @@ void ClipCohenSutherLand(vertexArray& vertices, const GLsizei& stride,const GLfl
             } else if ((code1 & code2) != 0) {//completely outside
                 break;
             }
-            //std::cout<<code1<<' '<<code2<<std::endl;
         }
     }
     vertices = newArray;
-    std::cout<<"after"<<vertices.size()<<std::endl;
+    //std::cout<<"after"<<vertices.size()<<std::endl;
 }
-void ClipByShape(){
+
+void clipSutherlandHodgman(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
+}
+void clipLiangBarsky(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
+    vertexArray newArray;
+    newArray.clear();
+    for (auto ind = vertices.begin(); ind!=vertices.end(); ind+=stride*2){
+        const GLfloat x1 = *(ind),y1 = *(ind+1),x2 = *(ind+stride),y2 = *(ind+stride+1);
+        GLfloat p[4], q[4];
+        p[0] = -(x2 - x1);  p[1] = x2 - x1;     p[2] = -(y2 - y1);  p[3] = y2 - y1;
+        q[0] = x1 - xMin;   q[1] = xMax - x1;   q[2] = y1 - yMin;   q[3] = yMax - y1;
+        GLfloat u1 = 0.0f, u2 = 1.0f;
+        for (int i = 0; i < 4; i++) {
+            if (p[i] == 0.0f) {
+                if (q[i] < 0.0f)    continue;
+            } else {
+                GLfloat t = q[i] / p[i];
+                if (p[i] < 0.0f) {
+                    if (t > u2) continue;
+                    if (t > u1) u1 = t;
+                } else {
+                    if (t < u1) continue;
+                    if (t < u2) u2 = t;
+                }
+            }
+        }
+        const GLfloat nx1 = x1 + u1 * (x2 - x1),ny1 = y1 + u1 * (y2 - y1);
+        const GLfloat nx2 = x1 + u2 * (x2 - x1),ny2 = y1 + u2 * (y2 - y1);
+        newArray.push_back(nx1);
+        newArray.push_back(ny1);
+        newArray.push_back(0.0f);
+        newArray.push_back(nx2);
+        newArray.push_back(ny2);
+        newArray.push_back(0.0f);
+    }
+    vertices = newArray;
+}
+void clipLiangBarsky(vertexArray& vertices, const GLsizei& stride){
+    vertexArray newArray;
+    newArray.clear();
+    const vertexArray& clipVertex = Take::holdon().drawingVertices;
+    for (auto ind = vertices.begin(); ind!=vertices.end(); ind+=stride*2){
+        GLfloat p[4], q[4];
+        const GLfloat x1 = *(ind),y1 = *(ind+1),x2 = *(ind+stride),y2 = *(ind+stride+1);
+        GLfloat u1 = 0.0f, u2 = 1.0f;
+        for (auto clipInd1 = clipVertex.begin(); clipInd1 != clipVertex.end(); clipInd1 +=3){
+            vertexArray::const_iterator clipInd2;
+            if (clipInd1 + 3 == clipVertex.end())
+                clipInd2 = clipVertex.begin();
+            else
+                clipInd2 = clipInd1 + 3;
+            const GLfloat vx1 = *(clipInd1),vy1 = *(clipInd1+1),vx2 = *(clipInd2),vy2 = *(clipInd2+1);
+            p[0] = -vx2 + vx1;  p[1] = x1 - x2;     p[2] = -vy2 + vy1;  p[3] = y1 - y2;
+            q[0] = x2 - vx1;    q[1] = y2 - vy1;    q[2] = x2 - vx2;    q[3] = y2 - vy2;
+            for (int k = 0; k < 4; k++) {
+                if (p[k] == 0.0f) {
+                    if (q[k] < 0.0f) {
+                        break;
+                    }
+                } else {
+                    float t = q[k] / p[k];
+                    if (p[k] < 0.0f) {
+                        if (t > u2) break;
+                        if (t > u1) u1 = t;
+                    } else {
+                        if (t < u1) break;
+                        if (t < u2) u2 = t;
+                    }
+                }
+            }
+        }
+        const GLfloat nx1 = x1 + u1 * (x2 - x1),ny1 = y1 + u1 * (y2 - y1);
+        const GLfloat nx2 = x1 + u2 * (x2 - x1),ny2 = y1 + u2 * (y2 - y1);
+        newArray.push_back(nx1);
+        newArray.push_back(ny1);
+        newArray.push_back(0.0f);
+        newArray.push_back(nx2);
+        newArray.push_back(ny2);
+        newArray.push_back(0.0f);
+    }
+    vertices = newArray;
+}
+void clipByShape(){
     Take& take = Take::holdon();
     for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++){
         vertexArray& vertices = (*it) ->vertices;
@@ -403,16 +484,22 @@ void ClipByShape(){
             const GLfloat xMax = std::max(x1,x2),xMin = std::min(x1,x2);
             const GLfloat yMax = std::max(y1,y2),yMin = std::min(y1,y2);
             if ((*it)->shape == GL_POINTS){
-                ClipPoints(vertices,stride,xMin,xMax,yMin,yMax);
+                clipPoints(vertices,stride,xMin,xMax,yMin,yMax);
                 (*it)->updateVertex();
             }
             if ((*it)->shape == GL_LINES){
-                ClipCohenSutherLand(vertices, stride, xMin, xMax, yMin, yMax);
+                //clipCohenSutherLand(vertices, stride, xMin, xMax, yMin, yMax);
+                clipLiangBarsky(vertices, stride, xMin, xMax, yMin, yMax);
+                //clipLiangBarsky(vertices, stride);
                 (*it)->updateVertex();
+            }
+            if ((*it)->shape == GL_LINE_LOOP || (*it)->shape == GL_TRIANGLE_FAN ){
+                
             }
         }
         else{
-            
+            clipLiangBarsky(vertices, stride);
+            (*it)->updateVertex();
         }
     }
 }
