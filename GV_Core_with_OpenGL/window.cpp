@@ -8,6 +8,7 @@
 #include "commander.hpp"
 #include "window.hpp"
 #include "camera.hpp"
+#include "primitive.hpp"
 
 GLfloat WindowParas::screen2normalX(GLdouble screenX){
     return  (2.0f * static_cast<GLfloat>(screenX/ SCREEN_WIDTH * xScale)) - 1.0f;
@@ -301,3 +302,31 @@ void renderSelectPanel(){
     ImGui::End();
 }
 }//namespace gui
+
+void ClipByShape(){
+    //Records& record = Records::getState();
+    Take& take = Take::holdon();
+    //ShaderStyle& style = ShaderStyle::getStyle();
+    for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++){
+        vertexArray& vertices = (*it) ->vertices;
+        std::cout<<"before"<<vertices.size()<<std::endl;
+        const GLsizei stride = (*it)->stride;
+        vertexArray newArray;
+        newArray.clear();
+        if ((*it)->shape == GL_POINTS && take.drawType == Shape::LOOP){
+            const GLfloat x1 = take.drawingVertices[0],x2 = take.drawingVertices[6];
+            const GLfloat y1 = take.drawingVertices[1],y2 = take.drawingVertices[7];
+            const GLfloat xMax = std::max(x1,x2),xMin = std::min(x1,x2);
+            const GLfloat yMax = std::max(y1,y2),yMin = std::min(y1,y2);
+            //auto ind = vertices.begin();
+            for (auto ind = vertices.begin(); ind!=vertices.end(); ind+=stride){
+                if ((*(ind) >= xMin) && (*(ind) <= xMax) && (*(ind+1) >= yMin) && (*(ind+1) <= yMax)){
+                    newArray.insert(newArray.end(), ind,ind+stride);
+                }
+            }
+            vertices = newArray;
+            std::cout<<"after"<<vertices.size()<<std::endl;
+            (*it)->updateVertex();
+        }
+    }
+}

@@ -284,9 +284,15 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         newShader->attchFragmentShader(rd::filePath("fillColor.frag"));
         newShader->linkProgram();
         rd::mainShaderList.push_back(std::move(newShader));
-        
-        newPrimitive->bindShader(rd::mainShaderList.back().get());
-        pr::mainPrimitiveList.push_back(std::move(newPrimitive));
+        if (!record.cliping){
+            newPrimitive->bindShader(rd::mainShaderList.back().get());
+            pr::mainPrimitiveList.push_back(std::move(newPrimitive));
+        }
+        else{
+            take.clipShape  =std::move(newPrimitive);
+            ClipByShape();
+            take.clipShape = nullptr;
+        }
         take.drawType = Shape::NONE;
     }
 }

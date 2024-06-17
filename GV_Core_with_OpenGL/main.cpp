@@ -37,22 +37,23 @@ int main(int argc, const char * argv[]) {
     initStyle();
     
     while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
-        gui::DrawGUI();
-        
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        InterectResponseCheck(window);
-        //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
-        for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++)
-            (*it)->draw();
-        if (pr::drawPreviewPrimitive != nullptr){
-            pr::drawPreviewPrimitive -> draw();
-            //std::cout<<"existed"<<std::endl;
+            glfwPollEvents();
+            gui::DrawGUI();
+            ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
+            //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClearColor(backgroundColor.x,backgroundColor.y, backgroundColor.z, backgroundColor.w);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            InterectResponseCheck(window);
+            //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
+            for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++)
+                (*it)->draw();
+            if (pr::drawPreviewPrimitive != nullptr){
+                pr::drawPreviewPrimitive -> draw();
+                //std::cout<<"existed"<<std::endl;
+            }
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+            glfwSwapBuffers(window);
         }
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(window);
-    }
     
     releaseResources(window);
     return 0;
@@ -118,7 +119,7 @@ int initStyle(){
     //init primitive paras
     glEnable(GL_LINE_SMOOTH);
     checkStyleBoundary();
-    
+    windowPara.backgroundColor = {0.1f, 0.1f, 0.1f, 1.0f};
     ShaderStyle& style = ShaderStyle::getStyle();
     style.pointSize = 5.0f;
     glPointSize(style.pointSize);

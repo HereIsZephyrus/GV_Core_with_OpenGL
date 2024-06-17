@@ -63,18 +63,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
         }
     }
     shader = nullptr;
-    glGenVertexArrays(1,&identifier.VAO);
-    glBindVertexArray(identifier.VAO);
-    glGenBuffers(1,&identifier.VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
-    if (!indices.empty()){
-        glGenBuffers(1, &identifier.EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, identifier.EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(indices.size() * sizeof(GLuint)), static_cast<const void*>(indices.data()), GL_STATIC_DRAW);
-    }
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    updateVertex();
 }
 void Primitive::load(){
     glBindVertexArray(identifier.VAO);
@@ -113,6 +102,20 @@ void Primitive::draw(){
     shader->rend();
     glBindVertexArray(0);
     return;
+}
+void Primitive::updateVertex(){
+    glGenVertexArrays(1,&identifier.VAO);
+    glBindVertexArray(identifier.VAO);
+    glGenBuffers(1,&identifier.VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
+    if (!indices.empty()){
+        glGenBuffers(1, &identifier.EBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, identifier.EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(indices.size() * sizeof(GLuint)), static_cast<const void*>(indices.data()), GL_STATIC_DRAW);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 namespace pr {

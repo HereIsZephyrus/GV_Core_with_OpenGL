@@ -74,8 +74,10 @@ void  Shader::rend() {
 
 Shader::Shader(ShaderStyle& style){
     thickness = style.thickness;
-    if (Records::getState().cliping)
-        color = WindowParas::getInstance().backgroundColor;
+    if (Records::getState().cliping){
+        const ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
+        color = {backgroundColor.x,backgroundColor.y,backgroundColor.z,backgroundColor.w};
+    }
     else
         color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
     

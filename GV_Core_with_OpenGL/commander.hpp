@@ -50,6 +50,7 @@ public:
     vertexArray drawingVertices;
     Shape drawType;
     bool holdonToDraw; // hold on to draw or click to draw
+    pPrimitive clipShape;
 private:
     Take(){}
 };

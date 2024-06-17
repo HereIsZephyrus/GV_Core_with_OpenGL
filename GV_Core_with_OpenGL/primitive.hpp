@@ -61,10 +61,12 @@ public:
     void bindShader(Shader* tobind){shader = tobind;}
     void draw();
     void load();
+    void updateVertex();
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
     friend class pr::Point;
     friend class pr::Line;
     friend class pr::Face;
+    friend void ClipByShape();
 private:
     primitiveIdentifier identifier;
     GLenum shape;
