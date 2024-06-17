@@ -391,8 +391,59 @@ void clipCohenSutherLand(vertexArray& vertices, const GLsizei& stride,const GLfl
     vertices = newArray;
     //std::cout<<"after"<<vertices.size()<<std::endl;
 }
+GLfloat x_intersect(const GLfloat& x1, const GLfloat& y1, const GLfloat& x2, const GLfloat& y2,const GLfloat& x3, const GLfloat& y3, const GLfloat& x4, const GLfloat& y4){
+    const GLfloat& num = (x1*y2 - y1*x2) * (x3-x4) -
+              (x1-x2) * (x3*y4 - y3*x4);
+    const GLfloat& den = (x1-x2) * (y3-y4) - (y1-y2) * (x3-x4);
+    return num/den;
+}
+GLfloat y_intersect(const GLfloat& x1, const GLfloat& y1, const GLfloat& x2, const GLfloat& y2,const GLfloat& x3, const GLfloat& y3, const GLfloat& x4, const GLfloat& y4){
+    const GLfloat& num = (x1*y2 - y1*x2) * (y3-y4) -
+              (y1-y2) * (x3*y4 - y3*x4);
+    const GLfloat& den = (x1-x2) * (y3-y4) - (y1-y2) * (x3-x4);
+    return num/den;
+}
 
 void clipSutherlandHodgman(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
+    vertexArray newArray;
+    newArray.clear();
+    std::cout<<"before"<<vertices.size()<<std::endl;
+    for (auto ind = vertices.begin(); ind!=vertices.end(); ind+=stride){
+        GLfloat x1 = *(ind),y1 = *(ind+1),x2,y2;
+        if (ind+1 ==vertices.end()){
+            x2 = *(vertices.begin());
+            y2 = *(vertices.begin() + 1);
+        }
+        else{
+            x2 = *(ind + stride);
+            y2 = *(ind + stride + 1);
+        }
+        bool inside1 = (x1 >= xMin && x1 <= xMax && y1 >= yMin && y1 <= yMax);
+        bool inside2 = (x2 >= xMin && x2 <= xMax && y2 >= yMin && y2 <= yMax);
+        //if (!inside1 && !inside2)   continue; //both outside
+        if (inside1 && inside2) {//both inside
+            newArray.push_back(x1);
+            newArray.push_back(y1);
+            newArray.push_back(0.0f);
+        } else if(inside1 && !inside2){
+            GLfloat intersectX = x_intersect(xMin,yMin,xMax,yMax,x1, y1, x2, y2);
+            GLfloat intersectY = y_intersect(xMin,yMin,xMax,yMax,x1, y1, x2, y2);
+            newArray.push_back(intersectX);
+            newArray.push_back(intersectY);
+            newArray.push_back(0.0f);
+            newArray.push_back(x2);
+            newArray.push_back(y2);
+            newArray.push_back(0.0f);
+        } else if (!inside1 && inside2) {
+            GLfloat intersectX = x_intersect(xMin,yMin,xMax,yMax,x1, y1, x2, y2);
+            GLfloat intersectY = y_intersect(xMin,yMin,xMax,yMax,x1, y1, x2, y2);
+            newArray.push_back(intersectX);
+            newArray.push_back(intersectY);
+            newArray.push_back(0.0f);
+            }
+    }
+    vertices = newArray;
+    std::cout<<"after"<<vertices.size()<<std::endl;
 }
 void clipLiangBarsky(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
     vertexArray newArray;
@@ -490,11 +541,12 @@ void clipByShape(){
             if ((*it)->shape == GL_LINES){
                 //clipCohenSutherLand(vertices, stride, xMin, xMax, yMin, yMax);
                 clipLiangBarsky(vertices, stride, xMin, xMax, yMin, yMax);
-                //clipLiangBarsky(vertices, stride);
                 (*it)->updateVertex();
             }
             if ((*it)->shape == GL_LINE_LOOP || (*it)->shape == GL_TRIANGLE_FAN ){
-                
+                //std::cout<<"I am here"<<std::endl;
+                clipSutherlandHodgman(vertices, stride, xMin, xMax, yMin, yMax);
+                //(*it)->updateVertex();
             }
         }
         else{
