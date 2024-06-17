@@ -118,6 +118,9 @@ int initStyle(){
     Camera2D::getView().loadSavedPara(cm::zeroCamera.get());
     //init primitive paras
     glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
     windowPara.backgroundColor = {0.1f, 0.1f, 0.1f, 1.0f};
     checkStyleBoundary();
     

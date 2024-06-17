@@ -69,10 +69,11 @@ void addBlock(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY,GLfl
     array.push_back(orthoX);
     array.push_back(orthoY);
     array.push_back(0.0f);
-    for (int i = -range; i<= range; i++)
-        for (int j = -range; j<=range; j++){
-            array.push_back(orthoX+i);
-            array.push_back(orthoY+j);
+    const int resolution = 10;
+    for (int i = -range * resolution ; i<= range * resolution ; i++)
+        for (int j = -range * resolution ; j<=range * resolution ; j++){
+            array.push_back(orthoX+i/resolution);
+            array.push_back(orthoY+j/resolution);
             array.push_back(0.0f); // flat draw
         }
 }
@@ -80,16 +81,17 @@ static void DDA(vertexArray& array,float sX,float sY,float tX,float tY,bool anti
     float dx = tX - sX,dy = tY - sY;
     int steps = 0;
     if (std::abs(dx) >= std::abs(dy)){
-        steps = std::abs(dx);
+        steps = std::abs(dx) * WindowParas::getInstance().xScale *2;
     }
     else{
-        steps = std::abs(dy);
+        steps = std::abs(dy) * WindowParas::getInstance().yScale *2;
     }
     float xinc = dx / steps;
     float yinc = dy / steps;
     float x = sX,y = sY;
     //std::cout<<x<<y<<std::endl;
     const ImVec4 color = ShaderStyle::getStyle().drawColor;
+    //std::cout<<color.x<<' '<<color.y<<' '<<color.z<<' '<<color.w<<std::endl;
     for (int i = 0; i <= steps; i++) {
         x += xinc;
         y += yinc;

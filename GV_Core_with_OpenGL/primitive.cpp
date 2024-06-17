@@ -123,7 +123,7 @@ void Primitive::load(){
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
         // 颜色属性
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(3* sizeof(GLfloat)));
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(4* sizeof(GLfloat)));
         glEnableVertexAttribArray(1);
     }
     else if (stride ==3){
