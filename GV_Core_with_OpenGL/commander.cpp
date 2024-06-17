@@ -69,16 +69,15 @@ void addBlock(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY,GLfl
     array.push_back(orthoX);
     array.push_back(orthoY);
     array.push_back(0.0f);
-    const int resolution = 10;
-    for (int i = -range * resolution ; i<= range * resolution ; i++)
-        for (int j = -range * resolution ; j<=range * resolution ; j++){
-            array.push_back(orthoX+i/resolution);
-            array.push_back(orthoY+j/resolution);
+    for (int i = -range; i<= range; i++)
+        for (int j = -range; j<=range; j++){
+            array.push_back(orthoX+i);
+            array.push_back(orthoY+j);
             array.push_back(0.0f); // flat draw
         }
 }
-static void DDA(vertexArray& array,float sX,float sY,float tX,float tY,bool antialising){
-    float dx = tX - sX,dy = tY - sY;
+static void DDA(vertexArray& array,float sX,float sY,float tX,float tY,bool antialising,const ImVec4& color){
+    const GLfloat dx = tX - sX,dy = tY - sY;
     int steps = 0;
     if (std::abs(dx) >= std::abs(dy)){
         steps = std::abs(dx) * WindowParas::getInstance().xScale *2;
@@ -90,7 +89,6 @@ static void DDA(vertexArray& array,float sX,float sY,float tX,float tY,bool anti
     float yinc = dy / steps;
     float x = sX,y = sY;
     //std::cout<<x<<y<<std::endl;
-    const ImVec4 color = ShaderStyle::getStyle().drawColor;
     //std::cout<<color.x<<' '<<color.y<<' '<<color.z<<' '<<color.w<<std::endl;
     for (int i = 0; i <= steps; i++) {
         x += xinc;
@@ -107,6 +105,62 @@ static void DDA(vertexArray& array,float sX,float sY,float tX,float tY,bool anti
         }
     }
 }
+static void antialisingCore(vertexArray& array,float sX,float sY,float tX,float tY,const ImVec4& color){
+    const GLfloat thickness = ShaderStyle::getStyle().thickness;
+    const GLint range = (thickness)/2;
+    const int resolution = 5;
+    const GLfloat limit = range * resolution * range * resolution *2;
+    const GLfloat feather = 0.75;
+    for (int i = -range * resolution ; i<= range * resolution ; i++)
+        for (int j = -range * resolution ; j<=range * resolution ; j++){
+            GLfloat distance = (i - range * resolution * feather) * (i - range * resolution * feather) + (j - range * resolution * feather) * (j - range * resolution * feather);
+            if (distance < 0 )distance = 0;
+            ImVec4 drawColor = color;
+            drawColor.w -= distance/limit;
+            if (drawColor.w < 0.1)  drawColor.w = 0;
+            DDA(array,sX+i/resolution,sY+j/resolution,tX+i/resolution,tY+j/resolution,true,drawColor);
+        }
+}
+static ImVec4 mingleColor(const ImVec4& forehead,const ImVec4& background,const float& porpotion){
+    ImVec4 res;
+    res.x = forehead.x * porpotion + background.x * (1-porpotion);
+    res.y = forehead.y * porpotion + background.y * (1-porpotion);
+    res.z = forehead.z * porpotion + background.z * (1-porpotion);
+    res.w = (forehead.w * porpotion + background.w * (1-porpotion))/2;
+    return res;
+}
+static void antialisingSuper(vertexArray& array,float sX,float sY,float tX,float tY,const ImVec4& color){
+    const GLfloat thickness = ShaderStyle::getStyle().thickness;
+    const GLint range = (thickness)/2;
+    const int resolution = 5;
+    for (int i = -range * resolution ; i<= range * resolution ; i++)
+        for (int j = -range * resolution ; j<=range * resolution ; j++)
+            DDA(array,sX+i/resolution,sY+j/resolution,tX+i/resolution,tY+j/resolution,true,color);
+    //super resolution lines
+    const GLfloat dx = std::abs(tX - sX), dy = std::abs(tY - sY);
+    const GLfloat quad = std::max(dx,dy);
+    const float porpotion =( dx * dy / 2) / (quad * quad);
+    const ImVec4 antiColor =mingleColor(color,WindowParas::getInstance().backgroundColor,porpotion);
+    //const ImVec4 antiColor ={1.0f,1.0f,1.0f,1.0f};
+    if (range>1){
+        const GLfloat bias = range * resolution * 1.5 +2;
+        if (dx <= dy){
+            DDA(array,sX+bias/resolution,sY,tX+bias/resolution,tY,true,antiColor);
+            DDA(array,sX-bias/resolution,sY,tX-bias/resolution,tY,true,antiColor);
+        }
+        else{
+            DDA(array,sX,sY+bias/resolution,tX,tY+bias/resolution,true,antiColor);
+            DDA(array,sX,sY-bias/resolution,tX,tY-bias/resolution,true,antiColor);
+        }
+    }
+}
+static void antialising0(vertexArray& array,float sX,float sY,float tX,float tY,const ImVec4& color){
+    const int range = (ShaderStyle::getStyle().thickness + 0.5)/2;
+    const int resolution = 5;
+    for (int i = -range * resolution ; i<= range * resolution ; i++)
+        for (int j = -range * resolution ; j<=range * resolution ; j++)
+            DDA(array,sX+i/resolution,sY+j/resolution,tX+i/resolution,tY+j/resolution,true,color);
+}
 static void drawLine(vertexArray& array,const GLfloat &sX,const GLfloat &sY,const GLdouble &cursorX,const GLdouble &cursorY,bool antialising) {
     const GLfloat thickness = ShaderStyle::getStyle().thickness;
     WindowParas& windowPara = WindowParas::getInstance();
@@ -114,11 +168,19 @@ static void drawLine(vertexArray& array,const GLfloat &sX,const GLfloat &sY,cons
     const GLfloat normalY = windowPara.screen2normalY(cursorY);
     const GLfloat tX = windowPara.normal2orthoX(normalX);
     const GLfloat tY = windowPara.normal2orthoY(normalY);
+    const ImVec4 color = ShaderStyle::getStyle().drawColor;
     //std::cout<<"this is right."<<sX << ' '<<sY<<' '<<tX << ' '<<tY<<std::endl;
-    const int range = (thickness + 0.5)/2;
-    for (int i = -range; i<= range; i++)
-        for (int j = -range; j<=range; j++)
-            DDA(array,sX+i,sY+j,tX+i,tY+j,antialising);
+    
+    if (antialising){
+        //antialising0(array,sX,sY,tX,tY,color);
+        //antialisingSuper(array,sX,sY,tX,tY,color);
+        antialisingCore(array,sX,sY,tX,tY,color);
+    }else{
+        const int range = (thickness + 0.5)/2;
+        for (int i = -range  ; i<= range  ; i++)
+            for (int j = -range ; j<=range ; j++)
+                DDA(array,sX+i,sY+j,tX+i,tY+j,false,color);
+    }
 }
 
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
