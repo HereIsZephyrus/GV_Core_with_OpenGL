@@ -24,6 +24,7 @@ void Records::initIObuffer(){
     dragingMode = GL_FALSE;
     drawingPrimitive = GL_FALSE;
     state = interectState::toselect;
+    primitiveList.clear();
 }
 
 static void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -290,6 +291,7 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
             pr::mainPrimitiveList.push_back(std::move(newPrimitive));
             Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
             createTopoElements(lastpPrimitive);
+            record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
         }
         else{
             take.clipShape  =std::move(newPrimitive);

@@ -68,14 +68,23 @@ public:
     friend class pr::Face;
     friend void clipByShape();
     GLsizei getVertexNum() const{return static_cast<GLsizei>(vertices.size() / stride);}
+    void setName(std::string name){this->name = name;}
+    std::string getName() const {return name;}
     vertexArray vertices;
     std::vector<pElement> elementList;
+    GLuint layer;
+    bool operator < (const Primitive& x) const{
+        return layer<x.layer;
+    }
+    Primitive* getSelf() {return m_self;}
 private:
     primitiveIdentifier identifier;
     GLenum shape;
     GLsizei stride,indexLen;
     Shader* shader;
     glm::vec4 color;
+    std::string name;
+    Primitive* m_self;
 };
 typedef std::unique_ptr<Primitive> pPrimitive;
 

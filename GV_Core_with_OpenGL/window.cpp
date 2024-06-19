@@ -213,7 +213,8 @@ void renderSiderbar(){
     float sidebarHeight = (windowPara.SCREEN_HEIGHT / 2)*(1 + (panelStackNum==0))/windowPara.yScale;
     ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH,sidebarHeight - menuBarHeight), ImGuiCond_Always);
     ImGui::Begin("sidebar",nullptr,ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-    ImGui::Text("This is the main sidebar");
+    //ImGui::Text("This is the main sidebar");
+    createPrimitiveList();
     ImGui::End();
 }
 void renderEditPanel(){
@@ -302,6 +303,45 @@ void renderSelectPanel(){
     
     ImGui::End();
 }
+void createPrimitiveList() {
+    std::vector<item >& items = Records::getState().primitiveList;
+    for (int i = 0; i < items.size(); i++) {
+        int currentIndex = i;
+        items[i].first->layer = i+1;
+        bool isHovered = ImGui::IsItemHovered();
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+            ImGui::SetDragDropPayload("TEXT_LIST_ITEM", &currentIndex, sizeof(int));
+            if (isHovered) {
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
+            }
+            ImGui::Text("%s", items[currentIndex].second.c_str());
+            if (isHovered) {
+                ImGui::PopStyleColor(2);
+            }
+            ImGui::EndDragDropSource();
+        }
+        if (isHovered) {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
+        }
+        ImGui::TextUnformatted(items[currentIndex].second.c_str());
+        if (isHovered) {
+            ImGui::PopStyleColor(2);
+        }
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXT_LIST_ITEM")) {
+                int sourceIndex = *(const int*)payload->Data;
+                std::swap(items[currentIndex], items[sourceIndex]);
+            }
+            ImGui::EndDragDropTarget();
+            std::sort(pr::mainPrimitiveList.begin(),pr::mainPrimitiveList.end());
+        }
+
+        ImGui::Separator();
+    }
+}
+
 }//namespace gui
 
 void clipPoints(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
@@ -557,3 +597,4 @@ void clipByShape(){
         }
     }
 }
+

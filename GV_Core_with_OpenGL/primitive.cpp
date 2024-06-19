@@ -15,8 +15,11 @@
 Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
+    m_self = this;
     this->vertices = vertices;
     this->elementList.clear();
+    Records& record = Records::getState();
+    this->layer = static_cast<GLuint>(record.primitiveList.size())+1;
     const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
     this->color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
     switch (shape) {

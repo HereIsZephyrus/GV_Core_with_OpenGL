@@ -21,6 +21,7 @@ enum class interectState{
     toselect,//to select feature
     holding,//binded to the object
 };
+typedef std::pair<Primitive*, std::string> item;
 class Records{
 public:
     static Records& getState(){
@@ -34,6 +35,7 @@ public:
     bool showCreateElementWindow;
     interectState state;
     void initIObuffer();
+    std::vector<item > primitiveList;
 private:
     Records(){}
 };
