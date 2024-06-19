@@ -13,7 +13,7 @@
 namespace rd{
 std::map<std::string,pShader > namedShader;
 std::vector<pShader> mainShaderList;
-Shader* defaultShader;
+//Shader* defaultShader;
 
 GLchar* filePath(const char* fileName){
     //checkSourceRelevantPath();

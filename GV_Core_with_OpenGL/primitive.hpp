@@ -58,6 +58,7 @@ public:
     void draw();
     void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
+    glm::vec4 getColor() const{return color;}
     GLenum getShape() const{return shape;}
     friend class pr::Element;
     friend class pr::Point;
@@ -65,11 +66,11 @@ public:
     friend class pr::Face;
     friend void clipByShape();
     GLsizei getVertexNum() const{return static_cast<GLsizei>(vertices.size() / stride);}
+    vertexArray vertices;
 private:
     primitiveIdentifier identifier;
     GLenum shape;
     GLsizei stride,indexLen;
-    vertexArray vertices;
     Shader* shader;
     glm::vec4 color;
 };

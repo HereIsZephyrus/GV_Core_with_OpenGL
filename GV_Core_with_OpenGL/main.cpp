@@ -38,25 +38,33 @@ int main(int argc, const char * argv[]) {
     initStyle();
     
     while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents();
-            gui::DrawGUI();
-            ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
-            //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            glClearColor(backgroundColor.x,backgroundColor.y, backgroundColor.z, backgroundColor.w);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            InterectResponseCheck(window);
-            //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
-            //for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++)
-//                (*it)->draw();
-        for (auto it = pr::mainElementList.begin(); it != pr::mainElementList.end(); it ++)
+        glfwPollEvents();
+        gui::DrawGUI();
+        ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
+        //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(backgroundColor.x,backgroundColor.y, backgroundColor.z, backgroundColor.w);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        InterectResponseCheck(window);
+        //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
+        //for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++)
+          //      (*it)->draw();
+        //int pointnum = 0,linenum = 0, facenum = 0;
+        for (auto it = pr::mainElementList.begin(); it != pr::mainElementList.end(); it ++){
+            if ((*it) -> getVisable())
                 (*it)->draw();
-            if (pr::drawPreviewPrimitive != nullptr){
-                pr::drawPreviewPrimitive -> draw();
-                //std::cout<<"existed"<<std::endl;
-            }
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-            glfwSwapBuffers(window);
+            //if ((*it)->getType() == pr::TopoType::point)  pointnum++;
+            //if ((*it)->getType() == pr::TopoType::line)    linenum++;
+            //if ((*it)->getType() == pr::TopoType::face)    facenum++;
         }
+            
+        //std::cout<<pointnum <<" point,"<<linenum<<" line,"<<facenum<<" face"<<std::endl;
+        if (pr::drawPreviewPrimitive != nullptr){
+            pr::drawPreviewPrimitive -> draw();
+            //std::cout<<"existed"<<std::endl;
+        }
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(window);
+    }
     
     releaseResources(window);
     return 0;
@@ -130,12 +138,17 @@ int initStyle(){
     glLineWidth(style.thickness);
     
     //init shader
-    pShader singleYellow (new Shader());
-    singleYellow->attchVertexShader(rd::filePath("singleVertices.vs"));
-    singleYellow->attchFragmentShader(rd::filePath("fillWhite.frag"));
-    singleYellow->linkProgram();
-    rd::namedShader["singleYellow"] = std::move(singleYellow);
-    rd::defaultShader = rd::namedShader["singleYellow"].get();
+   //pShader singleYellow (new Shader());
+   //singleYellow->attchVertexShader(rd::filePath("singleVertices.vs"));
+   //singleYellow->attchFragmentShader(rd::filePath("fillYellow.frag"));
+   //singleYellow->linkProgram();
+   //rd::namedShader["singleYellow"] = std::move(singleYellow);
+    pShader previewShader (new Shader());
+    previewShader->attchVertexShader(rd::filePath("singleVertices.vs"));
+    previewShader->attchFragmentShader(rd::filePath("fillWhite.frag"));
+    previewShader->linkProgram();
+    rd::namedShader["previewShader"] = std::move(previewShader);
+    //rd::defaultShader = rd::namedShader["singleYellow"].get();
     return 0;
 }
 

@@ -74,7 +74,7 @@ extern std::string fillWhite;
 extern std::map<std::string,pShader > namedShader;
 extern std::vector<pShader> mainShaderList;
 //extern Shader* defaultShader;
-extern Shader* defaultShader;
+//extern Shader* defaultShader;
 GLchar* filePath(const char* fileName);
 std::string geneateColorShader(const ImVec4& color);
 };

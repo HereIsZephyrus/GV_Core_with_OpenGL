@@ -57,6 +57,8 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
         }
     }
     shader = nullptr;
+    glGenVertexArrays(1,&identifier.VAO);
+    glGenBuffers(1,&identifier.VBO);
     updateVertex();
 }
 void Primitive::rend(GLuint& program){
@@ -86,7 +88,7 @@ void Primitive::draw(){
     //std::cout<<"Draw is running"<<std::endl;
     GLint currentBuffer;
     if (shader == nullptr){
-        std::cerr<<"havn't bind shader";
+        std::cerr<<"havn't bind shader"<<std::endl;
         return;
     }
     else
@@ -108,9 +110,7 @@ void Primitive::draw(){
 }
  
 void Primitive::updateVertex(){
-    glGenVertexArrays(1,&identifier.VAO);
     glBindVertexArray(identifier.VAO);
-    glGenBuffers(1,&identifier.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

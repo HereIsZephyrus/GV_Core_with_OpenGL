@@ -277,7 +277,7 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         }
         std::cout<<"finish draw"<<std::endl;
         Take& take = Take::holdon();
-        ShaderStyle& style = ShaderStyle::getStyle();
+        //ShaderStyle& style = ShaderStyle::getStyle();
         pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
         pShader newShader(new Shader());
         newShader->attchVertexShader(rd::filePath("singleVertices.vs"));
@@ -334,7 +334,7 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
             
         //generate preview primitive
         pPrimitive previewPrimitive(new Primitive(tempVertices,mapPreviewStyle(Take::holdon().drawType),3));
-        previewPrimitive -> bindShader(rd::namedShader["singleWhite"].get());
+        previewPrimitive -> bindShader(rd::namedShader["previewShader"].get());
         pr::drawPreviewPrimitive = std::move(previewPrimitive);
     }
     else
