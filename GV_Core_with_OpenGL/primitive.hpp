@@ -41,6 +41,7 @@ class Line;
 class Face;
 class Element;
 }
+typedef std::shared_ptr<pr::Element> pElement;
 class Primitive{
 public:
     Primitive(vertexArray vertices,Shape shape,GLsizei stride);
@@ -56,6 +57,7 @@ public:
     void updateVertex();
     void load();
     void draw();
+    void drawElement();
     void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
     glm::vec4 getColor() const{return color;}
@@ -67,6 +69,7 @@ public:
     friend void clipByShape();
     GLsizei getVertexNum() const{return static_cast<GLsizei>(vertices.size() / stride);}
     vertexArray vertices;
+    std::vector<pElement> elementList;
 private:
     primitiveIdentifier identifier;
     GLenum shape;

@@ -16,6 +16,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
     this->vertices = vertices;
+    this->elementList.clear();
     const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
     this->color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
     switch (shape) {

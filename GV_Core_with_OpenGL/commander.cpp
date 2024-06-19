@@ -288,7 +288,7 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         if (!record.cliping){
             newPrimitive->bindShader(rd::mainShaderList.back().get());
             pr::mainPrimitiveList.push_back(std::move(newPrimitive));
-            const Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
+            Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
             createTopoElements(lastpPrimitive);
         }
         else{

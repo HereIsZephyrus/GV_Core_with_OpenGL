@@ -9,9 +9,6 @@
 #include "camera.hpp"
 namespace pr{
 
-GLuint elementNum = 0;
-std::vector<pElement > mainElementList;
-
 void  Element::rend(GLuint& program) {
     //glUseProgram(program);
     //color
@@ -66,51 +63,52 @@ void Element::draw(){
     return;
 }
 
-void updateIndex(const Primitive* primitive){
+void updateIndex(Primitive* primitive){
     const primitiveIdentifier* identifier = primitive->getIdentifier();
-    mainElementList.erase(std::remove_if(mainElementList.begin(), mainElementList.end(),
+    primitive->elementList.erase(std::remove_if(primitive->elementList.begin(), primitive->elementList.end(),
                                          [identifier](const pElement&  x){
                                             return x->getIdentifier()->VAO == identifier->VAO;
                                             }),
-                          mainElementList.end());
+                          primitive->elementList.end());
     updateTopoElements(primitive);
 }
 }
 
-void createTopoElements(const Primitive* lastpPrimitive){
+void createTopoElements(Primitive* lastpPrimitive){
     const GLenum shape = lastpPrimitive->getShape();
     if (shape == GL_POINTS){
         for (int i = 0; i< lastpPrimitive->getVertexNum(); i++)
-            pr::mainElementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
     }
     else if (shape == GL_LINES || shape == GL_LINE){
         for (int i = 0; i< lastpPrimitive->getVertexNum()-1; i++)
-            pr::mainElementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1)) );
     }
     else
-        pr::mainElementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
+        lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
     return;
 }
 
-void updateTopoElements(const Primitive* lastpPrimitive){
+void updateTopoElements(Primitive* lastpPrimitive){
     ShaderStyle& style = ShaderStyle::getStyle();
     const ImVec4 nowColor = style.drawColor;
     const glm::vec4 primitiveColor = lastpPrimitive->getColor();
+    lastpPrimitive->elementList.clear();
     style.drawColor = {primitiveColor.x,primitiveColor.y,primitiveColor.z,primitiveColor.w};
     const GLenum shape = lastpPrimitive->getShape();
     if (shape == GL_POINTS){
         for (int i = 0; i< lastpPrimitive->getVertexNum(); i++){
-            pr::mainElementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
             
         }
     }
     else if (shape == GL_LINES || shape == GL_LINE){
         for (int i = 0; i< lastpPrimitive->getVertexNum()-1; i++){
-            pr::mainElementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1)) );
         }
     }
     else{
-        pr::mainElementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
+        lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
     }
     style.drawColor = nowColor;
     return;

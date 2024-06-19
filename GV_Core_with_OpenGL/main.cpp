@@ -46,18 +46,9 @@ int main(int argc, const char * argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         InterectResponseCheck(window);
         //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
-        //for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++)
-          //      (*it)->draw();
-        //int pointnum = 0,linenum = 0, facenum = 0;
-        for (auto it = pr::mainElementList.begin(); it != pr::mainElementList.end(); it ++){
-            if ((*it) -> getVisable())
-                (*it)->draw();
-            //if ((*it)->getType() == pr::TopoType::point)  pointnum++;
-            //if ((*it)->getType() == pr::TopoType::line)    linenum++;
-            //if ((*it)->getType() == pr::TopoType::face)    facenum++;
-        }
-            
-        //std::cout<<pointnum <<" point,"<<linenum<<" line,"<<facenum<<" face"<<std::endl;
+        for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++)
+            for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
+                (*element)->draw();
         if (pr::drawPreviewPrimitive != nullptr){
             pr::drawPreviewPrimitive -> draw();
             //std::cout<<"existed"<<std::endl;
