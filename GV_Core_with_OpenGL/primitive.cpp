@@ -11,6 +11,7 @@
 #include "commander.hpp"
 #include "window.hpp"
 #include "camera.hpp"
+#include "rendering.hpp"
 Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
@@ -56,11 +57,26 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     shader = nullptr;
     updateVertex();
 }
+void Primitive::rend(GLuint& program){
+    const glm::vec4 color = previewStyle::color;
+    GLuint colorLoc = glGetUniformLocation(program,"setColor");
+    glUniform4f(colorLoc,color.x,color.y,color.z,color.w);
+    
+    //camera
+    GLuint projectionLoc = glGetUniformLocation(program, "projection");
+    GLuint viewLoc = glGetUniformLocation(program, "view");
+    GLuint modelLoc = glGetUniformLocation(program, "model");
+    Camera2D& camera = Camera2D::getView();
+    glm::mat4 projection = camera.getProjectionMatrix();
+    glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 model = glm::mat4(1.0f);
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+}
 void Primitive::load(){
     glBindVertexArray(identifier.VAO);
     glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
-    if (type == DrawType::Index)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, identifier.EBO);
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
     glEnableVertexAttribArray(0);
 }
@@ -80,31 +96,21 @@ void Primitive::draw(){
     }
     glEnableVertexAttribArray(0);
     glBindVertexArray(identifier.VAO);
-    //std::cout<<VAO<<std::endl;
-    if (type == DrawType::Array){
-        //glDrawArrays(shape, 0,( getVertexNum()-1)*6);
-        glDrawArrays(shape, 0, getVertexNum());
-       // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
-    }
-    if (type == DrawType::Index){
-        glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0);
-        //CHECK_GL_ERROR( glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0));
-    }
-    shader->rend();
+    //glDrawArrays(shape, 0,( getVertexNum()-1)*6);
+    glDrawArrays(shape, 0, getVertexNum());
+    // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
+    
+    rend(shader->program);
     glBindVertexArray(0);
     return;
 }
+ 
 void Primitive::updateVertex(){
     glGenVertexArrays(1,&identifier.VAO);
     glBindVertexArray(identifier.VAO);
     glGenBuffers(1,&identifier.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
-    if (!indices.empty()){
-        glGenBuffers(1, &identifier.EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, identifier.EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(indices.size() * sizeof(GLuint)), static_cast<const void*>(indices.data()), GL_STATIC_DRAW);
-    }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }

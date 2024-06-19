@@ -6,11 +6,36 @@
 //
 
 #include "shape.hpp"
+#include "camera.hpp"
 namespace pr{
 
 GLuint elementNum = 0;
-std::vector<pElement > elements;
+std::vector<pElement > mainElementList;
 
+void  Element::rend(GLuint& program) {
+    //glUseProgram(program);
+    //color
+    GLuint colorLoc = glGetUniformLocation(program,"setColor");
+    glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
+    //thickness
+    //GLuint  resLoc  = glGetUniformLocation(program, "resolution");
+    //GLuint  thiLoc  = glGetUniformLocation(program, "thickness");
+    //glUniform1f(thiLoc,thickness);
+    //WindowParas& windowPara = WindowParas::getInstance();
+    //glUniform2f(resLoc, windowPara.SCREEN_WIDTH,windowPara.SCREEN_HEIGHT);
+    
+    //camera
+    GLuint projectionLoc = glGetUniformLocation(program, "projection");
+    GLuint viewLoc = glGetUniformLocation(program, "view");
+    GLuint modelLoc = glGetUniformLocation(program, "model");
+    Camera2D& camera = Camera2D::getView();
+    glm::mat4 projection = camera.getProjectionMatrix();
+    glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 model = glm::mat4(1.0f);
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+}
 void Element::load(){
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ARRAY_BUFFER, identifier->VBO);
@@ -34,12 +59,26 @@ void Element::draw(){
     }
     glEnableVertexAttribArray(0);
     glBindVertexArray(identifier->VAO);
-    //std::cout<<VAO<<std::endl;
     glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
     //CHECK_GL_ERROR( glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0));
-    shader->rend();
+    rend(shader->program);
     glBindVertexArray(0);
     return;
 }
 
+}
+
+void createTopoElements(const Primitive* lastpPrimitive){
+    const GLenum shape = lastpPrimitive->getShape();
+    if (shape == GL_POINTS){
+        for (int i = 0; i< lastpPrimitive->getVertexNum(); i++)
+            pr::mainElementList.push_back(std::make_shared<pr::Point>(lastpPrimitive,i));
+    }
+    else if (shape == GL_LINES || shape == GL_LINE){
+        for (int i = 0; i< lastpPrimitive->getVertexNum()-1; i++)
+            pr::mainElementList.push_back(std::make_shared<pr::Line>(lastpPrimitive,i,i+1));
+    }
+    else
+        pr::mainElementList.push_back(std::make_shared<pr::Face>(lastpPrimitive));
+    return;
 }

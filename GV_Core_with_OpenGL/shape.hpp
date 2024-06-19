@@ -21,6 +21,7 @@
 #include "rendering.hpp"
 
 typedef std::shared_ptr<vertexArray> pVertexArray;
+void createTopoElements(const Primitive* lastpPrimitive);
 namespace pr {
 //don't recycle point/line/face index -- don't need to tackle so much elements for now.
 extern GLuint elementNum;
@@ -28,14 +29,18 @@ class Element{
 public:
     void draw();
     void load();
+    void rend(GLuint& program) ;
     Element(const Primitive* primitive){
         refVertex = std::make_shared<vertexArray>(primitive->vertices);
         identifier = primitive->getIdentifier();
         shader = primitive->shader;
+        const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
+        style.color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
         glGenBuffers(1, &EBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(vertexIndex.size() * sizeof(GLuint)), static_cast<const void*>(vertexIndex.data()), GL_STATIC_DRAW);
     }
+    friend void createTopoElements(const Primitive* lastpPrimitive);
 protected:
     virtual void calcGeoCenter()=0;
     indexArray vertexIndex;
@@ -46,16 +51,21 @@ protected:
     const primitiveIdentifier* identifier;
     Shader* shader;
     GLenum shape;
+    struct Style{
+        glm::vec4 color;
+    } style;
+    //ShaderPara style;
 };
 typedef std::shared_ptr<Element> pElement;
-extern std::vector<pElement > elements;
+extern std::vector<pElement > mainElementList;
 
-class Point: Element{
+class Point: public Element{
 public:
     Point(const Primitive* primitive,GLuint startIndex):
-    Element(primitive),
-    pointSize(primitive->shader->thickness),
-    color(primitive->shader->color){
+    Element(primitive){
+        ShaderStyle& style = ShaderStyle::getStyle();
+        this->pointSize = style.pointSize;
+        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_POINTS;
         vertexIndex = {startIndex};
         calcGeoCenter();
@@ -69,19 +79,21 @@ protected:
     }
     GLuint id;
 private:
-    GLfloat& pointSize;
-    glm::vec4& color;
+    GLfloat pointSize;
 };
-class Line: Element{
+class Line: public Element{
 public:
     Line(const Primitive* primitive,GLuint startIndex):
-    Element(primitive),
-    lineWidth(primitive->shader->thickness),
-    color(primitive->shader->color){
+    Element(primitive){
+        ShaderStyle& style = ShaderStyle::getStyle();
+        this->lineWidth = style.thickness;
+        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_LINES;
         vertexIndex = {startIndex,startIndex+1};
         point[0] = std::make_shared<Point>(primitive,vertexIndex[0]);
         point[1] = std::make_shared<Point>(primitive,vertexIndex[1]);
+        mainElementList.push_back(point[0]);
+        mainElementList.push_back(point[1]);
         calcGeoCenter();
         id = ++ elementNum;
     }
@@ -96,21 +108,22 @@ protected:
     }
     GLuint id;
 private:
-    GLfloat& lineWidth;
-    glm::vec4& color;
+    GLfloat lineWidth;
     std::shared_ptr<Point> point[2];
 };
 typedef std::shared_ptr<Line> pLine;
-class Face: Element{
+class Face: public Element{
 public:
     Face(const Primitive* primitive):
-    Element(primitive),
-    color(primitive->shader->color){
+    Element(primitive){
+        ShaderStyle& style = ShaderStyle::getStyle();
+        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = primitive->shape;
         const GLsizei stride = primitive->stride;
         for (int i = 0; i<(*refVertex).size()/stride; i++){
             vertexIndex.push_back(i);
             line.push_back(std::make_shared<Line>(primitive,i));
+            mainElementList.push_back(line.back());
         }
         calcGeoCenter();
         id = ++ elementNum;
@@ -130,7 +143,6 @@ protected:
     }
     GLuint id;
 private:
-    glm::vec4& color;
     std::vector<pLine> line;
 };
 }

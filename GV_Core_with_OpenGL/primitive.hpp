@@ -53,24 +53,24 @@ public:
         glDeleteBuffers(1,&identifier.VBO);
     }
     void bindShader(Shader* tobind){shader = tobind;}
-    void draw();
-    void load();
     void updateVertex();
+    void load();
+    void draw();
+    void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
+    GLenum getShape() const{return shape;}
     friend class pr::Element;
     friend class pr::Point;
     friend class pr::Line;
     friend class pr::Face;
     friend void clipByShape();
+    GLsizei getVertexNum() const{return static_cast<GLsizei>(vertices.size() / stride);}
 private:
     primitiveIdentifier identifier;
     GLenum shape;
     GLsizei stride,indexLen;
     vertexArray vertices;
     Shader* shader;
-    inline const GLsizei getVertexNum(){
-        return static_cast<GLsizei>(vertices.size() / stride);
-    }
 };
 typedef std::unique_ptr<Primitive> pPrimitive;
 

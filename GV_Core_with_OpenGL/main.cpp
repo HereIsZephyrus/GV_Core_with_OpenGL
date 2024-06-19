@@ -22,6 +22,7 @@
 #include "primitive.hpp"
 #include "commander.hpp"
 #include "camera.hpp"
+#include "shape.hpp"
 
 static int initImGUI(GLFWwindow *window);
 static int initInterect(GLFWwindow* &window);
@@ -45,7 +46,9 @@ int main(int argc, const char * argv[]) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             InterectResponseCheck(window);
             //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
-            for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++)
+            //for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++)
+//                (*it)->draw();
+        for (auto it = pr::mainElementList.begin(); it != pr::mainElementList.end(); it ++)
                 (*it)->draw();
             if (pr::drawPreviewPrimitive != nullptr){
                 pr::drawPreviewPrimitive -> draw();

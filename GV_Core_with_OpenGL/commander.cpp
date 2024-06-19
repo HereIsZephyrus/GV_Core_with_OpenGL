@@ -12,6 +12,7 @@
 #include "window.hpp"
 #include "primitive.hpp"
 #include "camera.hpp"
+#include "shape.hpp"
 
 void Records::initIObuffer(){
     memset(keyRecord, GL_FALSE, sizeof(keyRecord));
@@ -287,6 +288,8 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         if (!record.cliping){
             newPrimitive->bindShader(rd::mainShaderList.back().get());
             pr::mainPrimitiveList.push_back(std::move(newPrimitive));
+            const Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
+            createTopoElements(lastpPrimitive);
         }
         else{
             take.clipShape  =std::move(newPrimitive);
