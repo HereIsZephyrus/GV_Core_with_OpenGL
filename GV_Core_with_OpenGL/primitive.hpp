@@ -71,6 +71,7 @@ private:
     GLsizei stride,indexLen;
     vertexArray vertices;
     Shader* shader;
+    glm::vec4 color;
 };
 typedef std::unique_ptr<Primitive> pPrimitive;
 

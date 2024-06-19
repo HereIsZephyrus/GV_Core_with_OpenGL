@@ -46,7 +46,9 @@ public:
     //Shader(std::string vertexShader,std::string fragmentShader);
     //Shader(const GLchar* vertexPath,std::string fragmentShader);
     //Shader(std::string vertexShader,const GLchar* fragmentPath);
-    Shader(ShaderStyle& style);
+    Shader(){
+        this->program = glCreateProgram();
+    }
     void use(){
         glUseProgram(program);
     }

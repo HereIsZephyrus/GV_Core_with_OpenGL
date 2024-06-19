@@ -22,6 +22,7 @@
 
 typedef std::shared_ptr<vertexArray> pVertexArray;
 void createTopoElements(const Primitive* lastpPrimitive);
+
 namespace pr {
 //don't recycle point/line/face index -- don't need to tackle so much elements for now.
 extern GLuint elementNum;
@@ -36,12 +37,14 @@ public:
         shader = primitive->shader;
         const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
         style.color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
+    }
+    friend void createTopoElements(const Primitive* lastpPrimitive);
+protected:
+    void bindEBObuffer(){
         glGenBuffers(1, &EBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(vertexIndex.size() * sizeof(GLuint)), static_cast<const void*>(vertexIndex.data()), GL_STATIC_DRAW);
     }
-    friend void createTopoElements(const Primitive* lastpPrimitive);
-protected:
     virtual void calcGeoCenter()=0;
     indexArray vertexIndex;
     pVertexArray refVertex;
@@ -70,6 +73,7 @@ public:
         vertexIndex = {startIndex};
         calcGeoCenter();
         id  = ++elementNum;
+        bindEBObuffer();
     }
     glm::vec2 getCenterLocation() const{return centerLocation;}
 protected:
@@ -96,6 +100,7 @@ public:
         mainElementList.push_back(point[1]);
         calcGeoCenter();
         id = ++ elementNum;
+        bindEBObuffer();
     }
     glm::vec2 getCenterLocation() const{return centerLocation;}
 protected:
@@ -127,6 +132,7 @@ public:
         }
         calcGeoCenter();
         id = ++ elementNum;
+        bindEBObuffer();
     }
 protected:
     void calcGeoCenter(){

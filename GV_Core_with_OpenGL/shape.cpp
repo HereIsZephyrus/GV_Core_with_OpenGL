@@ -58,7 +58,7 @@ void Element::draw(){
         load();
     }
     glEnableVertexAttribArray(0);
-    glBindVertexArray(identifier->VAO);
+    glBindVertexArray(identifier->VAO);;
     glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
     //CHECK_GL_ERROR( glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0));
     rend(shader->program);
@@ -72,13 +72,13 @@ void createTopoElements(const Primitive* lastpPrimitive){
     const GLenum shape = lastpPrimitive->getShape();
     if (shape == GL_POINTS){
         for (int i = 0; i< lastpPrimitive->getVertexNum(); i++)
-            pr::mainElementList.push_back(std::make_shared<pr::Point>(lastpPrimitive,i));
+            pr::mainElementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
     }
     else if (shape == GL_LINES || shape == GL_LINE){
         for (int i = 0; i< lastpPrimitive->getVertexNum()-1; i++)
-            pr::mainElementList.push_back(std::make_shared<pr::Line>(lastpPrimitive,i,i+1));
+            pr::mainElementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i)) );
     }
     else
-        pr::mainElementList.push_back(std::make_shared<pr::Face>(lastpPrimitive));
+        pr::mainElementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
     return;
 }

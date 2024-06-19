@@ -130,16 +130,11 @@ int initStyle(){
     glLineWidth(style.thickness);
     
     //init shader
-    pShader singleYellow (new Shader(style));
+    pShader singleYellow (new Shader());
     singleYellow->attchVertexShader(rd::filePath("singleVertices.vs"));
     singleYellow->attchFragmentShader(rd::filePath("fillWhite.frag"));
     singleYellow->linkProgram();
     rd::namedShader["singleYellow"] = std::move(singleYellow);
-    pShader singleWhite (new Shader(style));
-    singleWhite->attchVertexShader(rd::filePath("singleVertices.vs"));
-    singleWhite->attchFragmentShader(rd::filePath("fillWhite.frag"));
-    singleWhite->linkProgram();
-    rd::namedShader["singleWhite"] = std::move(singleWhite);
     rd::defaultShader = rd::namedShader["singleYellow"].get();
     return 0;
 }
