@@ -9,6 +9,7 @@
 #include "window.hpp"
 #include "camera.hpp"
 #include "primitive.hpp"
+#include "shape.hpp"
 
 GLfloat WindowParas::screen2normalX(GLdouble screenX){
     return  (2.0f * static_cast<GLfloat>(screenX/ SCREEN_WIDTH * xScale)) - 1.0f;
@@ -537,21 +538,22 @@ void clipByShape(){
             if ((*it)->shape == GL_POINTS){
                 clipPoints(vertices,stride,xMin,xMax,yMin,yMax);
                 (*it)->updateVertex();
+                pr::updateIndex((*it).get());
             }
             if ((*it)->shape == GL_LINES){
                 //clipCohenSutherLand(vertices, stride, xMin, xMax, yMin, yMax);
                 clipLiangBarsky(vertices, stride, xMin, xMax, yMin, yMax);
                 (*it)->updateVertex();
+                pr::updateIndex((*it).get());
             }
             if ((*it)->shape == GL_LINE_LOOP || (*it)->shape == GL_TRIANGLE_FAN ){
-                //std::cout<<"I am here"<<std::endl;
-                clipSutherlandHodgman(vertices, stride, xMin, xMax, yMin, yMax);
+                //clipSutherlandHodgman(vertices, stride, xMin, xMax, yMin, yMax);
                 //(*it)->updateVertex();
             }
         }
         else{
-            clipLiangBarsky(vertices, stride);
-            (*it)->updateVertex();
+            //clipLiangBarsky(vertices, stride);
+            //(*it)->updateVertex();
         }
     }
 }

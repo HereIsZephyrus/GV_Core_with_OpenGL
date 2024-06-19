@@ -21,10 +21,6 @@
 
 typedef std::vector<GLfloat> vertexArray;
 typedef std::vector<GLuint> indexArray;
-enum class DrawType{
-    Array,
-    Index,
-};
 enum class Shape{
     NONE,
     POINTS,
@@ -37,12 +33,13 @@ enum class Shape{
     POLYGEN
 };
 struct primitiveIdentifier{
-    GLuint VAO,VBO,EBO;
+    GLuint VAO,VBO;
 };
 namespace pr {
 class Point;
 class Line;
 class Face;
+class Element;
 }
 class Primitive{
 public:
@@ -52,32 +49,30 @@ public:
     //Shader* shader;
     ~Primitive(){
         vertices.clear();
-        indices.clear();
         glDeleteVertexArrays(1,&identifier.VAO);
         glDeleteBuffers(1,&identifier.VBO);
-        if (type == DrawType::Index)
-            glDeleteBuffers(1,&identifier.EBO);
     }
     void bindShader(Shader* tobind){shader = tobind;}
-    void draw();
-    void load();
     void updateVertex();
+    void load();
+    void draw();
+    void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
+    glm::vec4 getColor() const{return color;}
+    GLenum getShape() const{return shape;}
+    friend class pr::Element;
     friend class pr::Point;
     friend class pr::Line;
     friend class pr::Face;
     friend void clipByShape();
+    GLsizei getVertexNum() const{return static_cast<GLsizei>(vertices.size() / stride);}
+    vertexArray vertices;
 private:
     primitiveIdentifier identifier;
     GLenum shape;
     GLsizei stride,indexLen;
-    DrawType type;
-    vertexArray vertices;
-    indexArray indices;
     Shader* shader;
-    inline const GLsizei getVertexNum(){
-        return static_cast<GLsizei>(vertices.size() / stride);
-    }
+    glm::vec4 color;
 };
 typedef std::unique_ptr<Primitive> pPrimitive;
 

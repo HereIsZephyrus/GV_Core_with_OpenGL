@@ -9,10 +9,11 @@
 #include "window.hpp"
 #include "camera.hpp"
 #include "commander.hpp"
+
 namespace rd{
 std::map<std::string,pShader > namedShader;
 std::vector<pShader> mainShaderList;
-Shader* defaultShader;
+//Shader* defaultShader;
 
 GLchar* filePath(const char* fileName){
     //checkSourceRelevantPath();
@@ -47,46 +48,6 @@ std::string singleVertices = "#version 410 core\n"
 
 };
 
-void  Shader::rend() {
-    //glUseProgram(program);
-    //color
-    GLuint colorLoc = glGetUniformLocation(program,"setColor");
-    glUniform4f(colorLoc,color.x,color.y,color.z,color.w);
-    //thickness
-    //GLuint  resLoc  = glGetUniformLocation(program, "resolution");
-    //GLuint  thiLoc  = glGetUniformLocation(program, "thickness");
-    //glUniform1f(thiLoc,thickness);
-    //WindowParas& windowPara = WindowParas::getInstance();
-    //glUniform2f(resLoc, windowPara.SCREEN_WIDTH,windowPara.SCREEN_HEIGHT);
-    
-    //camera
-    GLuint projectionLoc = glGetUniformLocation(program, "projection");
-    GLuint viewLoc = glGetUniformLocation(program, "view");
-    GLuint modelLoc = glGetUniformLocation(program, "model");
-    Camera2D& camera = Camera2D::getView();
-    glm::mat4 projection = camera.getProjectionMatrix();
-    glm::mat4 view = camera.getViewMatrix();
-    glm::mat4 model = glm::mat4(1.0f);
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-}
-
-Shader::Shader(ShaderStyle& style){
-    thickness = style.thickness;
-    if (Records::getState().cliping){
-        const ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
-        color = {backgroundColor.x,backgroundColor.y,backgroundColor.z,backgroundColor.w};
-    }
-    else
-        color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
-    
-    this->program = glCreateProgram();
-    
-    //attchVertexShader(rd::filePath("singleVertices.vs"));
-    //attchFragmentShader(rd::filePath("fillColor.frag"));
-    //linkProgram();
-}
 void Shader::attchVertexShader(std::string vertexShader){
     const GLchar* vsShaderCode = vertexShader.c_str();
     GLint success;

@@ -24,11 +24,6 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-namespace pr {
-class Point;
-class Line;
-class Face;
-}
 class ShaderStyle{
 public:
     static ShaderStyle& getStyle(){
@@ -51,8 +46,9 @@ public:
     //Shader(std::string vertexShader,std::string fragmentShader);
     //Shader(const GLchar* vertexPath,std::string fragmentShader);
     //Shader(std::string vertexShader,const GLchar* fragmentPath);
-    Shader(ShaderStyle& style);
-    void  rend() ;
+    Shader(){
+        this->program = glCreateProgram();
+    }
     void use(){
         glUseProgram(program);
     }
@@ -61,18 +57,16 @@ public:
     void attchFragmentShader(std::string fragmentShader);
     void attchFragmentShader(const GLchar* fragmentPath);
     void linkProgram();
-    friend class pr::Point;
-    friend class pr::Line;
-    friend class pr::Face;
-private:
-    GLfloat thickness;
-    glm::vec4 color;
     GLuint program;
+private:
     std::string readGLSLfile(const GLchar* filePath);
 };
 
 
 typedef std::unique_ptr<Shader> pShader;
+namespace previewStyle {
+constexpr glm::vec4 color = glm::vec4(1.0f,1.0f,1.0f,1.0f);
+}
 namespace rd{
 extern std::string singleVertices;
 extern std::string fillYellow;
@@ -80,7 +74,7 @@ extern std::string fillWhite;
 extern std::map<std::string,pShader > namedShader;
 extern std::vector<pShader> mainShaderList;
 //extern Shader* defaultShader;
-extern Shader* defaultShader;
+//extern Shader* defaultShader;
 GLchar* filePath(const char* fileName);
 std::string geneateColorShader(const ImVec4& color);
 };
