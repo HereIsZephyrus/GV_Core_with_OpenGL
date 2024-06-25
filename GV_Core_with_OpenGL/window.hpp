@@ -7,6 +7,9 @@
 
 #ifndef window_hpp
 #define window_hpp
+#include <cstring>
+#include <string>
+#include <cmath>
 #define GLEW_STATIC
 #include <cstring>
 #include <string>
@@ -45,6 +48,10 @@ private:
     WindowParas() {}
 };
 void  clipByShape();
+namespace coord {
+void generateCoordinateAxis();
+void drawScaleText();
+}
 
 constexpr GLint left_bit_code = 0x1;
 constexpr GLint right_bit_code = 0x2;

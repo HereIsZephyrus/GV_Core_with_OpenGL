@@ -151,22 +151,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "56C298BA-8B0B-47BA-81D3-BE0CA529522D"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "GV_Core_with_OpenGL/window.cpp"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "55"
-            endingLineNumber = "55"
-            landmarkName = "initOpenGL(window)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "FE6189C1-D50A-4728-9575-9D1690FC85B8"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -174,8 +158,8 @@
             filePath = "GV_Core_with_OpenGL/commander.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "257"
-            endingLineNumber = "257"
+            startingLineNumber = "259"
+            endingLineNumber = "259"
             landmarkName = "drawModsToggle(window, button, action, mods)"
             landmarkType = "9">
          </BreakpointContent>
@@ -206,8 +190,8 @@
             filePath = "GV_Core_with_OpenGL/commander.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "264"
-            endingLineNumber = "264"
+            startingLineNumber = "266"
+            endingLineNumber = "266"
             landmarkName = "drawModsToggle(window, button, action, mods)"
             landmarkType = "9">
          </BreakpointContent>

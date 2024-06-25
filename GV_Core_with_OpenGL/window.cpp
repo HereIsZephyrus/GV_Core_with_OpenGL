@@ -5,6 +5,14 @@
 //  Created by ChanningTong on 6/8/24.
 //
 #include <iostream>
+#include <cmath>
+#include <cstring>
+#include <string>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "stb_truetype.h"
 #include "commander.hpp"
 #include "window.hpp"
 #include "camera.hpp"
@@ -76,6 +84,141 @@ int initOpenGL(GLFWwindow *&window) {
     return 0;
 }
 
+namespace coord {
+void drawScaleNumbers(){
+    const char* mac_font_path = "/Library/Fonts/Bodoni Bk BT Book.ttf";
+    unsigned char* font_data;
+    long font_size;
+
+    FILE* font_file = fopen(mac_font_path, "rb");
+    fseek(font_file, 0, SEEK_END);
+    font_size = ftell(font_file);
+    fseek(font_file, 0, SEEK_SET);
+    font_data = (unsigned char*)malloc(font_size);
+    fread(font_data, 1, font_size, font_file);
+    fclose(font_file);
+    stbtt_fontinfo font_info;
+    if (!stbtt_InitFont(&font_info, font_data, 0)) {
+        fprintf(stderr, "Failed to initialize font\n");
+        free(font_data);
+        return;
+    }
+    float scale = stbtt_ScaleForPixelHeight(&font_info, 48.0f);
+    int x = 0, y = 0;
+    const char* text = "123456789";
+
+    while (*text) {
+        int advance, left, top, right, bottom;
+        //unsigned char* bitmap = stbtt_GetCodepointBitmap(&font_info, scale, scale, stbtt_FindGlyphIndex(&font_info, *text), &advance, &left, &top, &bottom, &right);
+
+        //x += advance * scale;
+        text++;
+    }
+    free(font_data);
+    return;
+}
+void generateCoordinateAxis(){
+    Camera2D& camera = Camera2D::getView();
+    const glm::vec2 center = camera.getPosition();
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat zoom = camera.getZoom();
+    const GLfloat left = -windowPara.SCREEN_WIDTH/ windowPara.xScale / 2.0f *zoom + center.x;
+    const GLfloat right = windowPara.SCREEN_WIDTH / windowPara.xScale / 2.0f *zoom+ center.x;
+    const GLfloat bottom = -windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
+    const GLfloat top = windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
+    GLfloat scale =zoom * 40.0f,length =zoom*3.0f;
+    vertexArray axis = {
+       left,0,0,right,0,0,
+        0,top,0,0,bottom,0
+    };
+    for (GLfloat x = scale; x<= right; x+=scale){
+        axis.push_back(x);axis.push_back(0);axis.push_back(0);
+        axis.push_back(x);axis.push_back(length);axis.push_back(0);
+    }
+    for (GLfloat x = - scale; x>= left; x-=scale){
+        axis.push_back(x);axis.push_back(0);axis.push_back(0);
+        axis.push_back(x);axis.push_back(length);axis.push_back(0);
+    }
+    for (GLfloat y =  scale; y<= top; y+=scale){
+        axis.push_back(0);axis.push_back(y);axis.push_back(0);
+        axis.push_back(length);axis.push_back(y);axis.push_back(0);
+    }
+    for (GLfloat y =  - scale; y>= bottom; y-=scale){
+        axis.push_back(0);axis.push_back(y);axis.push_back(0);
+        axis.push_back(length);axis.push_back(y);axis.push_back(0);
+    }
+    //drawScaleNumbers();
+    pPrimitive newAxisPrimitive (new Primitive(axis,Shape::LINES,3));
+    newAxisPrimitive -> bindShader(rd::namedShader["axisShader"].get());
+    pr::axisPrimitive = std::move(newAxisPrimitive);
+}
+void drawScaleText(){
+    Camera2D& camera = Camera2D::getView();
+    const GLfloat zoom = camera.getZoom();
+    WindowParas& windowPara = WindowParas::getInstance();
+    const glm::vec2 center = camera.getPosition();
+    const GLfloat left = -windowPara.SCREEN_WIDTH/ windowPara.xScale / 2.0f *zoom + center.x;
+    const GLfloat right = windowPara.SCREEN_WIDTH / windowPara.xScale / 2.0f *zoom+ center.x;
+    const GLfloat bottom = -windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
+    const GLfloat top = windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
+    GLfloat scale =zoom * 40.0f;
+    ImGui::Begin("Transparent Window", NULL,
+                 ImGuiWindowFlags_NoDecoration |
+                 ImGuiWindowFlags_NoInputs |
+                 ImGuiWindowFlags_NoSavedSettings |
+                 ImGuiWindowFlags_NoFocusOnAppearing |
+                 ImGuiWindowFlags_NoMove |
+                 ImGuiWindowFlags_NoResize |
+                 ImGuiWindowFlags_NoScrollbar |
+                 ImGuiWindowFlags_NoScrollWithMouse |
+                 ImGuiWindowFlags_NoTitleBar |
+                 ImGuiWindowFlags_NoMouseInputs |
+                 ImGuiWindowFlags_AlwaysAutoResize |
+                 ImGuiWindowFlags_NoBackground);
+    //std::cout<<-left<<' '<<top<<std::endl;
+    ImGui::SetWindowPos(ImVec2(0, gui::menuBarHeight), ImGuiCond_Always);
+    const GLfloat TEXT_WIDTH =(right-left), TEXT_HETGHT = (top-bottom - gui::menuBarHeight);
+    ImGui::SetWindowSize(ImVec2(TEXT_WIDTH, TEXT_HETGHT), ImGuiCond_Always);
+    const GLfloat centerX = -left/zoom ,centerY=top/zoom-gui::menuBarHeight ,xbias = -7.0f,ybias = 1.0f;
+    ImVec2 textPos = ImVec2(centerX + xbias,centerY + ybias);
+    ImGui::SetCursorPos(textPos);
+    ImGui::Text("0");
+    const GLfloat textX = std::min(std::max(centerX +  xbias,0.0f),TEXT_WIDTH - 40.0f);
+    //std::cout<<TEXT_HETGHT<<' '<<centerY+ybias<<std::endl;
+    const GLfloat textY = std::min(std::max(centerY +  ybias,0.0f),TEXT_HETGHT - 20.0f);
+    for (GLfloat x = scale; x<= right; x+=scale){
+        textPos = ImVec2(centerX +  x/zoom + xbias,textY);
+        char buffer[8];
+        snprintf(buffer, sizeof(buffer),"%.1f", x);
+        ImGui::SetCursorPos(textPos);
+        ImGui::TextV(buffer,nullptr);
+    }
+    for (GLfloat x = - scale; x>= left; x-=scale){
+        textPos = ImVec2(centerX +  x/zoom + xbias,textY);
+        char buffer[8];
+        snprintf(buffer, sizeof(buffer),"%.1f", x);
+        ImGui::SetCursorPos(textPos);
+        ImGui::TextV(buffer,nullptr);
+    }
+    for (GLfloat y =  scale; y<= top; y+=scale){
+        textPos = ImVec2(textX,centerY -  y/zoom + ybias);
+        char buffer[8];
+        snprintf(buffer, sizeof(buffer),"%.1f", y);
+        ImGui::SetCursorPos(textPos);
+        ImGui::TextV(buffer,nullptr);
+    }
+    for (GLfloat y =  - scale; y>= bottom; y-=scale){
+        textPos = ImVec2(textX,centerY -  y/zoom + ybias);
+        char buffer[8];
+        snprintf(buffer, sizeof(buffer),"%.1f", y);
+        ImGui::SetCursorPos(textPos);
+        ImGui::TextV(buffer,nullptr);
+    }
+    ImGui::End();
+}
+}
+
+
 namespace gui {
 unsigned int panelStackNum = 0;
 float menuBarHeight;
@@ -105,7 +248,6 @@ void DrawGUI() {
     if (record.state == interectState::drawing) renderEditPanel();
     if (record.showCreateElementWindow)         renderSelectPanel();
     drawList->ChannelsMerge();
-    ImGui::Render();
     return;
 }
 void spiltUI(){
@@ -232,6 +374,7 @@ void renderEditPanel(){
     ImGui::Checkbox("Fill", &style.toFill);
     Shape& drawType = Take::holdon().drawType;
     bool& holdonToDraw = Take::holdon().holdonToDraw;
+    bool& showAxis = record.showAxis;
     if (!record.cliping && ImGui::Button("Clip")){
         record.cliping = true;
     }
@@ -249,6 +392,7 @@ void renderEditPanel(){
         }
         //std::cout<<(drawType == Shape::RECTANGLE)<<std::endl;
     }
+    ImGui::Checkbox("showAxis", &showAxis);
     ImGui::End();
 }
 
