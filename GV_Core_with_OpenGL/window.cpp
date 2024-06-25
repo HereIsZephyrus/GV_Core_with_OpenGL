@@ -5,14 +5,16 @@
 //  Created by ChanningTong on 6/8/24.
 //
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "stb_truetype.h"
 #include "commander.hpp"
 #include "window.hpp"
 #include "camera.hpp"
 #include "primitive.hpp"
 #include "shape.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 GLfloat WindowParas::screen2normalX(GLdouble screenX){
     return  (2.0f * static_cast<GLfloat>(screenX/ SCREEN_WIDTH * xScale)) - 1.0f;
@@ -80,6 +82,38 @@ int initOpenGL(GLFWwindow *&window) {
 }
 
 namespace coord {
+void drawScaleNumbers(){
+    const char* mac_font_path = "/Library/Fonts/Bodoni Bk BT Book.ttf";
+    unsigned char* font_data;
+    long font_size;
+
+    FILE* font_file = fopen(mac_font_path, "rb");
+    fseek(font_file, 0, SEEK_END);
+    font_size = ftell(font_file);
+    fseek(font_file, 0, SEEK_SET);
+    font_data = (unsigned char*)malloc(font_size);
+    fread(font_data, 1, font_size, font_file);
+    fclose(font_file);
+    stbtt_fontinfo font_info;
+    if (!stbtt_InitFont(&font_info, font_data, 0)) {
+        fprintf(stderr, "Failed to initialize font\n");
+        free(font_data);
+        return;
+    }
+    float scale = stbtt_ScaleForPixelHeight(&font_info, 48.0f);
+    int x = 0, y = 0;
+    const char* text = "123456789";
+
+    while (*text) {
+        int advance, left, top, right, bottom;
+        //unsigned char* bitmap = stbtt_GetCodepointBitmap(&font_info, scale, scale, stbtt_FindGlyphIndex(&font_info, *text), &advance, &left, &top, &bottom, &right);
+
+        //x += advance * scale;
+        text++;
+    }
+    free(font_data);
+    return;
+}
 void drawCoordinateAxis(){
     Camera2D& camera = Camera2D::getView();
     const glm::vec2 center = camera.getPosition();
@@ -109,6 +143,7 @@ void drawCoordinateAxis(){
         axis.push_back(0);axis.push_back(y);axis.push_back(0);
         axis.push_back(length);axis.push_back(y);axis.push_back(0);
     }
+    //drawScaleNumbers();
     pPrimitive newAxisPrimitive (new Primitive(axis,Shape::LINES,3));
     newAxisPrimitive -> bindShader(rd::namedShader["axisShader"].get());
     pr::axisPrimitive = std::move(newAxisPrimitive);
