@@ -46,7 +46,8 @@ private:
 };
 void  clipByShape();
 namespace coord {
-void drawCoordinateAxis();
+void generateCoordinateAxis();
+void drawScaleText();
 }
 
 constexpr GLint left_bit_code = 0x1;

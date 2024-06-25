@@ -57,8 +57,10 @@ int main(int argc, const char * argv[]) {
         }
         if (Records::getState().showAxis && pr::axisPrimitive != nullptr){
             pr::axisPrimitive -> draw();
+            coord::drawScaleText();
             //std::cout<<"showing axis"<<pr::axisPrimitive->getVertexNum()<<std::endl;
         }
+        ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
@@ -146,7 +148,7 @@ int initStyle(){
     axisShader->attchFragmentShader(rd::filePath("fillWhite.frag"));
     axisShader->linkProgram();
     rd::namedShader["axisShader"] = std::move(axisShader);
-    coord::drawCoordinateAxis();
+    coord::generateCoordinateAxis();
     //rd::defaultShader = rd::namedShader["singleYellow"].get();
     return 0;
 }
@@ -164,7 +166,7 @@ static bool checkCursorFocus(){
 int InterectResponseCheck(GLFWwindow* &window){
     Camera2D& camera = Camera2D::getView();
     camera.processKeyboard(window);
-    coord::drawCoordinateAxis();
+    coord::generateCoordinateAxis();
     WindowParas::getInstance().mainWindowFocused = checkCursorFocus();
     return 0;
 }

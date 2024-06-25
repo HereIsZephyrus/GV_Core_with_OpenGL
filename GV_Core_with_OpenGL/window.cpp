@@ -5,6 +5,8 @@
 //  Created by ChanningTong on 6/8/24.
 //
 #include <iostream>
+#include <cstring>
+#include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -114,19 +116,20 @@ void drawScaleNumbers(){
     free(font_data);
     return;
 }
-void drawCoordinateAxis(){
+void generateCoordinateAxis(){
     Camera2D& camera = Camera2D::getView();
     const glm::vec2 center = camera.getPosition();
     WindowParas& windowPara = WindowParas::getInstance();
-    const GLfloat left = -windowPara.SCREEN_WIDTH/ windowPara.xScale / 2.0f * camera.getZoom() + center.x;
-    const GLfloat right = windowPara.SCREEN_WIDTH / windowPara.xScale / 2.0f * camera.getZoom()+ center.x;
-    const GLfloat bottom = -windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f * camera.getZoom()+ center.y;
-    const GLfloat top = windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f * camera.getZoom()+ center.y;
+    const GLfloat zoom = camera.getZoom();
+    const GLfloat left = -windowPara.SCREEN_WIDTH/ windowPara.xScale / 2.0f *zoom + center.x;
+    const GLfloat right = windowPara.SCREEN_WIDTH / windowPara.xScale / 2.0f *zoom+ center.x;
+    const GLfloat bottom = -windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
+    const GLfloat top = windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
+    GLfloat scale =zoom * 40,length =zoom*3;
     vertexArray axis = {
        left,0,0,right,0,0,
         0,top,0,0,bottom,0
     };
-    GLfloat scale = camera.getZoom() * 20,length = camera.getZoom()*3;
     for (GLfloat x = scale; x<= right; x+=scale){
         axis.push_back(x);axis.push_back(0);axis.push_back(0);
         axis.push_back(x);axis.push_back(length);axis.push_back(0);
@@ -147,6 +150,58 @@ void drawCoordinateAxis(){
     pPrimitive newAxisPrimitive (new Primitive(axis,Shape::LINES,3));
     newAxisPrimitive -> bindShader(rd::namedShader["axisShader"].get());
     pr::axisPrimitive = std::move(newAxisPrimitive);
+}
+void drawScaleText(){
+    Camera2D& camera = Camera2D::getView();
+    const GLfloat zoom = camera.getZoom();
+    WindowParas& windowPara = WindowParas::getInstance();
+    const glm::vec2 center = camera.getPosition();
+    const GLfloat left = -windowPara.SCREEN_WIDTH/ windowPara.xScale / 2.0f *zoom + center.x;
+    const GLfloat right = windowPara.SCREEN_WIDTH / windowPara.xScale / 2.0f *zoom+ center.x;
+    const GLfloat bottom = -windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
+    const GLfloat top = windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
+    GLfloat scale =zoom * 40;
+    ImGui::Begin("Transparent Window", NULL,
+                 ImGuiWindowFlags_NoDecoration |
+                 ImGuiWindowFlags_NoInputs |
+                 ImGuiWindowFlags_NoSavedSettings |
+                 ImGuiWindowFlags_NoFocusOnAppearing |
+                 ImGuiWindowFlags_NoMove |
+                 ImGuiWindowFlags_NoResize |
+                 ImGuiWindowFlags_NoScrollbar |
+                 ImGuiWindowFlags_NoScrollWithMouse |
+                 ImGuiWindowFlags_NoTitleBar |
+                 ImGuiWindowFlags_NoMouseInputs |
+                 ImGuiWindowFlags_AlwaysAutoResize |
+                 ImGuiWindowFlags_NoBackground);
+    //std::cout<<-left<<' '<<top<<std::endl;
+    ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+    ImGui::SetWindowSize(ImVec2(right-left, top-bottom), ImGuiCond_Always);
+    const GLfloat centerX = -left/zoom,centerY= top/zoom;
+    ImVec2 textPos = ImVec2(centerX,centerY);
+    ImGui::SetCursorPos(textPos);
+    ImGui::Text("0");
+    for (GLfloat x = scale; x<= right; x+=scale){
+        textPos = ImVec2(centerX +  x/zoom,centerY);
+        ImGui::SetCursorPos(textPos);
+        ImGui::Text(std::to_string(int(x*10)/10).c_str());
+    }
+    for (GLfloat x = - scale; x>= left; x-=scale){
+        textPos = ImVec2(centerX +  x/zoom,centerY);
+        ImGui::SetCursorPos(textPos);
+        ImGui::Text(std::to_string(int(x*10)/10).c_str());
+    }
+    for (GLfloat y =  scale; y<= top; y+=scale){
+        textPos = ImVec2(centerX,centerY -  y/zoom);
+        ImGui::SetCursorPos(textPos);
+        ImGui::Text(std::to_string(int(y*10)/10).c_str());
+    }
+    for (GLfloat y =  - scale; y>= bottom; y-=scale){
+        textPos = ImVec2(centerX,centerY -  y/zoom);
+        ImGui::SetCursorPos(textPos);
+        ImGui::Text(std::to_string(int(y*10)/10).c_str());
+    }
+    ImGui::End();
 }
 }
 
@@ -180,7 +235,6 @@ void DrawGUI() {
     if (record.state == interectState::drawing) renderEditPanel();
     if (record.showCreateElementWindow)         renderSelectPanel();
     drawList->ChannelsMerge();
-    ImGui::Render();
     return;
 }
 void spiltUI(){

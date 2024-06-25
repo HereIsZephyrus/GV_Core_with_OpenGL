@@ -223,7 +223,7 @@ void mouseModsToggle(GLFWwindow* window, int button, int action, int mods){
 }
 void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
     Camera2D::getView().processScroll(window, xoffset, yoffset, Records::getState().pressCtrl, Records::getState().pressAlt);
-    coord::drawCoordinateAxis();
+    coord::generateCoordinateAxis();
 }
 static bool startDrawCheck(GLFWwindow* window, int button, int action, int mods){
     Records& record = Records::getState();
