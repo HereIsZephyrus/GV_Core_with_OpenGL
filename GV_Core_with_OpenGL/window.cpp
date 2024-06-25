@@ -5,6 +5,7 @@
 //  Created by ChanningTong on 6/8/24.
 //
 #include <iostream>
+#include <cmath>
 #include <cstring>
 #include <string>
 #include <glm/glm.hpp>
@@ -125,7 +126,7 @@ void generateCoordinateAxis(){
     const GLfloat right = windowPara.SCREEN_WIDTH / windowPara.xScale / 2.0f *zoom+ center.x;
     const GLfloat bottom = -windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
     const GLfloat top = windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
-    GLfloat scale =zoom * 40,length =zoom*3;
+    GLfloat scale =zoom * 40.0f,length =zoom*3.0f;
     vertexArray axis = {
        left,0,0,right,0,0,
         0,top,0,0,bottom,0
@@ -160,7 +161,7 @@ void drawScaleText(){
     const GLfloat right = windowPara.SCREEN_WIDTH / windowPara.xScale / 2.0f *zoom+ center.x;
     const GLfloat bottom = -windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
     const GLfloat top = windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
-    GLfloat scale =zoom * 40;
+    GLfloat scale =zoom * 40.0f;
     ImGui::Begin("Transparent Window", NULL,
                  ImGuiWindowFlags_NoDecoration |
                  ImGuiWindowFlags_NoInputs |
@@ -175,31 +176,43 @@ void drawScaleText(){
                  ImGuiWindowFlags_AlwaysAutoResize |
                  ImGuiWindowFlags_NoBackground);
     //std::cout<<-left<<' '<<top<<std::endl;
-    ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-    ImGui::SetWindowSize(ImVec2(right-left, top-bottom), ImGuiCond_Always);
-    const GLfloat centerX = -left/zoom,centerY= top/zoom;
-    ImVec2 textPos = ImVec2(centerX,centerY);
+    ImGui::SetWindowPos(ImVec2(0, gui::menuBarHeight), ImGuiCond_Always);
+    const GLfloat TEXT_WIDTH =(right-left), TEXT_HETGHT = (top-bottom - gui::menuBarHeight);
+    ImGui::SetWindowSize(ImVec2(TEXT_WIDTH, TEXT_HETGHT), ImGuiCond_Always);
+    const GLfloat centerX = -left/zoom ,centerY=top/zoom-gui::menuBarHeight ,xbias = -7.0f,ybias = 1.0f;
+    ImVec2 textPos = ImVec2(centerX + xbias,centerY + ybias);
     ImGui::SetCursorPos(textPos);
     ImGui::Text("0");
+    const GLfloat textX = std::min(std::max(centerX +  xbias,0.0f),TEXT_WIDTH - 40.0f);
+    //std::cout<<TEXT_HETGHT<<' '<<centerY+ybias<<std::endl;
+    const GLfloat textY = std::min(std::max(centerY +  ybias,0.0f),TEXT_HETGHT - 20.0f);
     for (GLfloat x = scale; x<= right; x+=scale){
-        textPos = ImVec2(centerX +  x/zoom,centerY);
+        textPos = ImVec2(centerX +  x/zoom + xbias,textY);
+        char buffer[8];
+        snprintf(buffer, sizeof(buffer),"%.1f", x);
         ImGui::SetCursorPos(textPos);
-        ImGui::Text(std::to_string(int(x*10)/10).c_str());
+        ImGui::TextV(buffer,nullptr);
     }
     for (GLfloat x = - scale; x>= left; x-=scale){
-        textPos = ImVec2(centerX +  x/zoom,centerY);
+        textPos = ImVec2(centerX +  x/zoom + xbias,textY);
+        char buffer[8];
+        snprintf(buffer, sizeof(buffer),"%.1f", x);
         ImGui::SetCursorPos(textPos);
-        ImGui::Text(std::to_string(int(x*10)/10).c_str());
+        ImGui::TextV(buffer,nullptr);
     }
     for (GLfloat y =  scale; y<= top; y+=scale){
-        textPos = ImVec2(centerX,centerY -  y/zoom);
+        textPos = ImVec2(textX,centerY -  y/zoom + ybias);
+        char buffer[8];
+        snprintf(buffer, sizeof(buffer),"%.1f", y);
         ImGui::SetCursorPos(textPos);
-        ImGui::Text(std::to_string(int(y*10)/10).c_str());
+        ImGui::TextV(buffer,nullptr);
     }
     for (GLfloat y =  - scale; y>= bottom; y-=scale){
-        textPos = ImVec2(centerX,centerY -  y/zoom);
+        textPos = ImVec2(textX,centerY -  y/zoom + ybias);
+        char buffer[8];
+        snprintf(buffer, sizeof(buffer),"%.1f", y);
         ImGui::SetCursorPos(textPos);
-        ImGui::Text(std::to_string(int(y*10)/10).c_str());
+        ImGui::TextV(buffer,nullptr);
     }
     ImGui::End();
 }
