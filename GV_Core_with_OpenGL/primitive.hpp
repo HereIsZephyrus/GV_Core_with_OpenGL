@@ -86,8 +86,8 @@ private:
     std::string name;
     Primitive* m_self;
 };
-typedef std::unique_ptr<Primitive> pPrimitive;
 
+typedef std::unique_ptr<Primitive> pPrimitive;
 namespace pr {
 extern pPrimitive drawPreviewPrimitive;
 extern pPrimitive axisPrimitive;

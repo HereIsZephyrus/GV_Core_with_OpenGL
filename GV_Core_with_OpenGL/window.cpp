@@ -92,6 +92,23 @@ void drawCoordinateAxis(){
        left,0,0,right,0,0,
         0,top,0,0,bottom,0
     };
+    GLfloat scale = camera.getZoom() * 20,length = camera.getZoom()*3;
+    for (GLfloat x = scale; x<= right; x+=scale){
+        axis.push_back(x);axis.push_back(0);axis.push_back(0);
+        axis.push_back(x);axis.push_back(length);axis.push_back(0);
+    }
+    for (GLfloat x = - scale; x>= left; x-=scale){
+        axis.push_back(x);axis.push_back(0);axis.push_back(0);
+        axis.push_back(x);axis.push_back(length);axis.push_back(0);
+    }
+    for (GLfloat y =  scale; y<= top; y+=scale){
+        axis.push_back(0);axis.push_back(y);axis.push_back(0);
+        axis.push_back(length);axis.push_back(y);axis.push_back(0);
+    }
+    for (GLfloat y =  - scale; y>= bottom; y-=scale){
+        axis.push_back(0);axis.push_back(y);axis.push_back(0);
+        axis.push_back(length);axis.push_back(y);axis.push_back(0);
+    }
     pPrimitive newAxisPrimitive (new Primitive(axis,Shape::LINES,3));
     newAxisPrimitive -> bindShader(rd::namedShader["axisShader"].get());
     pr::axisPrimitive = std::move(newAxisPrimitive);
