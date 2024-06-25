@@ -21,6 +21,7 @@ enum class interectState{
     toselect,//to select feature
     holding,//binded to the object
 };
+typedef std::pair<Primitive*, std::string> item;
 class Records{
 public:
     static Records& getState(){
@@ -32,8 +33,10 @@ public:
     GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
     bool dragingMode,drawingPrimitive,cliping;
     bool showCreateElementWindow;
+    bool showAxis;
     interectState state;
     void initIObuffer();
+    std::vector<item > primitiveList;
 private:
     Records(){}
 };

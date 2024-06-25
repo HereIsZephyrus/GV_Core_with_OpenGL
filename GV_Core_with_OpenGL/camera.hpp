@@ -62,8 +62,6 @@ private:
     glm::mat4 viewMatrix;
     const GLfloat deltaTime = 0.016f; // 60FPS
     void updateProjectionMatrix();
-    void updateViewMatrix() {
-        viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-position, 0.0f));
-    }
+    void updateViewMatrix() ;
 };
 #endif /* camera_hpp */

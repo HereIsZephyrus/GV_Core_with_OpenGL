@@ -21,18 +21,17 @@
 #include "rendering.hpp"
 
 typedef std::shared_ptr<vertexArray> pVertexArray;
-void createTopoElements(const Primitive* lastpPrimitive);
-void updateTopoElements(const Primitive* lastpPrimitive);
+void createTopoElements(Primitive* lastpPrimitive);
+void updateTopoElements(Primitive* lastpPrimitive);
 
 namespace pr {
-void updateIndex(const Primitive*);
+void updateIndex(Primitive*);
 enum class TopoType{
     point,
     line,
     face
 };
 //don't recycle point/line/face index -- don't need to tackle so much elements for now.
-extern GLuint elementNum;
 class Element{
 public:
     void draw();
@@ -50,7 +49,6 @@ public:
     TopoType getType() const {return type;}
     const primitiveIdentifier* getIdentifier() const{return identifier;}
     void setColor(const glm::vec4 setColor){style.color = {setColor.x,setColor.y,setColor.z,setColor.w};}
-    friend void createTopoElements(const Primitive* lastpPrimitive);
 protected:
     void bindEBObuffer(){
         glGenBuffers(1, &EBO);
@@ -72,12 +70,10 @@ protected:
     TopoType type;
     //ShaderPara style;
 };
-typedef std::shared_ptr<Element> pElement;
-extern std::vector<pElement > mainElementList;
 
 class Point: public Element{
 public:
-    Point(const Primitive* primitive,GLuint startIndex):
+    Point(Primitive* primitive,GLuint startIndex):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
         this->pointSize = style.pointSize;
@@ -86,7 +82,6 @@ public:
         vertexIndex = {startIndex};
         calcGeoCenter();
         type = TopoType::point;
-        id  = ++elementNum;
         bindEBObuffer();
     }
     glm::vec2 getCenterLocation() const{return centerLocation;}
@@ -96,13 +91,12 @@ protected:
         centerLocation.x = (*refVertex)[0];
         centerLocation.y = (*refVertex)[1];
     }
-    GLuint id;
 private:
     GLfloat pointSize;
 };
 class Line: public Element{
 public:
-    Line(const Primitive* primitive,GLuint startIndex,GLuint endIndex):
+    Line(Primitive* primitive,GLuint startIndex,GLuint endIndex):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
         this->lineWidth = style.thickness;
@@ -110,12 +104,11 @@ public:
         shape = GL_LINES;
         vertexIndex = {startIndex,endIndex};
         point[0] = std::make_shared<Point>(primitive,vertexIndex[0]);
+        primitive->elementList.push_back(point[0]);
         point[1] = std::make_shared<Point>(primitive,vertexIndex[1]);
-        mainElementList.push_back(point[0]);
-        mainElementList.push_back(point[1]);
+        primitive->elementList.push_back(point[1]);
         calcGeoCenter();
         type = TopoType::line;
-        id = ++ elementNum;
         bindEBObuffer();
     }
     glm::vec2 getCenterLocation() const{return centerLocation;}
@@ -127,7 +120,6 @@ protected:
         centerLocation.x = (centerLoc1.x + centerLoc2.x)/2;
         centerLocation.y = (centerLoc1.y + centerLoc2.y)/2;
     }
-    GLuint id;
 private:
     GLfloat lineWidth;
     std::shared_ptr<Point> point[2];
@@ -135,7 +127,7 @@ private:
 typedef std::shared_ptr<Line> pLine;
 class Face: public Element{
 public:
-    Face(const Primitive* primitive):
+    Face(Primitive* primitive):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
@@ -145,14 +137,13 @@ public:
         for (int i = 0; i<n-1; i++){
             vertexIndex.push_back(i);
             line.push_back(std::make_shared<Line>(primitive,i,i+1));
-            mainElementList.push_back(line.back());
+            primitive->elementList.push_back(line.back());
         }
         vertexIndex.push_back(n-1);
         line.push_back(std::make_shared<Line>(primitive,n-1,0));
-        mainElementList.push_back(line.back());
+        primitive->elementList.push_back(line.back());
         calcGeoCenter();
         type = TopoType::face;
-        id = ++ elementNum;
         bindEBObuffer();
     }
 protected:
@@ -168,7 +159,6 @@ protected:
         centerLocation.x /= vertexNum;
         centerLocation.y /= vertexNum;
     }
-    GLuint id;
 private:
     std::vector<pLine> line;
 };

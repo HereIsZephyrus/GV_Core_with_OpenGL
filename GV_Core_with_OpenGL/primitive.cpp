@@ -15,7 +15,11 @@
 Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
+    m_self = this;
     this->vertices = vertices;
+    this->elementList.clear();
+    Records& record = Records::getState();
+    this->layer = static_cast<GLuint>(record.primitiveList.size())+1;
     const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
     this->color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
     switch (shape) {
@@ -100,6 +104,7 @@ void Primitive::draw(){
     }
     glEnableVertexAttribArray(0);
     glBindVertexArray(identifier.VAO);
+    //std::cout<<"drawing primitive"<<std::endl;
     //glDrawArrays(shape, 0,( getVertexNum()-1)*6);
     glDrawArrays(shape, 0, getVertexNum());
     // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
@@ -120,4 +125,5 @@ void Primitive::updateVertex(){
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;
 pPrimitive drawPreviewPrimitive = nullptr;
+pPrimitive axisPrimitive = nullptr;
 }

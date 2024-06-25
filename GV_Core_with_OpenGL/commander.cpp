@@ -23,7 +23,9 @@ void Records::initIObuffer(){
     pressCtrl = GL_FALSE;
     dragingMode = GL_FALSE;
     drawingPrimitive = GL_FALSE;
+    showAxis = GL_FALSE;
     state = interectState::toselect;
+    primitiveList.clear();
 }
 
 static void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -221,6 +223,7 @@ void mouseModsToggle(GLFWwindow* window, int button, int action, int mods){
 }
 void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
     Camera2D::getView().processScroll(window, xoffset, yoffset, Records::getState().pressCtrl, Records::getState().pressAlt);
+    coord::generateCoordinateAxis();
 }
 static bool startDrawCheck(GLFWwindow* window, int button, int action, int mods){
     Records& record = Records::getState();
@@ -288,8 +291,9 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         if (!record.cliping){
             newPrimitive->bindShader(rd::mainShaderList.back().get());
             pr::mainPrimitiveList.push_back(std::move(newPrimitive));
-            const Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
+            Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
             createTopoElements(lastpPrimitive);
+            record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
         }
         else{
             take.clipShape  =std::move(newPrimitive);

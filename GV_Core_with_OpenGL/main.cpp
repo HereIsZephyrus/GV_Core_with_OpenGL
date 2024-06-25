@@ -29,6 +29,7 @@ static int initInterect(GLFWwindow* &window);
 static int initStyle();
 static int releaseResources(GLFWwindow* &window);
 static int InterectResponseCheck(GLFWwindow* &window);
+
 int main(int argc, const char * argv[]) {
     GLFWwindow *& window = WindowParas::getInstance().window;
     if (!HAS_INIT_OPENGL_CONTEXT && initOpenGL(window) != 0)
@@ -45,23 +46,21 @@ int main(int argc, const char * argv[]) {
         glClearColor(backgroundColor.x,backgroundColor.y, backgroundColor.z, backgroundColor.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         InterectResponseCheck(window);
+        
         //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
-        //for (auto it = pr::mainPrimitiveList.begin(); it!= pr::mainPrimitiveList.end(); it++)
-          //      (*it)->draw();
-        //int pointnum = 0,linenum = 0, facenum = 0;
-        for (auto it = pr::mainElementList.begin(); it != pr::mainElementList.end(); it ++){
-            if ((*it) -> getVisable())
-                (*it)->draw();
-            //if ((*it)->getType() == pr::TopoType::point)  pointnum++;
-            //if ((*it)->getType() == pr::TopoType::line)    linenum++;
-            //if ((*it)->getType() == pr::TopoType::face)    facenum++;
-        }
-            
-        //std::cout<<pointnum <<" point,"<<linenum<<" line,"<<facenum<<" face"<<std::endl;
+        for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++)
+            for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
+                (*element)->draw();
         if (pr::drawPreviewPrimitive != nullptr){
             pr::drawPreviewPrimitive -> draw();
-            //std::cout<<"existed"<<std::endl;
+            //std::cout<<"showing preview"<<std::endl;
         }
+        if (Records::getState().showAxis && pr::axisPrimitive != nullptr){
+            pr::axisPrimitive -> draw();
+            coord::drawScaleText();
+            //std::cout<<"showing axis"<<pr::axisPrimitive->getVertexNum()<<std::endl;
+        }
+        ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
@@ -137,17 +136,19 @@ int initStyle(){
     style.thickness = 1.0f;
     glLineWidth(style.thickness);
     
-    //init shader
-   //pShader singleYellow (new Shader());
-   //singleYellow->attchVertexShader(rd::filePath("singleVertices.vs"));
-   //singleYellow->attchFragmentShader(rd::filePath("fillYellow.frag"));
-   //singleYellow->linkProgram();
-   //rd::namedShader["singleYellow"] = std::move(singleYellow);
+    //init preview shader
     pShader previewShader (new Shader());
     previewShader->attchVertexShader(rd::filePath("singleVertices.vs"));
     previewShader->attchFragmentShader(rd::filePath("fillWhite.frag"));
     previewShader->linkProgram();
     rd::namedShader["previewShader"] = std::move(previewShader);
+    //init axis
+    pShader axisShader (new Shader());
+    axisShader->attchVertexShader(rd::filePath("singleVertices.vs"));
+    axisShader->attchFragmentShader(rd::filePath("fillWhite.frag"));
+    axisShader->linkProgram();
+    rd::namedShader["axisShader"] = std::move(axisShader);
+    coord::generateCoordinateAxis();
     //rd::defaultShader = rd::namedShader["singleYellow"].get();
     return 0;
 }
@@ -165,6 +166,7 @@ static bool checkCursorFocus(){
 int InterectResponseCheck(GLFWwindow* &window){
     Camera2D& camera = Camera2D::getView();
     camera.processKeyboard(window);
+    coord::generateCoordinateAxis();
     WindowParas::getInstance().mainWindowFocused = checkCursorFocus();
     return 0;
 }

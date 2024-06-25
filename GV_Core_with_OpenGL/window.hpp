@@ -7,10 +7,12 @@
 
 #ifndef window_hpp
 #define window_hpp
+#include <cstring>
+#include <string>
+#include <cmath>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <cmath>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -43,6 +45,10 @@ private:
     WindowParas() {}
 };
 void  clipByShape();
+namespace coord {
+void generateCoordinateAxis();
+void drawScaleText();
+}
 
 constexpr GLint left_bit_code = 0x1;
 constexpr GLint right_bit_code = 0x2;
@@ -53,6 +59,7 @@ extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
 void DrawGUI();
 void spiltUI();
+void createPrimitiveList();
 }
 
 #endif /* window_hpp */
