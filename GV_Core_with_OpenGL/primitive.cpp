@@ -104,6 +104,7 @@ void Primitive::draw(){
     }
     glEnableVertexAttribArray(0);
     glBindVertexArray(identifier.VAO);
+    //std::cout<<"drawing primitive"<<std::endl;
     //glDrawArrays(shape, 0,( getVertexNum()-1)*6);
     glDrawArrays(shape, 0, getVertexNum());
     // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
@@ -124,4 +125,5 @@ void Primitive::updateVertex(){
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;
 pPrimitive drawPreviewPrimitive = nullptr;
+pPrimitive axisPrimitive = nullptr;
 }

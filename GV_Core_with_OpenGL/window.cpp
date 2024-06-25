@@ -10,6 +10,9 @@
 #include "camera.hpp"
 #include "primitive.hpp"
 #include "shape.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 GLfloat WindowParas::screen2normalX(GLdouble screenX){
     return  (2.0f * static_cast<GLfloat>(screenX/ SCREEN_WIDTH * xScale)) - 1.0f;
@@ -75,6 +78,26 @@ int initOpenGL(GLFWwindow *&window) {
     HAS_INIT_OPENGL_CONTEXT = true;
     return 0;
 }
+
+namespace coord {
+void drawCoordinateAxis(){
+    Camera2D& camera = Camera2D::getView();
+    const glm::vec2 center = camera.getPosition();
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat left = -windowPara.SCREEN_WIDTH/ windowPara.xScale / 2.0f * camera.getZoom() + center.x;
+    const GLfloat right = windowPara.SCREEN_WIDTH / windowPara.xScale / 2.0f * camera.getZoom()+ center.x;
+    const GLfloat bottom = -windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f * camera.getZoom()+ center.y;
+    const GLfloat top = windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f * camera.getZoom()+ center.y;
+    vertexArray axis = {
+       left,0,0,right,0,0,
+        0,top,0,0,bottom,0
+    };
+    pPrimitive newAxisPrimitive (new Primitive(axis,Shape::LINES,3));
+    newAxisPrimitive -> bindShader(rd::namedShader["axisShader"].get());
+    pr::axisPrimitive = std::move(newAxisPrimitive);
+}
+}
+
 
 namespace gui {
 unsigned int panelStackNum = 0;
@@ -232,6 +255,7 @@ void renderEditPanel(){
     ImGui::Checkbox("Fill", &style.toFill);
     Shape& drawType = Take::holdon().drawType;
     bool& holdonToDraw = Take::holdon().holdonToDraw;
+    bool& showAxis = record.showAxis;
     if (!record.cliping && ImGui::Button("Clip")){
         record.cliping = true;
     }
@@ -249,6 +273,7 @@ void renderEditPanel(){
         }
         //std::cout<<(drawType == Shape::RECTANGLE)<<std::endl;
     }
+    ImGui::Checkbox("showAxis", &showAxis);
     ImGui::End();
 }
 

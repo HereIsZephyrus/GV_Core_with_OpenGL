@@ -90,6 +90,7 @@ typedef std::unique_ptr<Primitive> pPrimitive;
 
 namespace pr {
 extern pPrimitive drawPreviewPrimitive;
+extern pPrimitive axisPrimitive;
 extern std::vector<pPrimitive >mainPrimitiveList;
 }
 

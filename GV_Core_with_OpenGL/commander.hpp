@@ -33,6 +33,7 @@ public:
     GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
     bool dragingMode,drawingPrimitive,cliping;
     bool showCreateElementWindow;
+    bool showAxis;
     interectState state;
     void initIObuffer();
     std::vector<item > primitiveList;

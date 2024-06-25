@@ -7,10 +7,10 @@
 
 #ifndef window_hpp
 #define window_hpp
-#define GLEW_STATIC
 #include <cstring>
 #include <string>
 #include <cmath>
+#define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "imgui.h"
@@ -45,6 +45,9 @@ private:
     WindowParas() {}
 };
 void  clipByShape();
+namespace coord {
+void drawCoordinateAxis();
+}
 
 constexpr GLint left_bit_code = 0x1;
 constexpr GLint right_bit_code = 0x2;
