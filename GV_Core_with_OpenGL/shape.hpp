@@ -52,6 +52,7 @@ public:
     TopoType getType() const {return type;}
     const primitiveIdentifier* getIdentifier() const{return identifier;}
     void setColor(const glm::vec4 setColor){style.color = {setColor.x,setColor.y,setColor.z,setColor.w};}
+    GLenum getShape() const {return shape;}
     pVertexArray getVertexArray() const {return refVertex;}
     virtual bool cursorSelectDetect(GLdouble xpos,GLdouble ypos) = 0;
 protected:

@@ -22,6 +22,8 @@ void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mo
 void mouseModsToggle(GLFWwindow* window, int button, int action, int mods);
 void cursorDragingDetect(GLFWwindow* window, double xpos, double ypos);
 void drawModsToggle(GLFWwindow* window, int button, int action, int mods);
+void editPrimitive();
 void viewScroll(GLFWwindow* window, double xoffset, double yoffset);
 void processCursorTrace(GLFWwindow* window,double xpos, double ypos);
+bool primitiveSelectDetect(Primitive* primitive);
 #endif /* factor_hpp */

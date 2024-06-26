@@ -70,6 +70,7 @@ void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mod
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);
 void mouseViewCallback(GLFWwindow* window, int button, int action, int mods);
+void mouseEditCallback(GLFWwindow* window, int button, int action, int mods);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void cursorDefaultCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorDragCallback(GLFWwindow* window, double xpos, double ypos);

@@ -23,13 +23,13 @@
 #include "commander.hpp"
 #include "camera.hpp"
 #include "shape.hpp"
+#include "factor.hpp"
 
 static int initImGUI(GLFWwindow *window);
 static int initInterect(GLFWwindow* &window);
 static int initStyle();
 static int releaseResources(GLFWwindow* &window);
 static int InterectResponseCheck(GLFWwindow* &window);
-static bool primitiveSelectDetect(Primitive* primitive);
 
 int main(int argc, const char * argv[]) {
     GLFWwindow *& window = WindowParas::getInstance().window;
@@ -197,6 +197,8 @@ int InterectResponseCheck(GLFWwindow* &window){
     camera.processKeyboard(window);
     coord::generateCoordinateAxis();
     WindowParas::getInstance().mainWindowFocused = checkCursorFocus();
+    if (Records::getState().state == interectState::editing && WindowParas::getInstance().mainWindowFocused)
+        editPrimitive();
     return 0;
 }
 

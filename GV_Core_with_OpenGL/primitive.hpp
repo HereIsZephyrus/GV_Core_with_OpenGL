@@ -80,6 +80,7 @@ public:
         return layer<x.layer;
     }
     Primitive* getSelf() {return m_self;}
+    void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
 private:
     primitiveIdentifier identifier;
     GLenum shape;
@@ -97,7 +98,6 @@ namespace pr {
 extern pPrimitive drawPreviewPrimitive;
 extern pPrimitive axisPrimitive;
 extern std::vector<pPrimitive >mainPrimitiveList;
-void addMat(glm::mat3& objMat,const glm::mat3& inputMat);
 }
 
 #endif /* primitive_hpp */

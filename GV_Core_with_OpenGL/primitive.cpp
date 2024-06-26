@@ -138,5 +138,4 @@ namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;
 pPrimitive drawPreviewPrimitive = nullptr;
 pPrimitive axisPrimitive = nullptr;
-void addMat(glm::mat3& objMat,const glm::mat3& inputMat){objMat = objMat * inputMat;}
 }

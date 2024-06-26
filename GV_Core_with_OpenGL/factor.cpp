@@ -180,19 +180,48 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
         pr::drawPreviewPrimitive = nullptr;
     return;
 }
-/*
-bool cursorDetectPoint(std::shared_ptr<pr::Point> element,double xpos, double ypos){
+void editPrimitive(){
+    Take& take = Take::holdon();
+    Records& record = Records::getState();
     WindowParas& windowPara = WindowParas::getInstance();
-    const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
-    const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
-    const GLfloat& pointX = (*element->getVertexArray())[element->vertexIndex[0]];
-    const GLfloat pointDetectRange = 3.0f;
-    if ((cursorX - element.))
+    if (record.pressLeft){
+        std::cout<<"input edit"<<std::endl;
+        pElement holdonElement = nullptr;
+        GLdouble xpos,ypos;
+        glfwGetCursorPos(windowPara.window, &xpos, &ypos);
+        
+        if (primitiveSelectDetect(take.editingPrimitive)){
+            //for the sake of topography build sequeence,the points push back first, then lines, then face. so when detect happend,it will be the fitest one
+            for (auto element = take.editingPrimitive->elementList.begin(); element != take.editingPrimitive->elementList.end(); element++){
+                if ((*element)->cursorSelectDetect(xpos, ypos)){
+                    holdonElement = *element;
+                    break;
+                }
+            }
+        }
+        if (holdonElement != nullptr){
+            // to move
+            const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+            const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+            const GLfloat dX = (cursorX - record.previewXpos);
+            const GLfloat dY = (cursorY - record.previewYpos);
+            if (holdonElement->getShape() == GL_POINT || holdonElement->getShape() == GL_POINTS){
+                //to recognize center of the point set
+                glm::mat3 move = glm::mat3(1.0f);
+                move[0][2] = dX; move[1][2] = dY;
+                take.editingPrimitive->addMat(move);
+                take.editingPrimitive->transform();
+            }
+            else if (holdonElement == take.editingPrimitive->elementList.back()){
+                //to recognize the character element
+                glm::mat3 move = glm::mat3(1.0f);
+                move[0][2] = dX; move[1][2] = dY;
+                take.editingPrimitive->addMat(move);
+                take.editingPrimitive->transform();
+            }
+        }else{
+            //to scale
+            //to rotate
+        }
+    }
 }
-void cursorDetectLine(std::shared_ptr<pr::Line> element,double xpos, double ypos){
-    
-}
-void cursorDetectFace(std::shared_ptr<pr::Face> element,double xpos, double ypos){
-    
-}
-*/
