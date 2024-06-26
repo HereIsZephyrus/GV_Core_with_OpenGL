@@ -74,6 +74,7 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void cursorDefaultCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorDragCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos);
+void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorFocusCallback(GLFWwindow* window, int entered);
 void windowPosCallback(GLFWwindow* window, int xpos, int ypos);
 void windowSizeCallback(GLFWwindow* window, int width, int height);

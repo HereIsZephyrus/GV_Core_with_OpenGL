@@ -95,7 +95,7 @@ int initInterect(GLFWwindow* &window){
     glfwSetKeyCallback(window, keyBasicCallback);
     glfwSetMouseButtonCallback(window, mouseViewCallback);
     glfwSetScrollCallback(window, scrollCallback);
-    glfwSetCursorPosCallback(window, cursorDefaultCallback);
+    glfwSetCursorPosCallback(window, cursorSelectCallback);
     glfwSetCursorEnterCallback(window, cursorFocusCallback);
     return 0;
 }
@@ -158,9 +158,25 @@ static bool checkCursorFocus(){
     GLdouble cursorX,cursorY;
     glfwGetCursorPos(windowPara.window, &cursorX, &cursorY);
     //std::cout<<cursorX<<' '<<cursorY<<std::endl;
-    if (cursorX >= 0 && cursorX <= windowPara.SCREEN_WIDTH/windowPara.xScale && cursorY>= 0 && cursorY <= windowPara.SCREEN_HEIGHT/windowPara.yScale)
-        return  true;
-    return false;
+    if (cursorX < 0 || cursorX > windowPara.SCREEN_WIDTH/windowPara.xScale || cursorY< 0 || cursorY > windowPara.SCREEN_HEIGHT/windowPara.yScale)
+        return  false;
+    if (Records::getState().state ==interectState::toselect && !Records::getState().dragingMode){
+        Camera2D& camera = Camera2D::getView();
+        const GLfloat dragCameraSpeed = 10.0f,borderDetectRange = 40.0f;
+        if (cursorX < borderDetectRange){
+            camera.setDeltaPosition(camera.getPosition(), -dragCameraSpeed, 0);
+        }
+        else if (cursorX> windowPara.SCREEN_WIDTH/windowPara.xScale - borderDetectRange){
+            camera.setDeltaPosition(camera.getPosition(), dragCameraSpeed, 0);
+        }
+        if (cursorY < borderDetectRange){
+            camera.setDeltaPosition(camera.getPosition(), 0, dragCameraSpeed);
+        }
+        else if (cursorY> windowPara.SCREEN_HEIGHT/windowPara.yScale - borderDetectRange){
+            camera.setDeltaPosition(camera.getPosition(), 0, -dragCameraSpeed);
+        }
+    }
+    return true;
 }
 
 int InterectResponseCheck(GLFWwindow* &window){

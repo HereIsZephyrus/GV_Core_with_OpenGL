@@ -23,7 +23,7 @@ void Records::initIObuffer(){
     pressCtrl = GL_FALSE;
     dragingMode = GL_FALSE;
     drawingPrimitive = GL_FALSE;
-    showAxis = GL_FALSE;
+    showAxis = GL_TRUE;
     cliping = GL_FALSE;
     draging = GL_FALSE;
     state = interectState::toselect;
@@ -34,6 +34,7 @@ static void MeauCallback(GLFWwindow* window, int key, int scancode, int action, 
 static void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods);
 static void mouseModsToggle(GLFWwindow* window, int button, int action, int mods);
 static void cursorDragingDetect(GLFWwindow* window, double xpos, double ypos);
+//static void cursorWindowMoveDetect(GLFWwindow* window, double xpos, double ypos);
 static void drawModsToggle(GLFWwindow* window, int button, int action, int mods);
 static void viewScroll(GLFWwindow* window, double xoffset, double yoffset);
 static void processCursorTrace(GLFWwindow* window,double xpos, double ypos);
@@ -128,7 +129,7 @@ void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
             }
             else if (action == GLFW_RELEASE){
                 Records::getState().draging = GL_FALSE;
-                glfwSetCursorPosCallback(window, cursorDefaultCallback);
+                glfwSetCursorPosCallback(window, cursorSelectCallback);
             }
         }
         
@@ -163,6 +164,11 @@ void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos){
 void cursorDragCallback(GLFWwindow* window, double xpos, double ypos){
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
     cursorDragingDetect(window,xpos,ypos);
+    return;
+}
+void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos){
+    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+    //cursorWindowMoveDetect(window,xpos,ypos);
     return;
 }
 void cursorFocusCallback(GLFWwindow* window, int entered){
