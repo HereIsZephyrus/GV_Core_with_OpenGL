@@ -29,6 +29,7 @@ static int initInterect(GLFWwindow* &window);
 static int initStyle();
 static int releaseResources(GLFWwindow* &window);
 static int InterectResponseCheck(GLFWwindow* &window);
+static bool primitiveSelectDetect(Primitive* primitive);
 
 int main(int argc, const char * argv[]) {
     GLFWwindow *& window = WindowParas::getInstance().window;
@@ -42,28 +43,22 @@ int main(int argc, const char * argv[]) {
         glfwPollEvents();
         gui::DrawGUI();
         ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
-        //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClearColor(backgroundColor.x,backgroundColor.y, backgroundColor.z, backgroundColor.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         InterectResponseCheck(window);
+        bool hasHolding = false;
         Records& record = Records::getState();
-        //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
         for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
+            if (record.state != interectState::drawing && !record.dragingMode && record.pressLeft){
+                bool holdingThis = primitiveSelectDetect((*primitive).get());
+                hasHolding |= holdingThis;
+            }
             for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
                 (*element)->draw();
-            GLdouble xpos,ypos;
-            glfwGetCursorPos(window, &xpos, &ypos);
-            if (record.state == interectState::toselect && !record.dragingMode && record.pressLeft) {
-                pElement characterPrimitive = (*primitive) -> elementList.back();
-                bool selected = (*characterPrimitive).cursorSelectDetect(xpos, ypos);
-                if (selected){
-                    std::cout<<"selected"<<std::endl;
-                    //record.state = interectState::holding;
-                }
-                else{
-                    std::cout<<"not selected"<<std::endl;
-                }
-            }
+        }
+        if (record.state != interectState::drawing && !hasHolding && record.pressLeft &&  !record.pressCtrl){
+            Take::holdon().holdonObjList.clear();
+            record.state = interectState::toselect;
         }
         if (pr::drawPreviewPrimitive != nullptr){
             pr::drawPreviewPrimitive -> draw();
@@ -72,7 +67,6 @@ int main(int argc, const char * argv[]) {
         if (Records::getState().showAxis && pr::axisPrimitive != nullptr){
             pr::axisPrimitive -> draw();
             coord::drawScaleText();
-            //std::cout<<"showing axis"<<pr::axisPrimitive->getVertexNum()<<std::endl;
         }
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -208,4 +202,41 @@ int releaseResources(GLFWwindow* &window){
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
+}
+
+bool primitiveSelectDetect(Primitive* primitive){
+    GLdouble xpos,ypos;
+    WindowParas& windowPara = WindowParas::getInstance();
+    Records& record = Records::getState();
+    glfwGetCursorPos(windowPara.window, &xpos, &ypos);
+    bool selected = false;
+    if (primitive->getShape() == GL_POINTS){
+        for (auto singlePoint = primitive ->elementList.begin(); singlePoint != primitive->elementList.end(); singlePoint ++){
+            selected = (*singlePoint)->cursorSelectDetect(xpos, ypos);
+            if (selected)   break;
+        }
+    }else{
+        pElement characterPrimitive = primitive -> elementList.back();
+        selected = (*characterPrimitive).cursorSelectDetect(xpos, ypos);
+    }
+    
+    if (selected){
+        //std::cout<<"selected"<<std::endl;
+        record.state = interectState::holding;
+        if (primitive->getHold())
+            return selected;
+        else{
+            if (!record.pressCtrl)
+                Take::holdon().holdonObjList.clear();
+            Take::holdon().holdonObjList.push_back(primitive);
+        }
+        primitive->setHold(selected);
+        //std::cout<<"selected"<<Take::holdon().holdonObjList.size()<<std::endl;
+    }
+    else{
+       // std::cout<<"not selected"<<Take::holdon().holdonObjList.size()<<std::endl;
+        if (!record.pressCtrl)
+            primitive->setHold(selected);
+    }
+    return selected;
 }

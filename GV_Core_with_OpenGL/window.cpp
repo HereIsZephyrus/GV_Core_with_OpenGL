@@ -290,7 +290,7 @@ static void editMenu() {
     if (ImGui::MenuItem("Redo", "CTRL Shift Z")){
         
     }
-    if (record.state == interectState::toselect && ImGui::MenuItem("Start edit")){
+    if (record.state != interectState::drawing && ImGui::MenuItem("Start edit")){
         record.state = interectState::drawing;
         panelStackNum ++;
         GLFWwindow *& window = WindowParas::getInstance().window;

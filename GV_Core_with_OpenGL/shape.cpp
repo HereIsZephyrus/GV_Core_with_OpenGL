@@ -75,10 +75,11 @@ void updateIndex(Primitive* primitive){
 }
 bool Point::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     WindowParas& windowPara = WindowParas::getInstance();
+    //std::cout<<"detect point"<<std::endl;
     const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
     const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
     const GLfloat& pointX = (*refVertex)[vertexIndex[0] * stride],pointY = (*refVertex)[vertexIndex[0] * stride + 1];
-    const GLfloat pointDetectRange = 3.0f;
+    const GLfloat pointDetectRange = 5.0f;
     if ((cursorX - pointX) * (cursorX - pointX) + (cursorY - pointY) * (cursorY - pointY) <= pointDetectRange * pointDetectRange){
         return true;
     }
@@ -86,20 +87,31 @@ bool Point::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
 }
 bool Line::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     WindowParas& windowPara = WindowParas::getInstance();
+    //std::cout<<"detect line"<<std::endl;
     const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
     const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
     const GLfloat& pointX1 = (*refVertex)[vertexIndex[0] * stride],pointY1 = (*refVertex)[vertexIndex[0] * stride + 1];
     const GLfloat& pointX2 = (*refVertex)[vertexIndex[1] * stride],pointY2 = (*refVertex)[vertexIndex[1] * stride + 1];
-    const GLfloat lineAngleRange = 0.2f * Camera2D::getView().getZoom();
-    bool inTheRange = ((cursorX > pointX1) != (cursorX > pointX2)) && (cursorY > pointY1) != (cursorY > pointY2);
-    bool onTheSlop = abs((cursorX - pointX1)/ (cursorY - pointY1) - (pointX2 - pointX1)/ (pointY2 - pointY1)) <= lineAngleRange;
-    if (inTheRange && onTheSlop){
-        return true;
+    const GLfloat zoom = Camera2D::getView().getZoom();
+    const GLfloat lineAngleRange = 0.2f * zoom, paralellRange = 5.0f * zoom;
+    bool inTheRange = false,onTheSlop = false;
+    if (abs(pointX2- pointX1)< paralellRange){
+        inTheRange = (cursorY > pointY1) != (cursorY > pointY2);
+        onTheSlop = (abs(pointX1 - cursorX)< paralellRange) || (abs(pointX2 - cursorX)< paralellRange);
+    }else if (abs(pointY2 - pointY1)<paralellRange){
+        inTheRange = (cursorX > pointX1) != (cursorX > pointX2);
+        onTheSlop = (abs(pointY1 - cursorY)< paralellRange) || (abs(pointY2 - cursorY)< paralellRange);
+    }else{
+        inTheRange = ((cursorX > pointX1) != (cursorX > pointX2)) && (cursorY > pointY1) != (cursorY > pointY2);
+        onTheSlop = abs((cursorX - pointX1)/ (cursorY - pointY1) - (pointX2 - pointX1)/ (pointY2 - pointY1)) <= lineAngleRange;
     }
+    if (inTheRange && onTheSlop)
+        return true;
     return false;
 }
 bool Face::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     WindowParas& windowPara = WindowParas::getInstance();
+    //std::cout<<"detect face"<<std::endl;
     const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
     const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
     bool inside = false;

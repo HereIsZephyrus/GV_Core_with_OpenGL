@@ -51,7 +51,7 @@ public:
     }
     Take(const Take&) = delete;
     void operator = (const Take&) = delete;
-    Primitive* obj; // for now only one primitive can be selected
+    std::vector<Primitive*> holdonObjList;
     Shader* drawingShader;
     vertexArray drawingVertices;
     Shape drawType;

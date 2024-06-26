@@ -18,6 +18,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     m_self = this;
     this->vertices = vertices;
     this->elementList.clear();
+    this->holding = false;
     Records& record = Records::getState();
     this->layer = static_cast<GLuint>(record.primitiveList.size())+1;
     const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
