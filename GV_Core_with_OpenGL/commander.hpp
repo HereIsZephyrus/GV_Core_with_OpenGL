@@ -7,8 +7,6 @@
 
 #ifndef commander_hpp
 #define commander_hpp
-
-#include <stdio.h>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -66,7 +64,7 @@ void addPoint(vertexArray& array,const GLdouble cursorX, const GLdouble cursorY)
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY);
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY);
 void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY);
-
+void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);
 void mouseViewCallback(GLFWwindow* window, int button, int action, int mods);

@@ -7,6 +7,7 @@
 
 #include "shape.hpp"
 #include "camera.hpp"
+#include "window.hpp"
 namespace pr{
 
 void  Element::rend(GLuint& program) {
@@ -72,7 +73,45 @@ void updateIndex(Primitive* primitive){
                           primitive->elementList.end());
     updateTopoElements(primitive);
 }
+bool Point::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+    const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+    const GLfloat& pointX = (*refVertex)[vertexIndex[0] * stride],pointY = (*refVertex)[vertexIndex[0] * stride + 1];
+    const GLfloat pointDetectRange = 3.0f;
+    if ((cursorX - pointX) * (cursorX - pointX) + (cursorY - pointY) * (cursorY - pointY) <= pointDetectRange * pointDetectRange){
+        return true;
+    }
+    return false;
 }
+bool Line::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+    const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+    const GLfloat& pointX1 = (*refVertex)[vertexIndex[0] * stride],pointY1 = (*refVertex)[vertexIndex[0] * stride + 1];
+    const GLfloat& pointX2 = (*refVertex)[vertexIndex[1] * stride],pointY2 = (*refVertex)[vertexIndex[1] * stride + 1];
+    const GLfloat lineAngleRange = 1.0f;
+    if (abs((cursorX - pointX1)/ (cursorY - pointY1) - (pointX2 - pointX1)/ (pointY2 - pointY1)) <= lineAngleRange){
+        return true;
+    }
+    return false;
+}
+bool Face::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+    const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+    bool inside = false;
+    for (auto it = line.begin(); it != line.end(); it ++){
+        const GLuint ind1 = (*it)->vertexIndex[0] ,ind2 = (*it)->vertexIndex[1];
+        const GLfloat& pointX1 = (*refVertex)[ind1 * stride],pointY1 = (*refVertex)[ind1 * stride + 1];
+        const GLfloat& pointX2 = (*refVertex)[ind2* stride],pointY2 = (*refVertex)[ind2* stride + 1];
+        if ((pointY1 > cursorY) != (pointY2 > cursorY) && (cursorX < (pointX2 - pointX1) * (cursorY - pointY1) / (pointY2 - pointY1) + pointX1)){
+            inside = !inside;
+        }
+    }
+    return inside;
+}
+}//namespace pr
 
 void createTopoElements(Primitive* lastpPrimitive){
     const GLenum shape = lastpPrimitive->getShape();

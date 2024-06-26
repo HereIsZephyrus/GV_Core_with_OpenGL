@@ -31,6 +31,8 @@ enum class TopoType{
     line,
     face
 };
+class Line;
+class Face;
 //don't recycle point/line/face index -- don't need to tackle so much elements for now.
 class Element{
 public:
@@ -43,12 +45,15 @@ public:
         shader = primitive->shader;
         const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
         style.color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
+        stride = primitive->stride;
         visable = true;
     }
     bool getVisable() const {return visable;}
     TopoType getType() const {return type;}
     const primitiveIdentifier* getIdentifier() const{return identifier;}
     void setColor(const glm::vec4 setColor){style.color = {setColor.x,setColor.y,setColor.z,setColor.w};}
+    pVertexArray getVertexArray() const {return refVertex;}
+    virtual bool cursorSelectDetect(GLdouble xpos,GLdouble ypos) = 0;
 protected:
     void bindEBObuffer(){
         glGenBuffers(1, &EBO);
@@ -64,6 +69,7 @@ protected:
     const primitiveIdentifier* identifier;
     Shader* shader;
     GLenum shape;
+    GLsizei stride;
     struct Style{
         glm::vec4 color;
     } style;
@@ -84,8 +90,10 @@ public:
         type = TopoType::point;
         bindEBObuffer();
     }
+    friend class Line;
+    friend class Face;
     glm::vec2 getCenterLocation() const{return centerLocation;}
-    
+    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
 protected:
     void calcGeoCenter(){
         centerLocation.x = (*refVertex)[0];
@@ -111,7 +119,9 @@ public:
         type = TopoType::line;
         bindEBObuffer();
     }
+    friend class Face;
     glm::vec2 getCenterLocation() const{return centerLocation;}
+    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
 protected:
     void calcGeoCenter(){
         centerLocation.x = 0;
@@ -132,7 +142,6 @@ public:
         ShaderStyle& style = ShaderStyle::getStyle();
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = primitive->shape;
-        const GLsizei stride = primitive->stride;
         const int n =  static_cast<int>((*refVertex).size()/stride);
         for (int i = 0; i<n-1; i++){
             vertexIndex.push_back(i);
@@ -146,6 +155,7 @@ public:
         type = TopoType::face;
         bindEBObuffer();
     }
+    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
 protected:
     void calcGeoCenter(){
         centerLocation.x = 0;
