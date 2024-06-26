@@ -228,7 +228,9 @@ namespace gui{
 static void renderMenu(GLFWwindow *&window);
 static void renderEditPanel();
 static void renderSiderbar();
-static void renderSelectPanel();
+static void renderViewPanel();
+static void renderPrimitivePanel();
+static void renderPrimitiveSelectPanel();
 void DrawGUI() {
     GLFWwindow *& window = WindowParas::getInstance().window;
     Records& record = Records::getState();
@@ -245,8 +247,16 @@ void DrawGUI() {
     drawList->ChannelsSetCurrent(1);
     renderMenu(window);
     drawList->ChannelsSetCurrent(2);
-    if (record.state == interectState::drawing) renderEditPanel();
-    if (record.showCreateElementWindow)         renderSelectPanel();
+    if (record.state == interectState::drawing){
+        renderEditPanel();
+    }
+    else if (record.state == interectState::toselect){
+        renderViewPanel();
+    }
+    else if (record.state == interectState::holding){
+        renderPrimitivePanel();
+    }
+    if (record.showCreateElementWindow)         renderPrimitiveSelectPanel();
     drawList->ChannelsMerge();
     return;
 }
@@ -280,7 +290,7 @@ static void editMenu() {
     if (ImGui::MenuItem("Redo", "CTRL Shift Z")){
         
     }
-    if (record.state == interectState::toselect && ImGui::MenuItem("Start edit")){
+    if (record.state != interectState::drawing && ImGui::MenuItem("Start edit")){
         record.state = interectState::drawing;
         panelStackNum ++;
         GLFWwindow *& window = WindowParas::getInstance().window;
@@ -293,7 +303,7 @@ static void editMenu() {
         panelStackNum --;
         GLFWwindow *& window = WindowParas::getInstance().window;
         glfwSetMouseButtonCallback(window, mouseViewCallback);
-        glfwSetCursorPosCallback(window, cursorSelectCallback);
+        glfwSetCursorPosCallback(window, cursorDefaultCallback);
     }
     
     if (ImGui::MenuItem("Add Data", "CTRL A")){
@@ -352,7 +362,8 @@ void renderMenu(GLFWwindow *&window) {
 void renderSiderbar(){
     WindowParas& windowPara = WindowParas::getInstance();
     ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, menuBarHeight), ImGuiCond_Always);
-    float sidebarHeight = (windowPara.SCREEN_HEIGHT / 2)*(1 + (panelStackNum==0))/windowPara.yScale;
+    //float sidebarHeight = (windowPara.SCREEN_HEIGHT / 2)*(1 + (panelStackNum==0))/windowPara.yScale;
+    float sidebarHeight = (windowPara.SCREEN_HEIGHT / 2)/windowPara.yScale;
     ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH,sidebarHeight - menuBarHeight), ImGuiCond_Always);
     ImGui::Begin("sidebar",nullptr,ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
     //ImGui::Text("This is the main sidebar");
@@ -366,7 +377,6 @@ void renderEditPanel(){
     ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::Begin("Edit Panel",nullptr, ImGuiWindowFlags_NoMove |ImGuiWindowFlags_NoResize);
-    ImGui::Text("This is a edit panel");
     if (ImGui::Button("Create Element"))
         record.showCreateElementWindow = true;
     ImGui::ColorEdit4("Color", (float*)&style.drawColor);
@@ -395,8 +405,27 @@ void renderEditPanel(){
     ImGui::Checkbox("showAxis", &showAxis);
     ImGui::End();
 }
+void renderViewPanel(){
+    Records& record = Records::getState();
+    ShaderStyle& style = ShaderStyle::getStyle();
+    WindowParas& windowPara = WindowParas::getInstance();
+    ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
+    ImGui::Begin("View Panel",nullptr, ImGuiWindowFlags_NoMove |ImGuiWindowFlags_NoResize);
+    ImGui::Checkbox("Draging Mode", &record.dragingMode);
+    ImGui::End();
+}
+void renderPrimitivePanel(){
+    Records& record = Records::getState();
+    ShaderStyle& style = ShaderStyle::getStyle();
+    WindowParas& windowPara = WindowParas::getInstance();
+    ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
+    ImGui::Begin("Primitive Panel",nullptr, ImGuiWindowFlags_NoMove |ImGuiWindowFlags_NoResize);
+    ImGui::End();
+}
 
-void renderSelectPanel(){
+void renderPrimitiveSelectPanel(){
     Records& record = Records::getState();
     Shape& drawType = Take::holdon().drawType;
     bool& holdonToDraw = Take::holdon().holdonToDraw;

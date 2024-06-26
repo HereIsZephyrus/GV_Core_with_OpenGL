@@ -69,6 +69,8 @@ public:
     friend void clipByShape();
     GLsizei getVertexNum() const{return static_cast<GLsizei>(vertices.size() / stride);}
     void setName(std::string name){this->name = name;}
+    void setHold(bool isHolding){this->holding = isHolding;}
+    bool getHold() const{return holding;}
     std::string getName() const {return name;}
     vertexArray vertices;
     std::vector<pElement> elementList;
@@ -85,6 +87,7 @@ private:
     glm::vec4 color;
     std::string name;
     Primitive* m_self;
+    bool holding;
 };
 
 typedef std::unique_ptr<Primitive> pPrimitive;

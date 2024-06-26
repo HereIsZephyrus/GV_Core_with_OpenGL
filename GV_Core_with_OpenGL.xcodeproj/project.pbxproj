@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3229B9E12C2BDC0C003693E6 /* factor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3229B9DF2C2BDC0C003693E6 /* factor.cpp */; };
 		322E52F62C13EE17002AFB73 /* libGLEW.2.2.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 322E52F52C13EE17002AFB73 /* libGLEW.2.2.0.dylib */; };
 		322E52F72C13EE17002AFB73 /* libGLEW.2.2.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 322E52F52C13EE17002AFB73 /* libGLEW.2.2.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		322E52FA2C13F6E2002AFB73 /* window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E52F82C13F6E2002AFB73 /* window.cpp */; };
@@ -59,6 +60,8 @@
 
 /* Begin PBXFileReference section */
 		32251A072C0D2FE400049D9C /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		3229B9DF2C2BDC0C003693E6 /* factor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = factor.cpp; sourceTree = "<group>"; };
+		3229B9E02C2BDC0C003693E6 /* factor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = factor.hpp; sourceTree = "<group>"; };
 		322E52F52C13EE17002AFB73 /* libGLEW.2.2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.2.0.dylib; path = ../../../../opt/homebrew/Cellar/glew/2.2.0_1/lib/libGLEW.2.2.0.dylib; sourceTree = "<group>"; };
 		322E52F82C13F6E2002AFB73 /* window.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = window.cpp; sourceTree = "<group>"; };
 		322E52F92C13F6E2002AFB73 /* window.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = window.hpp; sourceTree = "<group>"; };
@@ -178,6 +181,8 @@
 				32C5E0A42C19464E00152CDF /* camera.hpp */,
 				328DF9B82C1EE0530092223F /* shape.cpp */,
 				328DF9B92C1EE0530092223F /* shape.hpp */,
+				3229B9DF2C2BDC0C003693E6 /* factor.cpp */,
+				3229B9E02C2BDC0C003693E6 /* factor.hpp */,
 			);
 			path = GV_Core_with_OpenGL;
 			sourceTree = "<group>";
@@ -284,6 +289,7 @@
 				32C5E09C2C18A14E00152CDF /* imgui_impl_opengl3.cpp in Sources */,
 				32C5E0A52C19464E00152CDF /* camera.cpp in Sources */,
 				32948FAD2C157E65007A0078 /* glexception.cpp in Sources */,
+				3229B9E12C2BDC0C003693E6 /* factor.cpp in Sources */,
 				323A00EE2C0AC7440056BAD1 /* commander.cpp in Sources */,
 				32C5E09E2C18A14E00152CDF /* imgui_widgets.cpp in Sources */,
 				328DF9BA2C1EE0530092223F /* shape.cpp in Sources */,

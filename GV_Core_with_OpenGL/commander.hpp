@@ -7,14 +7,15 @@
 
 #ifndef commander_hpp
 #define commander_hpp
-
-#include <stdio.h>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <vector>
 #include "primitive.hpp"
 #include "rendering.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 enum class interectState{
     drawing,//draw feature
@@ -31,11 +32,13 @@ public:
     Records(const Records&) = delete;
     void operator = (const Records&) = delete;
     GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
-    bool dragingMode,drawingPrimitive,cliping;
+    bool dragingMode,drawingPrimitive,cliping,draging;
     bool showCreateElementWindow;
     bool showAxis;
     interectState state;
     void initIObuffer();
+    GLfloat previewXpos,previewYpos;
+    glm::vec2 previewPosition;
     std::vector<item > primitiveList;
 private:
     Records(){}
@@ -48,7 +51,7 @@ public:
     }
     Take(const Take&) = delete;
     void operator = (const Take&) = delete;
-    Primitive* obj; // for now only one primitive can be selected
+    std::vector<Primitive*> holdonObjList;
     Shader* drawingShader;
     vertexArray drawingVertices;
     Shape drawType;
@@ -61,13 +64,15 @@ void addPoint(vertexArray& array,const GLdouble cursorX, const GLdouble cursorY)
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY);
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY);
 void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY);
-
+void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);
 void mouseViewCallback(GLFWwindow* window, int button, int action, int mods);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos);
+void cursorDefaultCallback(GLFWwindow* window, double xpos, double ypos);
+void cursorDragCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos);
+void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorFocusCallback(GLFWwindow* window, int entered);
 void windowPosCallback(GLFWwindow* window, int xpos, int ypos);
 void windowSizeCallback(GLFWwindow* window, int width, int height);
