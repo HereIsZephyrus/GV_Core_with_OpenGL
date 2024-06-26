@@ -253,7 +253,7 @@ void DrawGUI() {
     else if (record.state == interectState::toselect){
         renderViewPanel();
     }
-    else if (record.state == interectState::holding){
+    else if (record.state == interectState::holding || record.state == interectState::editing){
         renderPrimitivePanel();
     }
     if (record.showCreateElementWindow)         renderPrimitiveSelectPanel();
@@ -417,11 +417,25 @@ void renderViewPanel(){
 }
 void renderPrimitivePanel(){
     Records& record = Records::getState();
-    ShaderStyle& style = ShaderStyle::getStyle();
+    //ShaderStyle& style = ShaderStyle::getStyle();
+    Take& take = Take::holdon();
     WindowParas& windowPara = WindowParas::getInstance();
     ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::Begin("Primitive Panel",nullptr, ImGuiWindowFlags_NoMove |ImGuiWindowFlags_NoResize);
+    if (take.holdonObjList.size() == 1){
+        if (record.state != interectState::editing){
+            if (ImGui::Button("Edit Primitive")){
+                record.state = interectState::editing;
+                take.editingPrimitive = take.holdonObjList.front();
+            }
+        }else{
+            if (ImGui::Button("Finish Edit")){
+                record.state = interectState::holding;
+                take.editingPrimitive = nullptr;
+            }
+        }
+    }
     ImGui::End();
 }
 

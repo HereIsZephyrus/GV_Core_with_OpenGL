@@ -48,22 +48,27 @@ int main(int argc, const char * argv[]) {
         InterectResponseCheck(window);
         bool hasHolding = false;
         Records& record = Records::getState();
+        //draw main primitive list
+        bool openDetect = ((record.state == interectState::holding) || (record.state == interectState::toselect));
         for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
-            if (record.state != interectState::drawing && !record.dragingMode && record.pressLeft){
-                bool holdingThis = primitiveSelectDetect((*primitive).get());
-                hasHolding |= holdingThis;
-            }
+            if (WindowParas::getInstance().mainWindowFocused && openDetect && !record.dragingMode && record.pressLeft)
+                 primitiveSelectDetect((*primitive).get());
+            hasHolding |= (*primitive)->getHold();
             for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
                 (*element)->draw((*primitive)->getHold());
         }
-        if (record.state != interectState::drawing && !hasHolding && record.pressLeft &&  !record.pressCtrl){
+        if (openDetect && !hasHolding && record.pressLeft &&  !record.pressCtrl){
             Take::holdon().holdonObjList.clear();
             record.state = interectState::toselect;
         }
+        
+        //draw priview
         if (pr::drawPreviewPrimitive != nullptr){
             pr::drawPreviewPrimitive -> draw();
             //std::cout<<"showing preview"<<std::endl;
         }
+        
+        //draw axis
         if (Records::getState().showAxis && pr::axisPrimitive != nullptr){
             pr::axisPrimitive -> draw();
             coord::drawScaleText();

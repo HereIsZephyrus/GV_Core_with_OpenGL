@@ -18,9 +18,10 @@
 #include <glm/gtc/type_ptr.hpp>
 
 enum class interectState{
-    drawing,//draw feature
+    drawing,//create primitive
     toselect,//to select feature
     holding,//binded to the object
+    editing,//edit primitive
 };
 typedef std::pair<Primitive*, std::string> item;
 class Records{
@@ -52,6 +53,7 @@ public:
     Take(const Take&) = delete;
     void operator = (const Take&) = delete;
     std::vector<Primitive*> holdonObjList;
+    Primitive* editingPrimitive;
     Shader* drawingShader;
     vertexArray drawingVertices;
     Shape drawType;
