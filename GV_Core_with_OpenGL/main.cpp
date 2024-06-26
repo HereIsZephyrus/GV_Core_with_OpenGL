@@ -46,11 +46,25 @@ int main(int argc, const char * argv[]) {
         glClearColor(backgroundColor.x,backgroundColor.y, backgroundColor.z, backgroundColor.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         InterectResponseCheck(window);
-        
+        Records& record = Records::getState();
         //std::cout<<WindowParas::getInstance().mainWindowFocused<<std::endl;
-        for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++)
+        for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
             for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
                 (*element)->draw();
+            GLdouble xpos,ypos;
+            glfwGetCursorPos(window, &xpos, &ypos);
+            if (record.state == interectState::toselect && !record.dragingMode && record.pressLeft) {
+                pElement characterPrimitive = (*primitive) -> elementList.back();
+                bool selected = (*characterPrimitive).cursorSelectDetect(xpos, ypos);
+                if (selected){
+                    std::cout<<"selected"<<std::endl;
+                    //record.state = interectState::holding;
+                }
+                else{
+                    std::cout<<"not selected"<<std::endl;
+                }
+            }
+        }
         if (pr::drawPreviewPrimitive != nullptr){
             pr::drawPreviewPrimitive -> draw();
             //std::cout<<"showing preview"<<std::endl;
@@ -158,18 +172,18 @@ static bool checkCursorFocus(){
     GLdouble cursorX,cursorY;
     glfwGetCursorPos(windowPara.window, &cursorX, &cursorY);
     //std::cout<<cursorX<<' '<<cursorY<<std::endl;
-    if (cursorX < 0 || cursorX > windowPara.SCREEN_WIDTH/windowPara.xScale || cursorY< 0 || cursorY > windowPara.SCREEN_HEIGHT/windowPara.yScale)
+    if (cursorX < 0 || cursorX > windowPara.SCREEN_WIDTH/windowPara.xScale || cursorY< gui::menuBarHeight || cursorY > windowPara.SCREEN_HEIGHT/windowPara.yScale)
         return  false;
     if (Records::getState().state ==interectState::toselect && !Records::getState().dragingMode){
         Camera2D& camera = Camera2D::getView();
-        const GLfloat dragCameraSpeed = 10.0f,borderDetectRange = 40.0f;
+        const GLfloat dragCameraSpeed = 10.0f,borderDetectRange = 40.0f, menuWidth = 200.0f;
         if (cursorX < borderDetectRange){
             camera.setDeltaPosition(camera.getPosition(), -dragCameraSpeed, 0);
         }
         else if (cursorX> windowPara.SCREEN_WIDTH/windowPara.xScale - borderDetectRange){
             camera.setDeltaPosition(camera.getPosition(), dragCameraSpeed, 0);
         }
-        if (cursorY < borderDetectRange){
+        if (cursorY < borderDetectRange  && cursorX > menuWidth){
             camera.setDeltaPosition(camera.getPosition(), 0, dragCameraSpeed);
         }
         else if (cursorY> windowPara.SCREEN_HEIGHT/windowPara.yScale - borderDetectRange){

@@ -133,8 +133,8 @@ void cursorDragingDetect(GLFWwindow* window,double xpos, double ypos){
     if (record.draging){
         const GLfloat cursorX =windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
         const GLfloat cursorY =windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
-        const GLfloat dX = (record.previewXpos - cursorX)/windowPara.xScale ;
-        const GLfloat dY = (record.previewYpos - cursorY)/windowPara.yScale ;
+        const GLfloat dX = (record.previewXpos - cursorX);
+        const GLfloat dY = (record.previewYpos - cursorY);
         Camera2D::getView().setDeltaPosition(record.previewPosition,dX,dY);
     }
 }

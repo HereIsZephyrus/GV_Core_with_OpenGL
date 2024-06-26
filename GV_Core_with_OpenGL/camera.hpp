@@ -55,6 +55,8 @@ public:
     void setDeltaPosition(glm::vec2 previewPosition,GLfloat x,GLfloat y){
         position.x = previewPosition.x + x;
         position.y = previewPosition.y + y;
+        updateProjectionMatrix();
+        updateViewMatrix();
     }
 private:
     Camera2D();

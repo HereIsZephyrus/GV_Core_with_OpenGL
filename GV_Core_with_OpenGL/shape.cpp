@@ -90,8 +90,10 @@ bool Line::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
     const GLfloat& pointX1 = (*refVertex)[vertexIndex[0] * stride],pointY1 = (*refVertex)[vertexIndex[0] * stride + 1];
     const GLfloat& pointX2 = (*refVertex)[vertexIndex[1] * stride],pointY2 = (*refVertex)[vertexIndex[1] * stride + 1];
-    const GLfloat lineAngleRange = 1.0f;
-    if (abs((cursorX - pointX1)/ (cursorY - pointY1) - (pointX2 - pointX1)/ (pointY2 - pointY1)) <= lineAngleRange){
+    const GLfloat lineAngleRange = 0.2f * Camera2D::getView().getZoom();
+    bool inTheRange = ((cursorX > pointX1) != (cursorX > pointX2)) && (cursorY > pointY1) != (cursorY > pointY2);
+    bool onTheSlop = abs((cursorX - pointX1)/ (cursorY - pointY1) - (pointX2 - pointX1)/ (pointY2 - pointY1)) <= lineAngleRange;
+    if (inTheRange && onTheSlop){
         return true;
     }
     return false;
@@ -105,7 +107,7 @@ bool Face::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
         const GLuint ind1 = (*it)->vertexIndex[0] ,ind2 = (*it)->vertexIndex[1];
         const GLfloat& pointX1 = (*refVertex)[ind1 * stride],pointY1 = (*refVertex)[ind1 * stride + 1];
         const GLfloat& pointX2 = (*refVertex)[ind2* stride],pointY2 = (*refVertex)[ind2* stride + 1];
-        if ((pointY1 > cursorY) != (pointY2 > cursorY) && (cursorX < (pointX2 - pointX1) * (cursorY - pointY1) / (pointY2 - pointY1) + pointX1)){
+        if (((pointY1 > cursorY) != (pointY2 > cursorY)) && (cursorX < (pointX2 - pointX1) * (cursorY - pointY1) / (pointY2 - pointY1) + pointX1)){
             inside = !inside;
         }
     }
