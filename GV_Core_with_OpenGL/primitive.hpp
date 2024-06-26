@@ -57,6 +57,7 @@ public:
     void updateVertex();
     void load();
     void draw();
+    void transform();
     void drawElement();
     void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
@@ -72,7 +73,7 @@ public:
     void setHold(bool isHolding){this->holding = isHolding;}
     bool getHold() const{return holding;}
     std::string getName() const {return name;}
-    vertexArray vertices;
+    vertexArray vertices,transfered;
     std::vector<pElement> elementList;
     GLuint layer;
     bool operator < (const Primitive& x) const{
@@ -88,6 +89,7 @@ private:
     std::string name;
     Primitive* m_self;
     bool holding;
+    glm::mat3 transMat;
 };
 
 typedef std::unique_ptr<Primitive> pPrimitive;
@@ -95,6 +97,7 @@ namespace pr {
 extern pPrimitive drawPreviewPrimitive;
 extern pPrimitive axisPrimitive;
 extern std::vector<pPrimitive >mainPrimitiveList;
+void addMat(glm::mat3& objMat,const glm::mat3& inputMat);
 }
 
 #endif /* primitive_hpp */

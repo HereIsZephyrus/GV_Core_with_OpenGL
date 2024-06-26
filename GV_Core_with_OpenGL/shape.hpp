@@ -63,7 +63,7 @@ protected:
     virtual void calcGeoCenter()=0;
     indexArray vertexIndex;
     pVertexArray refVertex;
-    glm::vec2 centerLocation;
+    glm::vec2 geoCenter,rotateCenter;
     bool visable;
     GLuint EBO;
     const primitiveIdentifier* identifier;
@@ -92,12 +92,13 @@ public:
     }
     friend class Line;
     friend class Face;
-    glm::vec2 getCenterLocation() const{return centerLocation;}
+    glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
 protected:
     void calcGeoCenter(){
-        centerLocation.x = (*refVertex)[0];
-        centerLocation.y = (*refVertex)[1];
+        geoCenter.x = (*refVertex)[0];
+        geoCenter.y = (*refVertex)[1];
+        rotateCenter = geoCenter;
     }
 private:
     GLfloat pointSize;
@@ -120,15 +121,16 @@ public:
         bindEBObuffer();
     }
     friend class Face;
-    glm::vec2 getCenterLocation() const{return centerLocation;}
+    glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
 protected:
     void calcGeoCenter(){
-        centerLocation.x = 0;
-        centerLocation.y = 0;
+        geoCenter.x = 0;
+        geoCenter.y = 0;
         glm::vec2 centerLoc1 = (*point[0]).getCenterLocation(),centerLoc2 = (*point[1]).getCenterLocation();
-        centerLocation.x = (centerLoc1.x + centerLoc2.x)/2;
-        centerLocation.y = (centerLoc1.y + centerLoc2.y)/2;
+        geoCenter.x = (centerLoc1.x + centerLoc2.x)/2;
+        geoCenter.y = (centerLoc1.y + centerLoc2.y)/2;
+        rotateCenter = geoCenter;
     }
 private:
     GLfloat lineWidth;
@@ -158,16 +160,17 @@ public:
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
 protected:
     void calcGeoCenter(){
-        centerLocation.x = 0;
-        centerLocation.y = 0;
+        geoCenter.x = 0;
+        geoCenter.y = 0;
         const int vertexNum = static_cast<int>(vertexIndex.size());
         for (auto it = line.begin(); it!=line.end(); it++){
             const glm::vec2 location = (*(*it)).getCenterLocation();
-            centerLocation.x += location.x;
-            centerLocation.y += location.y;
+            geoCenter.x += location.x;
+            geoCenter.y += location.y;
         }
-        centerLocation.x /= vertexNum;
-        centerLocation.y /= vertexNum;
+        geoCenter.x /= vertexNum;
+        geoCenter.y /= vertexNum;
+        rotateCenter = geoCenter;
     }
 private:
     std::vector<pLine> line;
