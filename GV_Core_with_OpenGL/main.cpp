@@ -54,7 +54,7 @@ int main(int argc, const char * argv[]) {
                 hasHolding |= holdingThis;
             }
             for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
-                (*element)->draw();
+                (*element)->draw((*primitive)->getHold());
         }
         if (record.state != interectState::drawing && !hasHolding && record.pressLeft &&  !record.pressCtrl){
             Take::holdon().holdonObjList.clear();

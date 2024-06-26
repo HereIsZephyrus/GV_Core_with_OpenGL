@@ -106,11 +106,10 @@ void Primitive::draw(){
     glEnableVertexAttribArray(0);
     glBindVertexArray(identifier.VAO);
     //std::cout<<"drawing primitive"<<std::endl;
+    rend(shader->program);
     //glDrawArrays(shape, 0,( getVertexNum()-1)*6);
     glDrawArrays(shape, 0, getVertexNum());
     // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
-    
-    rend(shader->program);
     glBindVertexArray(0);
     return;
 }

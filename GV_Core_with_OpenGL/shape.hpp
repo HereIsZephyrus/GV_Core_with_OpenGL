@@ -36,9 +36,9 @@ class Face;
 //don't recycle point/line/face index -- don't need to tackle so much elements for now.
 class Element{
 public:
-    void draw();
+    void draw(bool highlighted);
     void load();
-    void rend(GLuint& program) ;
+    void rend(GLuint& program,bool highlighted) ;
     Element(const Primitive* primitive){
         refVertex = std::make_shared<vertexArray>(primitive->vertices);
         identifier = primitive->getIdentifier();

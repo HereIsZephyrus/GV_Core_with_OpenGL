@@ -10,11 +10,25 @@
 #include "window.hpp"
 namespace pr{
 
-void  Element::rend(GLuint& program) {
+void  Element::rend(GLuint& program,bool highlighted) {
     //glUseProgram(program);
     //color
     GLuint colorLoc = glGetUniformLocation(program,"setColor");
-    glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
+    if (highlighted){
+        ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
+        if (shape == GL_POINTS || shape == GL_POINT){
+            glUniform4f(colorLoc,1-backgroundColor.x,1-backgroundColor.y,1-backgroundColor.z,1.0f);
+        }else if (shape ==GL_LINES || shape == GL_LINE_LOOP){
+            glUniform4f(colorLoc,1-backgroundColor.x - 0.2f,1-backgroundColor.y - 0.2f,1-backgroundColor.z - 0.2f,1.0f);
+        }
+        else{
+            //glUniform4f(colorLoc,style.color.x+ 0.1f,style.color.y+ 0.1f,style.color.z+0.1f,style.color.w);
+            glUniform4f(colorLoc,style.color.x + 0.1f,style.color.y+ 0.1f,style.color.z + 0.1f,style.color.w);
+        }
+    }
+    else{
+        glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
+    }
     //thickness
     //GLuint  resLoc  = glGetUniformLocation(program, "resolution");
     //GLuint  thiLoc  = glGetUniformLocation(program, "thickness");
@@ -41,7 +55,7 @@ void Element::load(){
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
     glEnableVertexAttribArray(0);
 }
-void Element::draw(){
+void Element::draw(bool highlighted){
     //std::cout<<"Draw is running"<<std::endl;
     GLint currentBuffer;
     if (shader == nullptr){
@@ -56,10 +70,10 @@ void Element::draw(){
         load();
     }
     glEnableVertexAttribArray(0);
-    glBindVertexArray(identifier->VAO);;
+    glBindVertexArray(identifier->VAO);
+    rend(shader->program,highlighted);
     glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
     //CHECK_GL_ERROR( glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0));
-    rend(shader->program);
     glBindVertexArray(0);
     return;
 }
