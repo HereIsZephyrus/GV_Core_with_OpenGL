@@ -95,7 +95,7 @@ int initInterect(GLFWwindow* &window){
     glfwSetKeyCallback(window, keyBasicCallback);
     glfwSetMouseButtonCallback(window, mouseViewCallback);
     glfwSetScrollCallback(window, scrollCallback);
-    glfwSetCursorPosCallback(window, cursorSelectCallback);
+    glfwSetCursorPosCallback(window, cursorDefaultCallback);
     glfwSetCursorEnterCallback(window, cursorFocusCallback);
     return 0;
 }

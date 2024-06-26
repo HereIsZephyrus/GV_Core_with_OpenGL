@@ -31,11 +31,12 @@ public:
     Records(const Records&) = delete;
     void operator = (const Records&) = delete;
     GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
-    bool dragingMode,drawingPrimitive,cliping;
+    bool dragingMode,drawingPrimitive,cliping,draging;
     bool showCreateElementWindow;
     bool showAxis;
     interectState state;
     void initIObuffer();
+    GLfloat previewXpos,previewYpos;
     std::vector<item > primitiveList;
 private:
     Records(){}
@@ -66,7 +67,8 @@ void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);
 void mouseViewCallback(GLFWwindow* window, int button, int action, int mods);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos);
+void cursorDefaultCallback(GLFWwindow* window, double xpos, double ypos);
+void cursorDragCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorDrawCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorFocusCallback(GLFWwindow* window, int entered);
 void windowPosCallback(GLFWwindow* window, int xpos, int ypos);
