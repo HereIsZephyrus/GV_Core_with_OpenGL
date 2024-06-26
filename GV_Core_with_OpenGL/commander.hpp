@@ -15,6 +15,9 @@
 #include <vector>
 #include "primitive.hpp"
 #include "rendering.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 enum class interectState{
     drawing,//draw feature
@@ -37,6 +40,7 @@ public:
     interectState state;
     void initIObuffer();
     GLfloat previewXpos,previewYpos;
+    glm::vec2 previewPosition;
     std::vector<item > primitiveList;
 private:
     Records(){}

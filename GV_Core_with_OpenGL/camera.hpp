@@ -52,8 +52,9 @@ public:
     float getZoom() const {return zoom;}
     glm::vec2 getPosition() const {return position;}
     GLfloat getCameraSpeed(GLfloat speed) const {return speed * deltaTime * zoom;}
-    void setPosition(GLfloat x,GLfloat y){
-        position.x = x; position.y = y;
+    void setDeltaPosition(glm::vec2 previewPosition,GLfloat x,GLfloat y){
+        position.x = previewPosition.x + x;
+        position.y = previewPosition.y + y;
     }
 private:
     Camera2D();

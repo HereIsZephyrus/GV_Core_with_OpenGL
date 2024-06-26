@@ -112,9 +112,18 @@ void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
     mouseModsToggle(window, button, action, mods);
     if (Records::getState().dragingMode){
         // drag to move window
+        WindowParas& windowPara = WindowParas::getInstance();
         if (button == GLFW_MOUSE_BUTTON_LEFT){
             if (action == GLFW_PRESS){
                 Records::getState().draging = GL_TRUE;
+                GLdouble xpos,ypos;
+                Records& record = Records::getState();
+                glfwGetCursorPos(window, &xpos, &ypos);
+                const GLfloat cursorX =windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+                const GLfloat cursorY =windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+                record.previewXpos = cursorX;
+                record.previewYpos = cursorY;
+                record.previewPosition = Camera2D::getView().getPosition();
                 glfwSetCursorPosCallback(window, cursorDragCallback);
             }
             else if (action == GLFW_RELEASE){
@@ -331,11 +340,10 @@ void cursorDragingDetect(GLFWwindow* window,double xpos, double ypos){
     Records& record = Records::getState();
     WindowParas& windowPara = WindowParas::getInstance();
     if (record.draging){
-        Camera2D::getView().setPosition(record.previewXpos, record.previewYpos);
         const GLfloat cursorX =windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
         const GLfloat cursorY =windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
-        record.previewXpos = cursorX;
-        record.previewYpos = cursorY;
+        const GLfloat dX = cursorX - record.previewXpos, dY = cursorY - record.previewYpos;
+        Camera2D::getView().setDeltaPosition(record.previewPosition,dX,dY);
     }
 }
 
