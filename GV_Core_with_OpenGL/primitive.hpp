@@ -57,7 +57,8 @@ public:
     void updateVertex();
     void load();
     void draw();
-    void transform();
+    void transform(const indexArray&,const glm::mat3&);
+    void transform(const glm::mat3&);
     void drawElement();
     void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
@@ -73,14 +74,14 @@ public:
     void setHold(bool isHolding){this->holding = isHolding;}
     bool getHold() const{return holding;}
     std::string getName() const {return name;}
-    vertexArray vertices,transfered;
+    vertexArray vertices;//,transfered;
     std::vector<pElement> elementList;
     GLuint layer;
     bool operator < (const Primitive& x) const{
         return layer<x.layer;
     }
     Primitive* getSelf() {return m_self;}
-    void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
+    //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
 private:
     primitiveIdentifier identifier;
     GLenum shape;
@@ -90,7 +91,7 @@ private:
     std::string name;
     Primitive* m_self;
     bool holding;
-    glm::mat3 transMat;
+    //glm::mat3 transMat;
 };
 
 typedef std::unique_ptr<Primitive> pPrimitive;

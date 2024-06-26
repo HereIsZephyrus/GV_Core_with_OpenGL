@@ -51,9 +51,12 @@ public:
     bool getVisable() const {return visable;}
     TopoType getType() const {return type;}
     const primitiveIdentifier* getIdentifier() const{return identifier;}
+    const indexArray& getVertexIndex(){return vertexIndex;}
+    GLsizei getStride() const{return stride;}
     void setColor(const glm::vec4 setColor){style.color = {setColor.x,setColor.y,setColor.z,setColor.w};}
     GLenum getShape() const {return shape;}
     pVertexArray getVertexArray() const {return refVertex;}
+    pVertexArray refVertex;
     virtual bool cursorSelectDetect(GLdouble xpos,GLdouble ypos) = 0;
 protected:
     void bindEBObuffer(){
@@ -63,7 +66,6 @@ protected:
     }
     virtual void calcGeoCenter()=0;
     indexArray vertexIndex;
-    pVertexArray refVertex;
     glm::vec2 geoCenter,rotateCenter;
     bool visable;
     GLuint EBO;

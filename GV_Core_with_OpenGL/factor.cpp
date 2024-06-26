@@ -199,25 +199,19 @@ void editPrimitive(){
                 }
             }
         }
+        glm::mat3 transMat = glm::mat3(1.0f);
         if (holdonElement != nullptr){
-            // to move
             const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
             const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
             const GLfloat dX = (cursorX - record.previewXpos);
             const GLfloat dY = (cursorY - record.previewYpos);
+            transMat[0][2] = dX; transMat[1][2] = dY;
+            // to move
             if (holdonElement->getShape() == GL_POINT || holdonElement->getShape() == GL_POINTS){
                 //to recognize center of the point set
-                glm::mat3 move = glm::mat3(1.0f);
-                move[0][2] = dX; move[1][2] = dY;
-                take.editingPrimitive->addMat(move);
-                take.editingPrimitive->transform();
-            }
-            else if (holdonElement == take.editingPrimitive->elementList.back()){
-                //to recognize the character element
-                glm::mat3 move = glm::mat3(1.0f);
-                move[0][2] = dX; move[1][2] = dY;
-                take.editingPrimitive->addMat(move);
-                take.editingPrimitive->transform();
+                take.editingPrimitive->transform(transMat);
+            }else{
+                take.editingPrimitive->transform(holdonElement->getVertexIndex(), transMat);
             }
         }else{
             //to scale

@@ -19,7 +19,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     this->vertices = vertices;
     this->elementList.clear();
     this->holding = false;
-    this->transMat = glm::mat4(1.0f);
+    //this->transMat = glm::mat4(1.0f);
     Records& record = Records::getState();
     this->layer = static_cast<GLuint>(record.primitiveList.size())+1;
     const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
@@ -116,21 +116,30 @@ void Primitive::draw(){
 }
  
 void Primitive::updateVertex(){
-    transform();
+    //transform();
     glBindVertexArray(identifier.VAO);
     glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(transfered.size() * sizeof(GLfloat)) ,static_cast<const void*>(transfered.data()), GL_STATIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(transfered.size() * sizeof(GLfloat)) ,static_cast<const void*>(transfered.data()), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
-void Primitive::transform(){
-    transfered = vertices;
-    for (int vertex = 0; vertex<getVertexNum(); vertex++) {
-        const GLint beginIndex = vertex * stride;
-        const GLfloat rawX = vertices[beginIndex], rawY = vertices[beginIndex + 1], rawZ = vertices[beginIndex + 2];
-        transfered[beginIndex] = rawX * transMat[0][0] + rawY * transMat[0][1] + transMat[0][1];
-        transfered[beginIndex+1] = rawX * transMat[1][0] + rawY * transMat[1][1] + transMat[1][1];
+void Primitive::transform(const glm::mat3& inputMat){
+    //transfered = vertices;
+    for (auto vertex = vertices.begin(); vertex != vertices.end(); vertex+=stride) {
+        const GLfloat rawX = *(vertex), rawY = *(vertex+1);
+        *(vertex) = rawX * inputMat[0][0] + rawY * inputMat[0][1] + inputMat[0][1];
+        *(vertex+1) = rawX * inputMat[1][0] + rawY * inputMat[1][1] + inputMat[1][1];
+    }
+}
+void Primitive::transform(const indexArray& vertexIndex,const glm::mat3& inputMat){
+    //transfered = vertices;
+    for (auto index = vertexIndex.begin(); index != vertexIndex.end(); index++) {
+        const GLint beginIndex = (*index) * stride;
+        const GLfloat rawX = vertices[beginIndex], rawY = vertices[beginIndex + 1];
+        vertices[beginIndex] = rawX * inputMat[0][0] + rawY * inputMat[0][1] + inputMat[0][1];
+        vertices[beginIndex+1] = rawX * inputMat[1][0] + rawY * inputMat[1][1] + inputMat[1][1];
     }
 }
 
