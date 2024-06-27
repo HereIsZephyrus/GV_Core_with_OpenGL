@@ -87,7 +87,10 @@ public:
     //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
 protected:
     void generateCurve();
-    GLfloat lagrangeInterpolation(GLfloat x,const vertexArray& controlArray,const GLsizei);
+    void lagrangeInterpolation(const GLint,const vertexArray& ,const GLsizei);
+    void splineInterpolation(const GLint,const vertexArray& ,const GLsizei);
+    void bezierInterpolation(const GLint,const vertexArray& ,const GLsizei);
+    void hermiteInterpolation(const GLint,const vertexArray& ,const GLsizei);
 private:
     primitiveIdentifier identifier;
     GLenum shape;
@@ -105,6 +108,9 @@ namespace pr {
 extern pPrimitive drawPreviewPrimitive;
 extern pPrimitive axisPrimitive;
 extern std::vector<pPrimitive >mainPrimitiveList;
+struct spline{
+    GLfloat a,b,c,d;
+};
 }
 
 #endif /* primitive_hpp */
