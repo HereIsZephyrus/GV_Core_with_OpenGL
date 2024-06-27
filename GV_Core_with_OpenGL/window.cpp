@@ -177,7 +177,7 @@ void drawScaleText(){
                  ImGuiWindowFlags_NoBackground);
     //std::cout<<-left<<' '<<top<<std::endl;
     ImGui::SetWindowPos(ImVec2(0, gui::menuBarHeight), ImGuiCond_Always);
-    const GLfloat TEXT_WIDTH =(right-left), TEXT_HETGHT = (top-bottom - gui::menuBarHeight);
+    const GLfloat TEXT_WIDTH =(right-left)/zoom, TEXT_HETGHT = (top-bottom)/zoom - gui::menuBarHeight * zoom;
     ImGui::SetWindowSize(ImVec2(TEXT_WIDTH, TEXT_HETGHT), ImGuiCond_Always);
     const GLfloat centerX = -left/zoom ,centerY=top/zoom-gui::menuBarHeight ,xbias = -7.0f,ybias = 1.0f;
     ImVec2 textPos = ImVec2(centerX + xbias,centerY + ybias);
@@ -476,11 +476,13 @@ void renderPrimitiveSelectPanel(){
         holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
+    ImGui::SameLine();
     if (ImGui::Button("Trangles")){
         drawType = Shape::TRIANGLE;
         holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
+    ImGui::SameLine();
     if (ImGui::Button("Rectangle")){
         drawType = Shape::RECTANGLE;
         holdonToDraw = true;
@@ -489,6 +491,12 @@ void renderPrimitiveSelectPanel(){
     if (ImGui::Button("Circle")){
         drawType = Shape::CIRCLE;
         holdonToDraw = true;
+        record.showCreateElementWindow = false;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Curve")){
+        drawType = Shape::CURVE;
+        holdonToDraw = false;
         record.showCreateElementWindow = false;
     }
     

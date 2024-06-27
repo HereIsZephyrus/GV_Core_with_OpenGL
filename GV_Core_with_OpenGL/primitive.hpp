@@ -30,7 +30,8 @@ enum class Shape{
     RECTANGLE,
     CIRCLE,
     LOOP,
-    POLYGEN
+    POLYGEN,
+    CURVE
 };
 struct primitiveIdentifier{
     GLuint VAO,VBO;
@@ -84,6 +85,9 @@ public:
     void destroyOutboundElement();
     Primitive* getSelf() {return m_self;}
     //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
+protected:
+    void generateCurve();
+    GLfloat lagrangeInterpolation(GLfloat x,const vertexArray& controlArray,const GLsizei);
 private:
     primitiveIdentifier identifier;
     GLenum shape;

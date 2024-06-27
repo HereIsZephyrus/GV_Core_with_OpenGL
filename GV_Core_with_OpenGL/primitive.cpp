@@ -6,6 +6,7 @@
 //
 
 #include <iostream>
+#include <cmath>
 #include "primitive.hpp"
 #include "glexception.hpp"
 #include "commander.hpp"
@@ -56,6 +57,11 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
             else
                 this->shape = GL_LINE_LOOP;
             break;;
+        }
+        case Shape::CURVE:{
+            this->shape = GL_LINE_STRIP;
+            generateCurve();
+            break;
         }
         default:{
             this->shape = GL_POINT;
@@ -128,8 +134,8 @@ void Primitive::transform(const glm::mat3& inputMat){
     //transfered = vertices;
     for (auto vertex = vertices.begin(); vertex != vertices.end(); vertex+=stride) {
         const GLfloat rawX = *(vertex), rawY = *(vertex+1);
-        std::cout<< inputMat[0][0]<<' '<< inputMat[1][0]<< inputMat[2][0]<<std::endl;
-        std::cout<< inputMat[0][1]<<' '<< inputMat[1][1]<< inputMat[2][1]<<std::endl;
+        //std::cout<< inputMat[0][0]<<' '<< inputMat[1][0]<< inputMat[2][0]<<std::endl;
+        //std::cout<< inputMat[0][1]<<' '<< inputMat[1][1]<< inputMat[2][1]<<std::endl;
         *(vertex) = rawX * inputMat[0][0] + rawY * inputMat[1][0] + inputMat[2][0];
         *(vertex+1) = rawX * inputMat[0][1] + rawY * inputMat[1][1] + inputMat[2][1];
     }
@@ -150,7 +156,47 @@ void Primitive::createOutboundElement(){
 void Primitive::destroyOutboundElement(){
     
 }
-
+GLfloat lagrange_basis(int i, GLfloat x, const std::vector<GLfloat>& points) {
+    GLfloat basis = 1.0f;
+    for (size_t j = 0; j < points.size(); ++j) {
+        if (j != i)
+            basis *= (x - points[j]) / (points[i] - points[j]);
+    }
+    return basis;
+}
+GLfloat Primitive::lagrangeInterpolation(GLfloat x,const vertexArray& controlArray,const GLsizei numControlPoints){
+    GLfloat y = 0.0f;
+    std::vector<GLfloat> xVal;
+    for (auto vertex = controlArray.begin(); vertex!=controlArray.end(); vertex+=stride)
+        xVal.push_back(*vertex);
+        
+    for (int i = 0; i < numControlPoints; i++) {
+            GLfloat basis = lagrange_basis(i, x, xVal);
+            y +=controlArray[i * stride + 1] * basis;
+        }
+    return y;
+}
+void Primitive::generateCurve(){
+    vertexArray controlArray = vertices;
+    const GLsizei numControlPoints = getVertexNum();
+    vertices.clear();
+    GLfloat length = 0;
+    for (int i = 1; i < numControlPoints; i++) {
+        length += std::sqrt(
+                        (controlArray[i * stride] - controlArray[(i-1) * stride]) * (controlArray[i * stride] - controlArray[(i-1) * stride])+
+                        (controlArray[i * stride + 1] - controlArray[(i-1) * stride + 1]) * (controlArray[i * stride + 1] - controlArray[(i-1) * stride] + 1)+
+                        (controlArray[i * stride + 2] - controlArray[(i-1) * stride + 2]) * (controlArray[i * stride + 2] - controlArray[(i-1) * stride] + 2)
+                        );
+    }
+    const int numInterpolated = static_cast<int>(length);
+    //std::cout<<"curve point num:"<<numInterpolated<<std::endl;
+    const GLfloat startX = controlArray[0],endX = controlArray[(numControlPoints-1) * stride];
+    for (int i = 0; i < numInterpolated; ++i) {
+        GLfloat x = startX + i * (endX - startX) / (numInterpolated - 1);
+        GLfloat y = lagrangeInterpolation(x, controlArray,numControlPoints);
+        vertices.push_back(x);vertices.push_back(y);vertices.push_back(0);
+    }
+}
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;
 pPrimitive drawPreviewPrimitive = nullptr;

@@ -81,7 +81,8 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         take.drawingVertices.clear();
         GLdouble cursorX, cursorY;
         glfwGetCursorPos(window, &cursorX, &cursorY);
-        addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+        if (take.holdonToDraw)
+            addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
     }
     if (finishDrawCheck(window,button,action,mods)){
         record.drawingPrimitive = false;
@@ -96,7 +97,6 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
             else if (take.drawType == Shape::RECTANGLE || take.drawType == Shape::LOOP){
                 vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
                 const GLfloat startX = *(it+2),startY = *(it+1);
-                std::cout<<std::endl;
                 addPoint(Take::holdon().drawingVertices,cursorX, startY);
                 addPoint(Take::holdon().drawingVertices,cursorX, cursorY);
                 addPoint(Take::holdon().drawingVertices,startX, cursorY);
@@ -142,6 +142,8 @@ void cursorDragingDetect(GLFWwindow* window,double xpos, double ypos){
 static Shape mapPreviewStyle(Shape drawType){
     if (drawType == Shape::RECTANGLE || drawType == Shape::POLYGEN || drawType ==Shape::TRIANGLE)
         return Shape::LOOP;
+    if (drawType == Shape::CURVE)
+        return Shape::POINTS;
     return drawType;
 }
 void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
@@ -189,7 +191,7 @@ void editPrimitive(){
     const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
     const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
     if (record.pressLeft){
-        //std::cout<<"input edit"<<std::endl;
+        std::cout<<"exert transfrom"<<std::endl;
         pElement outbound = take.editingPrimitive->elementList.back();
         take.transMat = glm::mat3(1.0f);
         int  relationship = outboundDetect(outbound);
@@ -207,7 +209,7 @@ void editPrimitive(){
                 }
             }
             
-            std::cout<<"move:"<<dX<<' '<<dY<<std::endl;
+            //std::cout<<"move:"<<dX<<' '<<dY<<std::endl;
             if (holdonElement != nullptr){
                 //take.editingPrimitive->transform(holdonElement->getVertexIndex(), take.transMat);
                 /*
@@ -220,7 +222,6 @@ void editPrimitive(){
             }
             else{
                 //no select,default move all
-                std::cout<<"exert transfrom"<<std::endl;
                 //take.editingPrimitive->transform(take.transMat);
             }
         }else if (relationship ==2){
