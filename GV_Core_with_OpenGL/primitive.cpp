@@ -142,6 +142,12 @@ void Primitive::transform(const indexArray& vertexIndex,const glm::mat3& inputMa
         vertices[beginIndex+1] = rawX * inputMat[1][0] + rawY * inputMat[1][1] + inputMat[1][1];
     }
 }
+void Primitive::createOutboundElement(){
+    
+}
+void Primitive::destroyOutboundElement(){
+    
+}
 
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;

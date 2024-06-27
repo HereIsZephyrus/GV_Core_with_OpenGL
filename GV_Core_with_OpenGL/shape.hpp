@@ -51,11 +51,11 @@ public:
     bool getVisable() const {return visable;}
     TopoType getType() const {return type;}
     const primitiveIdentifier* getIdentifier() const{return identifier;}
-    const indexArray& getVertexIndex(){return vertexIndex;}
     GLsizei getStride() const{return stride;}
     void setColor(const glm::vec4 setColor){style.color = {setColor.x,setColor.y,setColor.z,setColor.w};}
     GLenum getShape() const {return shape;}
-    pVertexArray getVertexArray() const {return refVertex;}
+    const pVertexArray& getVertexArray() const {return refVertex;}
+    const indexArray& getVertexIndex() const{return vertexIndex;}
     pVertexArray refVertex;
     virtual bool cursorSelectDetect(GLdouble xpos,GLdouble ypos) = 0;
     glm::vec2 getGeoCenter() const{return geoCenter;}

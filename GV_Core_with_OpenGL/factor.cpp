@@ -5,7 +5,6 @@
 //  Created by ChanningTong on 6/26/24.
 //
 
-#include <glm/gtx/vector_angle.hpp>
 #include "commander.hpp"
 #include "window.hpp"
 #include "primitive.hpp"
@@ -228,7 +227,7 @@ void editPrimitive(){
             move[0][2] = rotateCenter.x; move[1][2] = rotateCenter.y;
             const glm::vec2 startVec = glm::vec2{record.previewXpos - rotateCenter.x,record.previewYpos - rotateCenter.y};
             const glm::vec2 endVec = glm::vec2{cursorX - rotateCenter.x,cursorY - rotateCenter.y};
-            const GLfloat theta = glm::angle(startVec,endVec);
+            const GLfloat theta = glm::dot(startVec, endVec) / (glm::length(startVec) * glm::length(endVec));
             transMat[0][0] = glm::cos(theta); transMat[0][1] = glm::sin(-theta);
             transMat[1][0] = glm::sin(theta); transMat[1][1] = glm::cos(theta);
             transMat = move * transMat;
@@ -237,26 +236,97 @@ void editPrimitive(){
             }
         else{
             //to scale
-            if (relationship == 4){
-                //to scale top
+            const GLfloat dX = abs(cursorX - record.previewXpos);
+            const GLfloat dY = abs(cursorY - record.previewYpos);
+            const pVertexArray& vertices = outbound->getVertexArray();
+            
+            glm::vec2 boundary[4]; //leftbottom - lefttop - righttop - rightbottom
+            for (int i = 0; i<4; i++){
+                GLint startIndex = outbound->getVertexIndex()[i];
+                boundary[i] = {(*vertices)[startIndex],(*vertices)[startIndex+1]};
             }
-            else if (relationship == 5){
-                //to scale right
-            }
-            else if (relationship == 6){
-                //to scale bottom
-            }
-            else if (relationship == 7){
-                //to scale left top
-            }
-            else if (relationship == 8){
-                //to scale right top
-            }
-            else if (relationship == 9){
-                //to scale left bottom
-            }
-            else if (relationship == 10){
-                //to scale right bottom
+            glm::mat3 move = glm::mat3(1.0f);
+            if (record.pressCtrl){
+                //to scale center
+                const glm::vec2 geoCenter = outbound->getGeoCenter();
+                move[0][2] = geoCenter.x; move[1][2] = geoCenter.y;
+                transMat[0][0] = dX; transMat[1][1] = dY;
+                transMat = move * transMat;
+                move[0][2] = -geoCenter.x; move[1][2] = -geoCenter.y;
+                transMat = transMat * move;
+            }else{
+                if (relationship == 3){
+                    //to scale left
+                    const glm::vec2 geoCenter = boundary[2];
+                    move[0][2] = geoCenter.x; move[1][2] = geoCenter.y;
+                    transMat[0][0] = dX;
+                    transMat = move * transMat;
+                    move[0][2] = -geoCenter.x; move[1][2] = -geoCenter.y;
+                    transMat = transMat * move;
+                }
+                if (relationship == 4){
+                    //to scale top
+                    const glm::vec2 geoCenter = boundary[0];
+                    move[0][2] = geoCenter.x; move[1][2] = geoCenter.y;
+                    transMat[1][1] = dY;
+                    transMat = move * transMat;
+                    move[0][2] = -geoCenter.x; move[1][2] = -geoCenter.y;
+                    transMat = transMat * move;
+                }
+                else if (relationship == 5){
+                    //to scale right
+                    const glm::vec2 geoCenter = boundary[0];
+                    move[0][2] = geoCenter.x; move[1][2] = geoCenter.y;
+                    transMat[0][0] = dX;
+                    transMat = move * transMat;
+                    move[0][2] = -geoCenter.x; move[1][2] = -geoCenter.y;
+                    transMat = transMat * move;
+                }
+                else if (relationship == 6){
+                    //to scale bottom
+                    const glm::vec2 geoCenter = boundary[2];
+                    move[0][2] = geoCenter.x; move[1][2] = geoCenter.y;
+                     transMat[1][1] = dY;
+                    transMat = move * transMat;
+                    move[0][2] = -geoCenter.x; move[1][2] = -geoCenter.y;
+                    transMat = transMat * move;
+                }
+                else if (relationship == 7){
+                    //to scale left top
+                    const glm::vec2 geoCenter = boundary[3];
+                    move[0][2] = geoCenter.x; move[1][2] = geoCenter.y;
+                    transMat[0][0] = dX; transMat[1][1] = dY;
+                    transMat = move * transMat;
+                    move[0][2] = -geoCenter.x; move[1][2] = -geoCenter.y;
+                    transMat = transMat * move;
+                }
+                else if (relationship == 8){
+                    //to scale right top
+                    const glm::vec2 geoCenter = boundary[0];
+                    move[0][2] = geoCenter.x; move[1][2] = geoCenter.y;
+                    transMat[0][0] = dX; transMat[1][1] = dY;
+                    transMat = move * transMat;
+                    move[0][2] = -geoCenter.x; move[1][2] = -geoCenter.y;
+                    transMat = transMat * move;
+                }
+                else if (relationship == 9){
+                    //to scale left bottom
+                    const glm::vec2 geoCenter = boundary[2];
+                    move[0][2] = geoCenter.x; move[1][2] = geoCenter.y;
+                    transMat[0][0] = dX; transMat[1][1] = dY;
+                    transMat = move * transMat;
+                    move[0][2] = -geoCenter.x; move[1][2] = -geoCenter.y;
+                    transMat = transMat * move;
+                }
+                else if (relationship == 10){
+                    //to scale right bottom
+                    const glm::vec2 geoCenter = boundary[1];
+                    move[0][2] = geoCenter.x; move[1][2] = geoCenter.y;
+                    transMat[0][0] = dX; transMat[1][1] = dY;
+                    transMat = move * transMat;
+                    move[0][2] = -geoCenter.x; move[1][2] = -geoCenter.y;
+                    transMat = transMat * move;
+                }
             }
         }
     }
