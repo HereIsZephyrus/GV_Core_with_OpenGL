@@ -133,28 +133,19 @@ void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
 void mouseEditCallback(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     mouseModsToggle(window, button, action, mods);
-    if (Records::getState().state == interectState::editing){
-        // drag to move window
-        WindowParas& windowPara = WindowParas::getInstance();
-        if (button == GLFW_MOUSE_BUTTON_LEFT){
-            if (action == GLFW_PRESS){
-                Records::getState().draging = GL_TRUE;
-                GLdouble xpos,ypos;
-                Records& record = Records::getState();
-                glfwGetCursorPos(window, &xpos, &ypos);
-                const GLfloat cursorX =windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
-                const GLfloat cursorY =windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
-                record.previewXpos = cursorX;
-                record.previewYpos = cursorY;
-                record.previewPosition = Camera2D::getView().getPosition();
-                //glfwSetCursorPosCallback(window, cursorDragCallback);
-            }
-            else if (action == GLFW_RELEASE){
-                Records::getState().draging = GL_FALSE;
-                //glfwSetCursorPosCallback(window, cursorSelectCallback);
-            }
-        }
-        
+    WindowParas& windowPara = WindowParas::getInstance();
+    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT) {
+        Records& record = Records::getState();
+        GLdouble xpos,ypos;
+        glfwGetCursorPos(windowPara.window, &xpos, &ypos);
+        const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+        const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+        record.previewXpos = cursorX;
+        record.previewYpos = cursorY;
+    }
+    if (action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_LEFT && windowPara.mainWindowFocused) {
+        Take& take = Take::holdon();
+        take.editingPrimitive->transform(take.transMat);
     }
     return;
 }
