@@ -325,7 +325,7 @@ void editPrimitive(){
                     //to scale right bottom
                     const glm::vec2 geoCenter = boundary[1];
                     move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                    take.transMat[0][0] = dX; take.transMat[1][1] = dY;
+                    take.transMat[0][0] = dX/200.0f; take.transMat[1][1] = dY/200.0f;
                     take.transMat = move * take.transMat;
                     move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
                     take.transMat = take.transMat * move;
