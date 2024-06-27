@@ -130,6 +130,25 @@ void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
     }
     return;
 }
+void mouseEditCallback(GLFWwindow* window, int button, int action, int mods){
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+    mouseModsToggle(window, button, action, mods);
+    WindowParas& windowPara = WindowParas::getInstance();
+    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT) {
+        Records& record = Records::getState();
+        GLdouble xpos,ypos;
+        glfwGetCursorPos(windowPara.window, &xpos, &ypos);
+        const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+        const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+        record.previewXpos = cursorX;
+        record.previewYpos = cursorY;
+    }
+    if (action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_LEFT && windowPara.mainWindowFocused) {
+        Take& take = Take::holdon();
+        take.editingPrimitive->transform(take.transMat);
+    }
+    return;
+}
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
     

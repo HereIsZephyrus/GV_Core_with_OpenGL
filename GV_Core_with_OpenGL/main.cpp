@@ -23,13 +23,13 @@
 #include "commander.hpp"
 #include "camera.hpp"
 #include "shape.hpp"
+#include "factor.hpp"
 
 static int initImGUI(GLFWwindow *window);
 static int initInterect(GLFWwindow* &window);
 static int initStyle();
 static int releaseResources(GLFWwindow* &window);
 static int InterectResponseCheck(GLFWwindow* &window);
-static bool primitiveSelectDetect(Primitive* primitive);
 
 int main(int argc, const char * argv[]) {
     GLFWwindow *& window = WindowParas::getInstance().window;
@@ -48,22 +48,27 @@ int main(int argc, const char * argv[]) {
         InterectResponseCheck(window);
         bool hasHolding = false;
         Records& record = Records::getState();
+        //draw main primitive list
+        bool openDetect = ((record.state == interectState::holding) || (record.state == interectState::toselect));
         for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
-            if (record.state != interectState::drawing && !record.dragingMode && record.pressLeft){
-                bool holdingThis = primitiveSelectDetect((*primitive).get());
-                hasHolding |= holdingThis;
-            }
+            if (WindowParas::getInstance().mainWindowFocused && openDetect && !record.dragingMode && record.pressLeft)
+                 primitiveSelectDetect((*primitive).get());
+            hasHolding |= (*primitive)->getHold();
             for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
-                (*element)->draw();
+                (*element)->draw((*primitive)->getHold());
         }
-        if (record.state != interectState::drawing && !hasHolding && record.pressLeft &&  !record.pressCtrl){
+        if (openDetect && !hasHolding && record.pressLeft &&  !record.pressCtrl){
             Take::holdon().holdonObjList.clear();
             record.state = interectState::toselect;
         }
+        
+        //draw priview
         if (pr::drawPreviewPrimitive != nullptr){
             pr::drawPreviewPrimitive -> draw();
             //std::cout<<"showing preview"<<std::endl;
         }
+        
+        //draw axis
         if (Records::getState().showAxis && pr::axisPrimitive != nullptr){
             pr::axisPrimitive -> draw();
             coord::drawScaleText();
@@ -168,7 +173,8 @@ static bool checkCursorFocus(){
     //std::cout<<cursorX<<' '<<cursorY<<std::endl;
     if (cursorX < 0 || cursorX > windowPara.SCREEN_WIDTH/windowPara.xScale || cursorY< gui::menuBarHeight || cursorY > windowPara.SCREEN_HEIGHT/windowPara.yScale)
         return  false;
-    if (Records::getState().state ==interectState::toselect && !Records::getState().dragingMode){
+    bool openDetect = ((Records::getState().state == interectState::holding) || (Records::getState().state == interectState::toselect));
+    if (openDetect && !Records::getState().dragingMode){
         Camera2D& camera = Camera2D::getView();
         const GLfloat dragCameraSpeed = 10.0f,borderDetectRange = 40.0f, menuWidth = 200.0f;
         if (cursorX < borderDetectRange){
@@ -192,6 +198,8 @@ int InterectResponseCheck(GLFWwindow* &window){
     camera.processKeyboard(window);
     coord::generateCoordinateAxis();
     WindowParas::getInstance().mainWindowFocused = checkCursorFocus();
+    if (Records::getState().state == interectState::editing && WindowParas::getInstance().mainWindowFocused)
+        editPrimitive();
     return 0;
 }
 

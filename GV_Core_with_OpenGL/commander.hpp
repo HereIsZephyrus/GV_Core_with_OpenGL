@@ -18,9 +18,10 @@
 #include <glm/gtc/type_ptr.hpp>
 
 enum class interectState{
-    drawing,//draw feature
+    drawing,//create primitive
     toselect,//to select feature
     holding,//binded to the object
+    editing,//edit primitive
 };
 typedef std::pair<Primitive*, std::string> item;
 class Records{
@@ -52,11 +53,13 @@ public:
     Take(const Take&) = delete;
     void operator = (const Take&) = delete;
     std::vector<Primitive*> holdonObjList;
+    Primitive* editingPrimitive;
     Shader* drawingShader;
     vertexArray drawingVertices;
     Shape drawType;
     bool holdonToDraw; // hold on to draw or click to draw
     pPrimitive clipShape;
+    glm::mat3 transMat;
 private:
     Take(){}
 };
@@ -68,6 +71,7 @@ void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mod
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);
 void mouseViewCallback(GLFWwindow* window, int button, int action, int mods);
+void mouseEditCallback(GLFWwindow* window, int button, int action, int mods);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 void cursorDefaultCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorDragCallback(GLFWwindow* window, double xpos, double ypos);
