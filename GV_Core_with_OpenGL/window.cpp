@@ -428,11 +428,13 @@ void renderPrimitivePanel(){
             if (ImGui::Button("Edit Primitive")){
                 record.state = interectState::editing;
                 take.editingPrimitive = take.holdonObjList.front();
+                take.editingPrimitive->createOutboundElement();
                 glfwSetMouseButtonCallback(windowPara.window, mouseEditCallback);
             }
         }else{
             if (ImGui::Button("Finish Edit")){
                 record.state = interectState::holding;
+                take.editingPrimitive->destroyOutboundElement();
                 take.editingPrimitive = nullptr;
                 glfwSetMouseButtonCallback(windowPara.window, mouseViewCallback);
             }

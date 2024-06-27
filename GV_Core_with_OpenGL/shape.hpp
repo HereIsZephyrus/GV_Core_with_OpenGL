@@ -58,6 +58,8 @@ public:
     pVertexArray getVertexArray() const {return refVertex;}
     pVertexArray refVertex;
     virtual bool cursorSelectDetect(GLdouble xpos,GLdouble ypos) = 0;
+    glm::vec2 getGeoCenter() const{return geoCenter;}
+    glm::vec2 getRotateCenter() const{return rotateCenter;};
 protected:
     void bindEBObuffer(){
         glGenBuffers(1, &EBO);
@@ -178,5 +180,6 @@ protected:
 private:
     std::vector<pLine> line;
 };
+int outboundDetect(pElement outbound);
 }
 #endif /* shape_hpp */

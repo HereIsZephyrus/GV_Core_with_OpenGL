@@ -139,6 +139,9 @@ bool Face::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     }
     return inside;
 }
+int outboundDetect(pElement outbound){
+    return 0;
+}
 }//namespace pr
 
 void createTopoElements(Primitive* lastpPrimitive){

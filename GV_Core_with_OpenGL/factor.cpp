@@ -5,6 +5,7 @@
 //  Created by ChanningTong on 6/26/24.
 //
 
+#include <glm/gtx/vector_angle.hpp>
 #include "commander.hpp"
 #include "window.hpp"
 #include "primitive.hpp"
@@ -189,8 +190,14 @@ void editPrimitive(){
         pElement holdonElement = nullptr;
         GLdouble xpos,ypos;
         glfwGetCursorPos(windowPara.window, &xpos, &ypos);
-        
-        if (primitiveSelectDetect(take.editingPrimitive)){
+        const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+        const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+        pElement outbound = take.editingPrimitive->elementList.back();
+        glm::mat3 transMat = glm::mat3(1.0f);
+        int  relationship = outboundDetect(outbound);
+        if (relationship == 0 || relationship == 1){//inside and on
+            const GLfloat dX = (cursorX - record.previewXpos);
+            const GLfloat dY = (cursorY - record.previewYpos);
             //for the sake of topography build sequeence,the points push back first, then lines, then face. so when detect happend,it will be the fitest one
             for (auto element = take.editingPrimitive->elementList.begin(); element != take.editingPrimitive->elementList.end(); element++){
                 if ((*element)->cursorSelectDetect(xpos, ypos)){
@@ -198,24 +205,59 @@ void editPrimitive(){
                     break;
                 }
             }
-        }
-        glm::mat3 transMat = glm::mat3(1.0f);
-        if (holdonElement != nullptr){
-            const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
-            const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
-            const GLfloat dX = (cursorX - record.previewXpos);
-            const GLfloat dY = (cursorY - record.previewYpos);
-            transMat[0][2] = dX; transMat[1][2] = dY;
             // to move
-            if (holdonElement->getShape() == GL_POINT || holdonElement->getShape() == GL_POINTS){
-                //to recognize center of the point set
-                take.editingPrimitive->transform(transMat);
-            }else{
+            transMat[0][2] = dX; transMat[1][2] = dY;
+            if (holdonElement != nullptr){
                 take.editingPrimitive->transform(holdonElement->getVertexIndex(), transMat);
+                /*
+                if (holdonElement->getShape() == GL_POINT || holdonElement->getShape() == GL_POINTS){
+                    //to recognize center of the point set
+                    take.editingPrimitive->transform(transMat);
+                }else{
+                    take.editingPrimitive->transform(holdonElement->getVertexIndex(), transMat);
+                }*/
             }
-        }else{
-            //to scale
+            else{
+                //no select,default move all
+                take.editingPrimitive->transform(transMat);
+            }
+        }else if (relationship ==2){
             //to rotate
+            glm::mat3 move = glm::mat3(1.0f);
+            const glm::vec2 rotateCenter = outbound->getRotateCenter();
+            move[0][2] = rotateCenter.x; move[1][2] = rotateCenter.y;
+            const glm::vec2 startVec = glm::vec2{record.previewXpos - rotateCenter.x,record.previewYpos - rotateCenter.y};
+            const glm::vec2 endVec = glm::vec2{cursorX - rotateCenter.x,cursorY - rotateCenter.y};
+            const GLfloat theta = glm::angle(startVec,endVec);
+            transMat[0][0] = glm::cos(theta); transMat[0][1] = glm::sin(-theta);
+            transMat[1][0] = glm::sin(theta); transMat[1][1] = glm::cos(theta);
+            transMat = move * transMat;
+            move[0][2] = -rotateCenter.x; move[1][2] = -rotateCenter.y;
+            transMat = transMat * move;
+            }
+        else{
+            //to scale
+            if (relationship == 4){
+                //to scale top
+            }
+            else if (relationship == 5){
+                //to scale right
+            }
+            else if (relationship == 6){
+                //to scale bottom
+            }
+            else if (relationship == 7){
+                //to scale left top
+            }
+            else if (relationship == 8){
+                //to scale right top
+            }
+            else if (relationship == 9){
+                //to scale left bottom
+            }
+            else if (relationship == 10){
+                //to scale right bottom
+            }
         }
     }
 }
