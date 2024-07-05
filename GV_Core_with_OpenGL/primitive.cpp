@@ -179,91 +179,7 @@ void Primitive::lagrangeInterpolation(const GLint numInterpolated,const vertexAr
         vertices.push_back(x);vertices.push_back(y);vertices.push_back(0);
     }
 }
-void Primitive::splineInterpolation(const GLint numInterpolated,const vertexArray& controlArray,const GLsizei numControlPoints){
-    const GLfloat startX = controlArray[0],endX = controlArray[(numControlPoints-1) * stride];
-    std::vector<GLfloat> xVal,yVal;
-    for (auto vertex = controlArray.begin(); vertex!=controlArray.end(); vertex+=stride){
-        xVal.push_back(*vertex);
-        yVal.push_back(*(vertex+1));
-    }
-    
-    std::vector<pr::spline> splines(numControlPoints);
-    std::vector<GLfloat> alpha(numControlPoints - 1);
-    std::vector<GLfloat> beta(numControlPoints - 1);
-    alpha[0] = 0.0f; beta[0] = 0.0f;
-    for (int i = 1; i < numControlPoints - 1; i++) {
-        GLfloat h_i = xVal[i] - xVal[i - 1];
-        GLfloat h_i1 = xVal[i + 1] - xVal[i];
-        GLfloat A = h_i;
-        GLfloat B = 2.0 * (h_i + h_i1);
-        GLfloat C = h_i1;
-        GLfloat F = 3.0 * ((yVal[i + 1] - yVal[i]) / h_i1 - (yVal[i] - yVal[i - 1]) / h_i);
-        alpha[i] = -C / (A * alpha[i - 1] + B);
-        beta[i] = (F - A * beta[i - 1]) / (A * alpha[i - 1] + B);
-        std::cout<<A<<' '<<B<<' '<<C<<' '<<F<<' '<<alpha[i]<<' '<<beta[i]<<std::endl;
-    }
 
-    for (int i = numControlPoints - 2; i > 0; i--) {
-        splines[i].c = alpha[i] * splines[i + 1].c + beta[i];
-    }
-
-    int inTheSpline = 1; //the spline id that on
-    for (int i = numControlPoints - 1; i > 0; i--) {
-        double h_i = xVal[i] - xVal[i - 1];
-        splines[i].a = yVal[i - 1];
-        splines[i].d = (splines[i].c - splines[i - 1].c) / (6.0 * h_i);
-        splines[i].b = h_i * (2.0 * splines[i].c + splines[i - 1].c) / 6.0 + (yVal[i] - yVal[i - 1]) / h_i;
-        //std::cout<<"i="<<i<<','<<splines[i].a<<' '<<splines[i].b<<' '<<splines[i].c<<' '<<splines[i].d<<std::endl;
-    }
-    std::cout<<"start generate,total points num:"<<numInterpolated<<std::endl;
-    for (int i = 0; i < numInterpolated; i++) {
-        GLfloat x = startX + i * (endX - startX) / (numInterpolated - 1);
-        GLfloat dx = x - xVal[inTheSpline-1];
-        //std::cout<<"i="<<i<<",in the "<<inTheSpline<<','<<splines[inTheSpline].a<<' '<<splines[inTheSpline].b<<' '<<splines[inTheSpline].c<<' '<<splines[inTheSpline].d<<std::endl;
-        GLfloat y = splines[inTheSpline].a + splines[inTheSpline].b  * dx + splines[inTheSpline].c * dx * dx + splines[inTheSpline].d * dx * dx * dx;
-        //std::cout<<x<<' '<<y<<std::endl;
-        vertices.push_back(x);vertices.push_back(y);vertices.push_back(0);
-        if (abs(x - xVal[inTheSpline]) < 1.0f && inTheSpline<xVal.size()){
-            std::cout<<y<<' '<<yVal[inTheSpline]<<std::endl;
-            inTheSpline++;
-        }
-    }
-    return;
-}
-
-static int binomialCoeff(int n, int k) {
-    int res = 1;
-    if (k > n - k) k = n - k;
-    for (int i = 0; i < k; ++i) {
-        res *= (n - i);
-        res /= (i + 1);
-    }
-    return res;
-}
-static glm::vec2 computeCubicBezierPoint(GLfloat t,const vertexArray& xVal,const vertexArray& yVal,const GLsizei numControlPoints) {
-    GLfloat x = 0, y = 0;
-    // Compute blending functions (Bernstein polynomials)
-    for (int i = 0; i<numControlPoints; i++) {
-        GLfloat coeff = binomialCoeff(numControlPoints, i) * pow(1 - t, numControlPoints - i) * pow(t, i);
-        x += coeff * xVal[i];
-        y += coeff * yVal[i];
-    }
-    return glm::vec2(x, y);
-}
-void Primitive::bezierInterpolation(const GLint numInterpolated,const vertexArray& controlArray,const GLsizei numControlPoints){
-    vertexArray xVal,yVal;
-    for (auto vertex = controlArray.begin(); vertex!=controlArray.end(); vertex+=stride){
-        xVal.push_back(*vertex);
-        yVal.push_back(*(vertex+1));
-    }
-        
-    for (int i = 0; i < numInterpolated; ++i) {
-        GLfloat t = static_cast<GLfloat>(i) / numInterpolated;
-        glm::vec2 curvePoint = computeCubicBezierPoint(t,xVal,yVal,numControlPoints);
-        vertices.push_back(curvePoint.x);vertices.push_back(curvePoint.y);vertices.push_back(0);
-    }
-    return;
-}
 glm::vec2 computeHermitePoint(const glm::vec2& pS, const glm::vec2& pT, const glm::vec2& t0, const glm::vec2& t1, double t) {
     const GLfloat t2 = t * t;
     const GLfloat t3 = t2 * t;
@@ -293,7 +209,7 @@ void Primitive::hermiteInterpolation(const GLint numInterpolated,const vertexArr
 
 void Primitive::generateCurve(){
     vertexArray controlArray = vertices;
-    std::cout<<controlArray.size()<<std::endl;
+    //std::cout<<controlArray.size()<<std::endl;
     const GLsizei numControlPoints = getVertexNum();
     vertices.clear();
     GLfloat length = 0;
@@ -304,13 +220,10 @@ void Primitive::generateCurve(){
                         (controlArray[i * stride + 2] - controlArray[(i-1) * stride + 2]) * (controlArray[i * stride + 2] - controlArray[(i-1) * stride] + 2)
                         );
     }
-    std::cout<<length<<std::endl;
     const GLint numInterpolated = static_cast<int>(length);
-    std::cout<<"curve point num:"<<numInterpolated<<std::endl;
-    //lagrangeInterpolation(numInterpolated,controlArray,numControlPoints);
-    //splineInterpolation(numInterpolated, controlArray, numControlPoints);
-    //bezierInterpolation(numInterpolated, controlArray, numControlPoints);
-    hermiteInterpolation(numInterpolated, controlArray, numControlPoints);
+    //std::cout<<"curve point num:"<<numInterpolated<<std::endl;
+    lagrangeInterpolation(numInterpolated,controlArray,numControlPoints);
+    //hermiteInterpolation(numInterpolated, controlArray, numControlPoints);
 }
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;

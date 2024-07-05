@@ -136,7 +136,7 @@ int initStyle(){
     
     //init camera
     WindowParas& windowPara = WindowParas::getInstance();
-    pCamera2D tempZeroCamera = pCamera2D(new CameraPara2D(glm::vec2(windowPara.SIDEBAR_WIDTH/2, 0.0f),1.0f,WindowParas::getInstance().SCREEN_WIDTH,WindowParas::getInstance().SCREEN_HEIGHT));
+    pCamera2D tempZeroCamera = pCamera2D(new CameraPara2D(glm::vec2(0.0f, 0.0f),1.0f,WindowParas::getInstance().SCREEN_WIDTH,WindowParas::getInstance().SCREEN_HEIGHT));
     cm::zeroCamera = std::move(tempZeroCamera);
     Camera2D::getView().loadSavedPara(cm::zeroCamera.get());
     //init primitive paras
@@ -209,6 +209,10 @@ int releaseResources(GLFWwindow* &window){
     ImGui::DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();
+    WindowParas::getInstance().window = nullptr;
+    Take::holdon().editingPrimitive = nullptr;
+    Take::holdon().drawingShader = nullptr;
+    Records::getState().primitiveList.clear();
     return 0;
 }
 
