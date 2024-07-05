@@ -62,6 +62,7 @@
 		32251A072C0D2FE400049D9C /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		3229B9DF2C2BDC0C003693E6 /* factor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = factor.cpp; sourceTree = "<group>"; };
 		3229B9E02C2BDC0C003693E6 /* factor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = factor.hpp; sourceTree = "<group>"; };
+		3229B9E22C2D3A76003693E6 /* curveVertices.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = curveVertices.vs; sourceTree = "<group>"; };
 		322E52F52C13EE17002AFB73 /* libGLEW.2.2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.2.0.dylib; path = ../../../../opt/homebrew/Cellar/glew/2.2.0_1/lib/libGLEW.2.2.0.dylib; sourceTree = "<group>"; };
 		322E52F82C13F6E2002AFB73 /* window.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = window.cpp; sourceTree = "<group>"; };
 		322E52F92C13F6E2002AFB73 /* window.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = window.hpp; sourceTree = "<group>"; };
@@ -214,6 +215,7 @@
 			isa = PBXGroup;
 			children = (
 				32C5E0A82C1987E000152CDF /* singleVertices.vs */,
+				3229B9E22C2D3A76003693E6 /* curveVertices.vs */,
 				32C5E0A92C19886800152CDF /* fillYellow.frag */,
 				32C5E0AA2C19889600152CDF /* fillWhite.frag */,
 				328DF9B62C1E91600092223F /* lineWidth.frag */,

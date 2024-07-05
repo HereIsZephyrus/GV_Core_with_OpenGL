@@ -30,7 +30,8 @@ enum class Shape{
     RECTANGLE,
     CIRCLE,
     LOOP,
-    POLYGEN
+    POLYGEN,
+    CURVE
 };
 struct primitiveIdentifier{
     GLuint VAO,VBO;
@@ -84,6 +85,12 @@ public:
     void destroyOutboundElement();
     Primitive* getSelf() {return m_self;}
     //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
+protected:
+    void generateCurve();
+    void lagrangeInterpolation(const GLint,const vertexArray& ,const GLsizei);
+    void splineInterpolation(const GLint,const vertexArray& ,const GLsizei);
+    void bezierInterpolation(const GLint,const vertexArray& ,const GLsizei);
+    void hermiteInterpolation(const GLint,const vertexArray& ,const GLsizei);
 private:
     primitiveIdentifier identifier;
     GLenum shape;
@@ -101,6 +108,9 @@ namespace pr {
 extern pPrimitive drawPreviewPrimitive;
 extern pPrimitive axisPrimitive;
 extern std::vector<pPrimitive >mainPrimitiveList;
+struct spline{
+    GLfloat a,b,c,d;
+};
 }
 
 #endif /* primitive_hpp */

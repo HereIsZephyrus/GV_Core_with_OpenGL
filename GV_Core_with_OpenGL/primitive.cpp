@@ -6,6 +6,7 @@
 //
 
 #include <iostream>
+#include <cmath>
 #include "primitive.hpp"
 #include "glexception.hpp"
 #include "commander.hpp"
@@ -56,6 +57,11 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
             else
                 this->shape = GL_LINE_LOOP;
             break;;
+        }
+        case Shape::CURVE:{
+            this->shape = GL_LINE_STRIP;
+            generateCurve();
+            break;
         }
         default:{
             this->shape = GL_POINT;
@@ -128,8 +134,8 @@ void Primitive::transform(const glm::mat3& inputMat){
     //transfered = vertices;
     for (auto vertex = vertices.begin(); vertex != vertices.end(); vertex+=stride) {
         const GLfloat rawX = *(vertex), rawY = *(vertex+1);
-        std::cout<< inputMat[0][0]<<' '<< inputMat[1][0]<< inputMat[2][0]<<std::endl;
-        std::cout<< inputMat[0][1]<<' '<< inputMat[1][1]<< inputMat[2][1]<<std::endl;
+        //std::cout<< inputMat[0][0]<<' '<< inputMat[1][0]<< inputMat[2][0]<<std::endl;
+        //std::cout<< inputMat[0][1]<<' '<< inputMat[1][1]<< inputMat[2][1]<<std::endl;
         *(vertex) = rawX * inputMat[0][0] + rawY * inputMat[1][0] + inputMat[2][0];
         *(vertex+1) = rawX * inputMat[0][1] + rawY * inputMat[1][1] + inputMat[2][1];
     }
@@ -150,7 +156,75 @@ void Primitive::createOutboundElement(){
 void Primitive::destroyOutboundElement(){
     
 }
+static GLfloat lagrange_basis(int i, GLfloat x, const std::vector<GLfloat>& points) {
+    GLfloat basis = 1.0f;
+    for (size_t j = 0; j < points.size(); ++j) {
+        if (j != i)
+            basis *= (x - points[j]) / (points[i] - points[j]);
+    }
+    return basis;
+}
+void Primitive::lagrangeInterpolation(const GLint numInterpolated,const vertexArray& controlArray,const GLsizei numControlPoints){
+    const GLfloat startX = controlArray[0],endX = controlArray[(numControlPoints-1) * stride];
+    std::vector<GLfloat> xVal;
+    for (auto vertex = controlArray.begin(); vertex!=controlArray.end(); vertex+=stride)
+        xVal.push_back(*vertex);
+    for (int i = 0; i < numInterpolated; ++i) {
+        GLfloat x = startX + i * (endX - startX) / (numInterpolated - 1);
+        GLfloat y = 0.0f;
+        for (int j = 0; j < numControlPoints; j++) {
+                GLfloat basis = lagrange_basis(j, x, xVal);
+                y +=controlArray[j * stride + 1] * basis;
+            }
+        vertices.push_back(x);vertices.push_back(y);vertices.push_back(0);
+    }
+}
 
+glm::vec2 computeHermitePoint(const glm::vec2& pS, const glm::vec2& pT, const glm::vec2& t0, const glm::vec2& t1, double t) {
+    const GLfloat t2 = t * t;
+    const GLfloat t3 = t2 * t;
+    const GLfloat h00 = 2*t3 - 3*t2 + 1;
+    const GLfloat h10 = t3 - 2*t2 + t;
+    const GLfloat h01 = -2*t3 + 3*t2;
+    const GLfloat h11 = t3 - t2;
+    const GLfloat x = h00*pS.x + h10*t0.x + h01*pT.x + h11*t1.x;
+    const GLfloat y = h00*pS.y + h10*t0.y + h01*pT.y + h11*t1.y;
+    return glm::vec2(x, y);
+}
+void Primitive::hermiteInterpolation(const GLint numInterpolated,const vertexArray& controlArray,const GLsizei numControlPoints){
+    vertexArray xVal,yVal;
+    for (auto vertex = controlArray.begin(); vertex!=controlArray.end(); vertex+=stride){
+        xVal.push_back(*vertex);
+        yVal.push_back(*(vertex+1));
+    }
+    const glm::vec2 pS = glm::vec2(xVal[0],yVal[0]),pT = glm::vec2(xVal[numControlPoints-1],yVal[numControlPoints-1]);
+    const glm::vec2 tS = glm::vec2(xVal[1] - xVal[0],yVal[1] - yVal[0]),tT = glm::vec2(xVal[numControlPoints-2] - xVal[numControlPoints-1],yVal[numControlPoints-2] - yVal[numControlPoints-1]);
+    for (int i = 0; i < numInterpolated; ++i) {
+        GLfloat t = static_cast<GLfloat>(i) / numInterpolated;
+        glm::vec2 curvePoint = computeHermitePoint(pS, pT, tS, tT, t);
+        vertices.push_back(curvePoint.x);vertices.push_back(curvePoint.y);vertices.push_back(0);
+    }
+    return;
+}
+
+void Primitive::generateCurve(){
+    vertexArray controlArray = vertices;
+    //std::cout<<controlArray.size()<<std::endl;
+    const GLsizei numControlPoints = getVertexNum();
+    vertices.clear();
+    GLfloat length = 0;
+    for (int i = 1; i < numControlPoints; i++) {
+        length += std::sqrt(
+                        (controlArray[i * stride] - controlArray[(i-1) * stride]) * (controlArray[i * stride] - controlArray[(i-1) * stride])+
+                        (controlArray[i * stride + 1] - controlArray[(i-1) * stride + 1]) * (controlArray[i * stride + 1] - controlArray[(i-1) * stride] + 1)+
+                        (controlArray[i * stride + 2] - controlArray[(i-1) * stride + 2]) * (controlArray[i * stride + 2] - controlArray[(i-1) * stride] + 2)
+                        );
+    }
+    const GLint numInterpolated = static_cast<int>(length);
+    //std::cout<<"curve point num:"<<numInterpolated<<std::endl;
+    lagrangeInterpolation(numInterpolated,controlArray,numControlPoints);
+    //hermiteInterpolation(numInterpolated, controlArray, numControlPoints);
+}
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;
 pPrimitive drawPreviewPrimitive = nullptr;
