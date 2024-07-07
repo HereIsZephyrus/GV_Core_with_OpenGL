@@ -346,7 +346,7 @@ void renderEditPanel(){
     if (ImGui::Button("Create Element"))
         record.showCreateElementWindow = true;
     ImGui::ColorEdit4("Color", (float*)&style.drawColor);
-    ImGui::SliderFloat("Thickness", &style.thickness, 1.0f, 100.0f);
+    ImGui::SliderFloat("Thickness", &style.thickness, 1.0f, 50.0f);
     ImGui::Checkbox("Fill", &style.toFill);
     Shape& drawType = Take::holdon().drawType;
     bool& holdonToDraw = Take::holdon().holdonToDraw;

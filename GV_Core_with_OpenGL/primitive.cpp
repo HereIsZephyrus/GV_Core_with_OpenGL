@@ -82,6 +82,8 @@ void Primitive::rend(GLuint& program){
     const glm::vec4 color = previewStyle::color;
     GLuint colorLoc = glGetUniformLocation(program,"setColor");
     glUniform4f(colorLoc,color.x,color.y,color.z,color.w);
+    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+    glUniform1f(sizeLoc,ShaderStyle::getStyle().thickness);
     
     //camera
     GLuint projectionLoc = glGetUniformLocation(program, "projection");

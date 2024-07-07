@@ -150,14 +150,14 @@ int initStyle(){
     
     //init preview shader
     pShader previewShader (new Shader());
-    previewShader->attchVertexShader(rd::filePath("singleVertices.vs"));
-    previewShader->attchFragmentShader(rd::filePath("fillWhite.frag"));
+    previewShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+    previewShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
     previewShader->linkProgram();
     rd::namedShader["previewShader"] = std::move(previewShader);
     //init axis
     pShader axisShader (new Shader());
-    axisShader->attchVertexShader(rd::filePath("singleVertices.vs"));
-    axisShader->attchFragmentShader(rd::filePath("fillWhite.frag"));
+    axisShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+    axisShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
     axisShader->linkProgram();
     rd::namedShader["axisShader"] = std::move(axisShader);
     coord::generateCoordinateAxis();

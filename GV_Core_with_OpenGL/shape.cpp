@@ -33,9 +33,9 @@ void Point::draw(bool highlighted){
     //thickness
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
     glUniform1f(sizeLoc,pointSize);
-    std::cout<<pointSize<<std::endl;
     // load data
     glBindVertexArray(identifier->VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     return;
@@ -45,9 +45,9 @@ void Line::draw(bool highlighted){
     //thickness
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
     glUniform1f(sizeLoc,lineWidth);
-    std::cout<<lineWidth<<std::endl;
     // load data
     glBindVertexArray(identifier->VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     return;
@@ -59,6 +59,7 @@ void Face::draw(bool highlighted){
     glUniform1f(sizeLoc,1.0f);
     // load data
     glBindVertexArray(identifier->VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     return;
@@ -133,6 +134,7 @@ void createTopoElements(Primitive* lastpPrimitive){
     const GLenum shape = lastpPrimitive->getShape();
     if (shape == GL_POINTS  || shape == GL_LINE_STRIP){
         std::cout<<"treat as points"<<std::endl;
+        //std::cout<<lastpPrimitive->getVertexNum()<<std::endl;
         for (int i = 0; i< lastpPrimitive->getVertexNum(); i++)
             lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
     }

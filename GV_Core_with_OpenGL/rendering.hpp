@@ -48,10 +48,8 @@ public:
     void use(){
         glUseProgram(program);
     }
-    void attchVertexShader(std::string vertexShader);
-    void attchVertexShader(const GLchar* vertexPath);
-    void attchFragmentShader(std::string fragmentShader);
-    void attchFragmentShader(const GLchar* fragmentPath);
+    void attchShader(std::string shader,GLuint type);
+    void attchShader(const GLchar* path,GLuint type);
     void linkProgram();
     GLuint program;
 private:
