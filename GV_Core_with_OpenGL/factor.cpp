@@ -108,6 +108,7 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
         pShader newShader(new Shader());
         newShader->attchVertexShader(rd::filePath("singleVertices.vs"));
+        //newShader->attchVertexShader(rd::filePath("lineWidth.frag"));
         newShader->attchFragmentShader(rd::filePath("fillColor.frag"));
         newShader->linkProgram();
         rd::mainShaderList.push_back(std::move(newShader));

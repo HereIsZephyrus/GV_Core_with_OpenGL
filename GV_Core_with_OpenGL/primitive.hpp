@@ -60,8 +60,9 @@ public:
     void transform(const indexArray&,const glm::mat3&);
     void transform(const glm::mat3&);
     void drawElement();
+    void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
-    //glm::vec4 getColor() const{return color;}
+    glm::vec4 getColor() const{return color;}
     GLenum getShape() const{return shape;}
     friend class pr::Element;
     friend class pr::Point;
@@ -84,7 +85,6 @@ public:
     Primitive* getSelf() {return m_self;}
     void useShader();
     //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
-    glm::mat4 modelMat;
 protected:
     void generateCurve();
     void lagrangeInterpolation(const GLint,const vertexArray& ,const GLsizei);
@@ -96,10 +96,11 @@ private:
     GLenum shape;
     GLsizei stride,indexLen;
     Shader* shader;
-    //glm::vec4 color;
+    glm::vec4 color;
     std::string name;
     Primitive* m_self;
     bool holding;
+    //glm::mat3 transMat;
 };
 
 typedef std::unique_ptr<Primitive> pPrimitive;

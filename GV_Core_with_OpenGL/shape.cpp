@@ -124,15 +124,16 @@ void createTopoElements(Primitive* lastpPrimitive){
 }
 
 void updateTopoElements(Primitive* lastpPrimitive){
-    //ShaderStyle& style = ShaderStyle::getStyle();
-    //const ImVec4 nowColor = style.drawColor;
-    //const glm::vec4 primitiveColor = lastpPrimitive->getColor();
+    ShaderStyle& style = ShaderStyle::getStyle();
+    const ImVec4 nowColor = style.drawColor;
+    const glm::vec4 primitiveColor = lastpPrimitive->getColor();
     lastpPrimitive->elementList.clear();
-    //style.drawColor = {primitiveColor.x,primitiveColor.y,primitiveColor.z,primitiveColor.w};
+    style.drawColor = {primitiveColor.x,primitiveColor.y,primitiveColor.z,primitiveColor.w};
     const GLenum shape = lastpPrimitive->getShape();
     if (shape == GL_POINTS){
         for (int i = 0; i< lastpPrimitive->getVertexNum(); i++){
             lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
+            
         }
     }
     else if (shape == GL_LINES || shape == GL_LINE){
@@ -143,6 +144,6 @@ void updateTopoElements(Primitive* lastpPrimitive){
     else{
         lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
     }
-    //style.drawColor = nowColor;
+    style.drawColor = nowColor;
     return;
 }
