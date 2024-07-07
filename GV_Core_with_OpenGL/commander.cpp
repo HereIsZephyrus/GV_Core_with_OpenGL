@@ -145,7 +145,7 @@ void mouseEditCallback(GLFWwindow* window, int button, int action, int mods){
     }
     if (action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_LEFT && windowPara.mainWindowFocused) {
         Take& take = Take::holdon();
-        take.editingPrimitive->transform(take.transMat);
+        take.editingPrimitive->transMat = take.transMat;
     }
     return;
 }

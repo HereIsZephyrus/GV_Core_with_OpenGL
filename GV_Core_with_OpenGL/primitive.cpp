@@ -20,7 +20,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     this->vertices = vertices;
     this->elementList.clear();
     this->holding = false;
-    //this->transMat = glm::mat4(1.0f);
+    this->transMat = glm::mat4(1.0f);
     Records& record = Records::getState();
     this->layer = static_cast<GLuint>(record.primitiveList.size())+1;
     const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
@@ -117,18 +117,18 @@ void Primitive::updateVertex(){
     glBindVertexArray(0);
 }
 
-void Primitive::transform(const glm::mat3& inputMat){
-    //transfered = vertices;
-    for (auto vertex = vertices.begin(); vertex != vertices.end(); vertex+=stride) {
-        const GLfloat rawX = *(vertex), rawY = *(vertex+1);
-        //std::cout<< inputMat[0][0]<<' '<< inputMat[1][0]<< inputMat[2][0]<<std::endl;
-        //std::cout<< inputMat[0][1]<<' '<< inputMat[1][1]<< inputMat[2][1]<<std::endl;
-        *(vertex) = rawX * inputMat[0][0] + rawY * inputMat[1][0] + inputMat[2][0];
-        *(vertex+1) = rawX * inputMat[0][1] + rawY * inputMat[1][1] + inputMat[2][1];
-    }
-    updateVertex();
-}
-void Primitive::transform(const indexArray& vertexIndex,const glm::mat3& inputMat){
+//void Primitive::transform(const glm::mat3& inputMat){
+//    //transfered = vertices;
+//    for (auto vertex = vertices.begin(); vertex != vertices.end(); vertex+=stride) {
+//        const GLfloat rawX = *(vertex), rawY = *(vertex+1);
+//        //std::cout<< inputMat[0][0]<<' '<< inputMat[1][0]<< inputMat[2][0]<<std::endl;
+//        //std::cout<< inputMat[0][1]<<' '<< inputMat[1][1]<< inputMat[2][1]<<std::endl;
+//        *(vertex) = rawX * inputMat[0][0] + rawY * inputMat[1][0] + inputMat[2][0];
+//        *(vertex+1) = rawX * inputMat[0][1] + rawY * inputMat[1][1] + inputMat[2][1];
+//    }
+//    updateVertex();
+//}
+void Primitive::transformVertex(const indexArray& vertexIndex,const glm::mat3& inputMat){
     //transfered = vertices;
     for (auto index = vertexIndex.begin(); index != vertexIndex.end(); index++) {
         const GLint beginIndex = (*index) * stride;
@@ -222,11 +222,15 @@ void Primitive::useShader(){
     //camera
     GLuint projectionLoc = glGetUniformLocation(shader->program, "projection");
     GLuint viewLoc = glGetUniformLocation(shader->program, "view");
+    GLuint modelLoc = glGetUniformLocation(shader->program, "model");
+    
     Camera2D& camera = Camera2D::getView();
     glm::mat4 projection = camera.getProjectionMatrix();
     glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 model = transMat;
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 }
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;

@@ -27,9 +27,6 @@ void Element::draw(bool highlighted){
     else{
         glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
     }
-    GLuint modelLoc = glGetUniformLocation(shader->program, "model");
-    glm::mat4 model = glm::mat4(1.0f);
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     
     // load data
     glBindVertexArray(identifier->VAO);

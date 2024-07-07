@@ -57,8 +57,8 @@ public:
     void bindShader(Shader* tobind){shader = tobind;}
     void updateVertex();
     void draw();
-    void transform(const indexArray&,const glm::mat3&);
-    void transform(const glm::mat3&);
+    void transformVertex(const indexArray&,const glm::mat3&);
+    //void transform(const glm::mat3&);
     void drawElement();
     void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
@@ -84,6 +84,7 @@ public:
     void destroyOutboundElement();
     Primitive* getSelf() {return m_self;}
     void useShader();
+    glm::mat3 transMat;
     //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
 protected:
     void generateCurve();
@@ -100,7 +101,6 @@ private:
     std::string name;
     Primitive* m_self;
     bool holding;
-    //glm::mat3 transMat;
 };
 
 typedef std::unique_ptr<Primitive> pPrimitive;
