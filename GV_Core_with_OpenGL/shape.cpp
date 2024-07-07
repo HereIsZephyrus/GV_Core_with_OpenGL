@@ -9,11 +9,9 @@
 #include "camera.hpp"
 #include "window.hpp"
 namespace pr{
-
-void  Element::rend(GLuint& program,bool highlighted) {
-    //glUseProgram(program);
+void Element::draw(bool highlighted){
     //color
-    GLuint colorLoc = glGetUniformLocation(program,"setColor");
+    GLuint colorLoc = glGetUniformLocation(shader->program,"setColor");
     if (highlighted){
         ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
         if (shape == GL_POINTS || shape == GL_POINT){
@@ -22,58 +20,20 @@ void  Element::rend(GLuint& program,bool highlighted) {
             glUniform4f(colorLoc,1-backgroundColor.x - 0.2f,1-backgroundColor.y - 0.2f,1-backgroundColor.z - 0.2f,1.0f);
         }
         else{
-            //glUniform4f(colorLoc,style.color.x+ 0.1f,style.color.y+ 0.1f,style.color.z+0.1f,style.color.w);
+            //glUnrangtaiform4f(colorLoc,style.color.x+ 0.1f,style.color.y+ 0.1f,style.color.z+0.1f,style.color.w);
             glUniform4f(colorLoc,style.color.x + 0.1f,style.color.y+ 0.1f,style.color.z + 0.1f,style.color.w);
         }
     }
     else{
         glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
     }
-    //thickness
-    //GLuint  resLoc  = glGetUniformLocation(program, "resolution");
-    //GLuint  thiLoc  = glGetUniformLocation(program, "thickness");
-    //glUniform1f(thiLoc,thickness);
-    //WindowParas& windowPara = WindowParas::getInstance();
-    //glUniform2f(resLoc, windowPara.SCREEN_WIDTH,windowPara.SCREEN_HEIGHT);
-    
-    //camera
-    GLuint projectionLoc = glGetUniformLocation(program, "projection");
-    GLuint viewLoc = glGetUniformLocation(program, "view");
-    GLuint modelLoc = glGetUniformLocation(program, "model");
-    Camera2D& camera = Camera2D::getView();
-    glm::mat4 projection = camera.getProjectionMatrix();
-    glm::mat4 view = camera.getViewMatrix();
+    GLuint modelLoc = glGetUniformLocation(shader->program, "model");
     glm::mat4 model = glm::mat4(1.0f);
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-}
-void Element::load(){
+    
+    // load data
     glBindVertexArray(identifier->VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, identifier->VBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
-    glEnableVertexAttribArray(0);
-}
-void Element::draw(bool highlighted){
-    //std::cout<<"Draw is running"<<std::endl;
-    GLint currentBuffer;
-    if (shader == nullptr){
-        std::cerr<<"havn't bind shader";
-        return;
-    }
-    else
-        shader ->use();
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentBuffer);
-    if (currentBuffer != EBO){
-        //std::cout<<currentBuffer<<' '<<VBO<<std::endl;
-        load();
-    }
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(identifier->VAO);
-    rend(shader->program,highlighted);
     glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
-    //CHECK_GL_ERROR( glDrawElements(shape, indexLen, GL_UNSIGNED_INT, 0));
     glBindVertexArray(0);
     return;
 }

@@ -42,10 +42,6 @@ class Shader{
 public:
    Shader(const Shader&) = delete;
     void operator=(const Shader&) = delete;
-    //Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
-    //Shader(std::string vertexShader,std::string fragmentShader);
-    //Shader(const GLchar* vertexPath,std::string fragmentShader);
-    //Shader(std::string vertexShader,const GLchar* fragmentPath);
     Shader(){
         this->program = glCreateProgram();
     }

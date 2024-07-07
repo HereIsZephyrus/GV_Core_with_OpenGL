@@ -49,11 +49,15 @@ int main(int argc, const char * argv[]) {
         bool hasHolding = false;
         Records& record = Records::getState();
         //draw main primitive list
-        bool openDetect = ((record.state == interectState::holding) || (record.state == interectState::toselect));
+        
+        bool openDetect = ((record.state == interectState::holding) || (record.state == interectState::toselect)); // whether primitives can be select
         for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
+            // detect hold
             if (WindowParas::getInstance().mainWindowFocused && openDetect && !record.dragingMode && record.pressLeft)
                  primitiveSelectDetect((*primitive).get());
             hasHolding |= (*primitive)->getHold();
+            // draw elements
+            (*primitive)->useShader();
             for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
                 (*element)->draw((*primitive)->getHold());
         }

@@ -56,7 +56,6 @@ public:
     }
     void bindShader(Shader* tobind){shader = tobind;}
     void updateVertex();
-    void load();
     void draw();
     void transform(const indexArray&,const glm::mat3&);
     void transform(const glm::mat3&);
@@ -84,6 +83,7 @@ public:
     void createOutboundElement();
     void destroyOutboundElement();
     Primitive* getSelf() {return m_self;}
+    void useShader();
     //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
 protected:
     void generateCurve();

@@ -37,8 +37,6 @@ class Face;
 class Element{
 public:
     void draw(bool highlighted);
-    void load();
-    void rend(GLuint& program,bool highlighted) ;
     Element(const Primitive* primitive){
         refVertex = std::make_shared<vertexArray>(primitive->vertices);
         identifier = primitive->getIdentifier();
@@ -63,8 +61,10 @@ public:
 protected:
     void bindEBObuffer(){
         glGenBuffers(1, &EBO);
+        glBindVertexArray(identifier->VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(vertexIndex.size() * sizeof(GLuint)), static_cast<const void*>(vertexIndex.data()), GL_STATIC_DRAW);
+        glBindVertexArray(0);
     }
     virtual void calcGeoCenter()=0;
     indexArray vertexIndex;

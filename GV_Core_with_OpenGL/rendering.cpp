@@ -26,26 +26,6 @@ GLchar* filePath(const char* fileName){
     //std::cout<<resource<<std::endl;
     return resource;
 }
-std::string geneateColorShader(const ImVec4& color){
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(1) << color.x<<"f,"<<color.y<<"f,"<<color.z<<"f,"<<color.w;
-    std::string  shaderCode = "#version 410 core\n"
-    "out vec4 color;\n"
-    "void main( ){\n"
-    "color = vec4( " + ss.str() + ");\n}";
-    //std::cout<<shaderCode<<std::endl;
-    return shaderCode;
-}
-
-std::string singleVertices = "#version 410 core\n"
-"layout(location = 0) in vec3 aPos;\n"
-"uniform mat4 projection;\n"
-"uniform mat4 view;\n"
-"uniform mat4 model;\n"
-"void main() {\n"
-"    gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
-"}\n";
-
 };
 
 void Shader::attchVertexShader(std::string vertexShader){

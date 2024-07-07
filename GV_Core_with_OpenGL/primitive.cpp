@@ -71,6 +71,10 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     shader = nullptr;
     glGenVertexArrays(1,&identifier.VAO);
     glGenBuffers(1,&identifier.VBO);
+    glBindVertexArray(identifier.VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
+    glEnableVertexAttribArray(0);
     updateVertex();
 }
 void Primitive::rend(GLuint& program){
@@ -90,33 +94,17 @@ void Primitive::rend(GLuint& program){
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 }
-void Primitive::load(){
-    glBindVertexArray(identifier.VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
-    glEnableVertexAttribArray(0);
-}
 void Primitive::draw(){
     //std::cout<<"Draw is running"<<std::endl;
-    GLint currentBuffer;
     if (shader == nullptr){
         std::cerr<<"havn't bind shader"<<std::endl;
         return;
     }
     else
         shader ->use();
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentBuffer);
-    if (currentBuffer != identifier.VBO){
-        //std::cout<<currentBuffer<<' '<<VBO<<std::endl;
-        load();
-    }
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(identifier.VAO);
-    //std::cout<<"drawing primitive"<<std::endl;
     rend(shader->program);
-    //glDrawArrays(shape, 0,( getVertexNum()-1)*6);
+    glBindVertexArray(identifier.VAO);
     glDrawArrays(shape, 0, getVertexNum());
-    // CHECK_GL_ERROR(glDrawArrays(shape, 0, vertexCount));
     glBindVertexArray(0);
     return;
 }
@@ -124,7 +112,6 @@ void Primitive::draw(){
 void Primitive::updateVertex(){
     glBindVertexArray(identifier.VAO);
     glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
-    //glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(transfered.size() * sizeof(GLfloat)) ,static_cast<const void*>(transfered.data()), GL_STATIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -224,6 +211,22 @@ void Primitive::generateCurve(){
     //std::cout<<"curve point num:"<<numInterpolated<<std::endl;
     lagrangeInterpolation(numInterpolated,controlArray,numControlPoints);
     //hermiteInterpolation(numInterpolated, controlArray, numControlPoints);
+}
+void Primitive::useShader(){
+    if (shader == nullptr){
+        std::cerr<<"havn't bind shader";
+        return;
+    }
+    else
+        shader ->use();
+    //camera
+    GLuint projectionLoc = glGetUniformLocation(shader->program, "projection");
+    GLuint viewLoc = glGetUniformLocation(shader->program, "view");
+    Camera2D& camera = Camera2D::getView();
+    glm::mat4 projection = camera.getProjectionMatrix();
+    glm::mat4 view = camera.getViewMatrix();
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 }
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;

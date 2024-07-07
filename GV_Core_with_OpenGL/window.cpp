@@ -11,8 +11,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#define STB_TRUETYPE_IMPLEMENTATION
-#include "stb_truetype.h"
 #include "commander.hpp"
 #include "window.hpp"
 #include "camera.hpp"
@@ -299,7 +297,7 @@ void renderMenu(GLFWwindow *&window) {
     if (ImGui::BeginMainMenuBar()){
         if (ImGui::BeginMenu("MyGIS")){
             if (ImGui::MenuItem("About")){
-                // 处理新建操作
+                // write about
             }
             if (ImGui::MenuItem("Quit", "Ctrl Q")){
                 //warning for save
