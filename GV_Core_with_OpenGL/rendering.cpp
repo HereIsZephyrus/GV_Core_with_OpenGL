@@ -26,69 +26,8 @@ GLchar* filePath(const char* fileName){
     //std::cout<<resource<<std::endl;
     return resource;
 }
-std::string geneateColorShader(const ImVec4& color){
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(1) << color.x<<"f,"<<color.y<<"f,"<<color.z<<"f,"<<color.w;
-    std::string  shaderCode = "#version 410 core\n"
-    "out vec4 color;\n"
-    "void main( ){\n"
-    "color = vec4( " + ss.str() + ");\n}";
-    //std::cout<<shaderCode<<std::endl;
-    return shaderCode;
-}
-
-std::string singleVertices = "#version 410 core\n"
-"layout(location = 0) in vec3 aPos;\n"
-"uniform mat4 projection;\n"
-"uniform mat4 view;\n"
-"uniform mat4 model;\n"
-"void main() {\n"
-"    gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
-"}\n";
-
 };
 
-void Shader::attchVertexShader(std::string vertexShader){
-    const GLchar* vsShaderCode = vertexShader.c_str();
-    GLint success;
-    GLchar infoLog[512];
-    GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vsShaderCode, NULL);
-    glCompileShader(vertex);
-    // Print compile errors if any
-    glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
-    if (!success){
-        glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-        std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    glAttachShader(program, vertex);
-    glDeleteShader(vertex);
-}
-void Shader::attchVertexShader(const GLchar* vertexPath){
-    std::string vertexShader = readGLSLfile(vertexPath);
-    attchVertexShader(vertexShader);
-}
-void Shader::attchFragmentShader(std::string fragmentShader){
-    const GLchar* fragShaderCode = fragmentShader.c_str();
-    GLint success;
-    GLchar infoLog[512];
-    GLuint fragment;
-    fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fragShaderCode, NULL);
-    glCompileShader(fragment);
-    // Print compile errors if any
-    glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
-    if (!success){
-        glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-        std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    glAttachShader(program, fragment);
-    glDeleteShader(fragment);
-}
-void Shader::attchFragmentShader(const GLchar* fragmentPath){
-    std::string fragmentShader = readGLSLfile(fragmentPath);
-    attchFragmentShader(fragmentShader);
-}
 std::string Shader::readGLSLfile(const GLchar* filePath){
     std::string fileString;
     std::ifstream fileStream;
@@ -106,7 +45,27 @@ std::string Shader::readGLSLfile(const GLchar* filePath){
     }
     return "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ";
 }
-
+void Shader::attchShader(std::string shader,GLuint type){
+    const GLchar* shaderCode = shader.c_str();
+    GLint success;
+    GLchar infoLog[512];
+    GLuint shaderProgram;
+    shaderProgram = glCreateShader(type);
+    glShaderSource(shaderProgram, 1, &shaderCode, NULL);
+    glCompileShader(shaderProgram);
+    // Print compile errors if any
+    glGetShaderiv(shaderProgram, GL_COMPILE_STATUS, &success);
+    if (!success){
+        glGetShaderInfoLog(shaderProgram, 512, NULL, infoLog);
+        std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+    glAttachShader(program, shaderProgram);
+    glDeleteShader(shaderProgram);
+}
+void Shader::attchShader(const GLchar* path,GLuint type){
+    std::string shader = readGLSLfile(path);
+    attchShader(shader,type);
+}
 void Shader::linkProgram(){
     GLint success;
     GLchar infoLog[512];

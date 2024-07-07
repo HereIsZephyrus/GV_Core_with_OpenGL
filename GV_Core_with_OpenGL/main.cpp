@@ -49,11 +49,15 @@ int main(int argc, const char * argv[]) {
         bool hasHolding = false;
         Records& record = Records::getState();
         //draw main primitive list
-        bool openDetect = ((record.state == interectState::holding) || (record.state == interectState::toselect));
+        
+        bool openDetect = ((record.state == interectState::holding) || (record.state == interectState::toselect)); // whether primitives can be select
         for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
+            // detect hold
             if (WindowParas::getInstance().mainWindowFocused && openDetect && !record.dragingMode && record.pressLeft)
                  primitiveSelectDetect((*primitive).get());
             hasHolding |= (*primitive)->getHold();
+            // draw elements
+            (*primitive)->useShader();
             for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
                 (*element)->draw((*primitive)->getHold());
         }
@@ -94,7 +98,7 @@ int initImGUI(GLFWwindow *window) {
     gui::spiltUI();
     ShaderStyle& style = ShaderStyle::getStyle();
     style.drawColor =  ImVec4(1.0f, 0.5f, 0.2f, 1.0f);
-    style.thickness = 1.0f;
+    style.thickness = 5.0f;
     Take& take = Take::holdon();
     take.drawType = Shape::NONE; //set as blank style
     gui::menuBarHeight = ImGui::GetFrameHeightWithSpacing() * WindowParas::getInstance().yScale;
@@ -143,26 +147,26 @@ int initStyle(){
     glEnable(GL_LINE_SMOOTH);
     checkStyleBoundary();
     windowPara.backgroundColor = {0.1f, 0.1f, 0.1f, 1.0f};
-    ShaderStyle& style = ShaderStyle::getStyle();
-    style.pointSize = 5.0f;
-    glPointSize(style.pointSize);
-    style.thickness = 1.0f;
-    glLineWidth(style.thickness);
     
     //init preview shader
-    pShader previewShader (new Shader());
-    previewShader->attchVertexShader(rd::filePath("singleVertices.vs"));
-    previewShader->attchFragmentShader(rd::filePath("fillWhite.frag"));
-    previewShader->linkProgram();
-    rd::namedShader["previewShader"] = std::move(previewShader);
+    pShader previewfillShader (new Shader());
+    previewfillShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+    previewfillShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
+    previewfillShader->linkProgram();
+    rd::namedShader["previewfillShader"] = std::move(previewfillShader);
+    pShader previewlineShader (new Shader());
+    previewlineShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+    previewlineShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
+    previewlineShader->attchShader(rd::filePath("lineWidth.gs"), GL_GEOMETRY_SHADER);
+    previewlineShader->linkProgram();
+    rd::namedShader["previewlineShader"] = std::move(previewlineShader);
     //init axis
     pShader axisShader (new Shader());
-    axisShader->attchVertexShader(rd::filePath("singleVertices.vs"));
-    axisShader->attchFragmentShader(rd::filePath("fillWhite.frag"));
+    axisShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+    axisShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
     axisShader->linkProgram();
     rd::namedShader["axisShader"] = std::move(axisShader);
     coord::generateCoordinateAxis();
-    //rd::defaultShader = rd::namedShader["singleYellow"].get();
     return 0;
 }
 

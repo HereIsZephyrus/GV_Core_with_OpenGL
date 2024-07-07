@@ -104,12 +104,12 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         }
         std::cout<<"finish draw"<<std::endl;
         Take& take = Take::holdon();
-        //ShaderStyle& style = ShaderStyle::getStyle();
         pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
         pShader newShader(new Shader());
-        newShader->attchVertexShader(rd::filePath("singleVertices.vs"));
-        //newShader->attchVertexShader(rd::filePath("lineWidth.frag"));
-        newShader->attchFragmentShader(rd::filePath("fillColor.frag"));
+        newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+        newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
+        if (take.drawType == Shape::LINES)
+            newShader->attchShader(rd::filePath("lineWidth.gs"), GL_GEOMETRY_SHADER);
         newShader->linkProgram();
         rd::mainShaderList.push_back(std::move(newShader));
         if (!record.cliping){
@@ -174,8 +174,11 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
         }
             
         //generate preview primitive
-        pPrimitive previewPrimitive(new Primitive(tempVertices,mapPreviewStyle(Take::holdon().drawType),3));
-        previewPrimitive -> bindShader(rd::namedShader["previewShader"].get());
+        pPrimitive previewPrimitive(new Primitive(tempVertices,mapPreviewStyle(take.drawType),3));
+        if (take.drawType == Shape::LINES)
+            previewPrimitive -> bindShader(rd::namedShader["previewlineShader"].get());
+        else
+            previewPrimitive -> bindShader(rd::namedShader["previewfillShader"].get());
         pr::drawPreviewPrimitive = std::move(previewPrimitive);
     }
     else

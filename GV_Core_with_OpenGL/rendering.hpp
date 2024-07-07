@@ -34,7 +34,7 @@ public:
     void operator = (const ShaderStyle&) = delete;
     bool toFill;
     ImVec4 drawColor;
-    float thickness,pointSize;
+    GLfloat thickness;
 private:
     ShaderStyle(){}
 };
@@ -42,20 +42,14 @@ class Shader{
 public:
    Shader(const Shader&) = delete;
     void operator=(const Shader&) = delete;
-    //Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
-    //Shader(std::string vertexShader,std::string fragmentShader);
-    //Shader(const GLchar* vertexPath,std::string fragmentShader);
-    //Shader(std::string vertexShader,const GLchar* fragmentPath);
     Shader(){
         this->program = glCreateProgram();
     }
     void use(){
         glUseProgram(program);
     }
-    void attchVertexShader(std::string vertexShader);
-    void attchVertexShader(const GLchar* vertexPath);
-    void attchFragmentShader(std::string fragmentShader);
-    void attchFragmentShader(const GLchar* fragmentPath);
+    void attchShader(std::string shader,GLuint type);
+    void attchShader(const GLchar* path,GLuint type);
     void linkProgram();
     GLuint program;
 private:

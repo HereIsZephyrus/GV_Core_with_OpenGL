@@ -69,7 +69,7 @@ void Camera2D::updateProjectionMatrix(){
     GLfloat right = screenWidth / windowPara.xScale / 2.0f * zoom;
     GLfloat bottom = -screenHeight / windowPara.xScale / 2.0f * zoom;
     GLfloat top = screenHeight / windowPara.xScale / 2.0f * zoom;
-    projectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+    projectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 20.0f);
 }
 void Camera2D::updateViewMatrix() {
     viewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-position, 0.0f));

@@ -77,10 +77,10 @@
 		323A00E62C0AC3530056BAD1 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glad.c; path = "../../OpenGL/glad-4.1/src/glad.c"; sourceTree = "<group>"; };
 		323A00EC2C0AC7440056BAD1 /* commander.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = commander.cpp; sourceTree = "<group>"; };
 		323A00ED2C0AC7440056BAD1 /* commander.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = commander.hpp; sourceTree = "<group>"; };
-		3256C6E32C2A655D005699CE /* stb_truetype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stb_truetype.h; path = ../../stb/stb_truetype.h; sourceTree = "<group>"; };
 		326A8BE72C0A28E300E30250 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		3278B0BE2C097C5500DF6489 /* GV_Core_with_OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GV_Core_with_OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		3278B0C12C097C5500DF6489 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		327DE2C12C3AD53900021453 /* linewidth.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = linewidth.gs; sourceTree = "<group>"; };
 		328DF9B52C1C95000092223F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		328DF9B62C1E91600092223F /* lineWidth.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = lineWidth.frag; sourceTree = "<group>"; };
 		328DF9B72C1EB1510092223F /* fillColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillColor.frag; sourceTree = "<group>"; };
@@ -108,7 +108,6 @@
 		32C5E0A32C19464E00152CDF /* camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = camera.cpp; sourceTree = "<group>"; };
 		32C5E0A42C19464E00152CDF /* camera.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = camera.hpp; sourceTree = "<group>"; };
 		32C5E0A82C1987E000152CDF /* singleVertices.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = singleVertices.vs; sourceTree = "<group>"; };
-		32C5E0A92C19886800152CDF /* fillYellow.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillYellow.frag; sourceTree = "<group>"; };
 		32C5E0AA2C19889600152CDF /* fillWhite.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillWhite.frag; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -165,7 +164,6 @@
 		3278B0C02C097C5500DF6489 /* GV_Core_with_OpenGL */ = {
 			isa = PBXGroup;
 			children = (
-				3256C6E32C2A655D005699CE /* stb_truetype.h */,
 				323A00EC2C0AC7440056BAD1 /* commander.cpp */,
 				323A00ED2C0AC7440056BAD1 /* commander.hpp */,
 				322E52F82C13F6E2002AFB73 /* window.cpp */,
@@ -215,8 +213,8 @@
 			isa = PBXGroup;
 			children = (
 				32C5E0A82C1987E000152CDF /* singleVertices.vs */,
+				327DE2C12C3AD53900021453 /* linewidth.gs */,
 				3229B9E22C2D3A76003693E6 /* curveVertices.vs */,
-				32C5E0A92C19886800152CDF /* fillYellow.frag */,
 				32C5E0AA2C19889600152CDF /* fillWhite.frag */,
 				328DF9B62C1E91600092223F /* lineWidth.frag */,
 				328DF9B72C1EB1510092223F /* fillColor.frag */,
