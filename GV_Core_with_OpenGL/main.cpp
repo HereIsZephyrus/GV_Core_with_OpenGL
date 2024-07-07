@@ -166,7 +166,6 @@ int initStyle(){
     axisShader->linkProgram();
     rd::namedShader["axisShader"] = std::move(axisShader);
     coord::generateCoordinateAxis();
-    //rd::defaultShader = rd::namedShader["singleYellow"].get();
     return 0;
 }
 
