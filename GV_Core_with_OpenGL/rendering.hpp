@@ -34,7 +34,7 @@ public:
     void operator = (const ShaderStyle&) = delete;
     bool toFill;
     ImVec4 drawColor;
-    float thickness,pointSize;
+    GLfloat thickness;
 private:
     ShaderStyle(){}
 };

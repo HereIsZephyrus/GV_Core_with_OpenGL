@@ -9,7 +9,7 @@
 #include "camera.hpp"
 #include "window.hpp"
 namespace pr{
-void Element::draw(bool highlighted){
+void Element::setColor(bool highlighted){
     //color
     GLuint colorLoc = glGetUniformLocation(shader->program,"setColor");
     if (highlighted){
@@ -27,14 +27,42 @@ void Element::draw(bool highlighted){
     else{
         glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
     }
-    
+}
+void Point::draw(bool highlighted){
+    setColor(highlighted);
+    //thickness
+    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+    glUniform1f(sizeLoc,pointSize);
+    std::cout<<pointSize<<std::endl;
     // load data
     glBindVertexArray(identifier->VAO);
     glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     return;
 }
-
+void Line::draw(bool highlighted){
+    setColor(highlighted);
+    //thickness
+    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+    glUniform1f(sizeLoc,lineWidth);
+    std::cout<<lineWidth<<std::endl;
+    // load data
+    glBindVertexArray(identifier->VAO);
+    glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+    return;
+}
+void Face::draw(bool highlighted){
+    setColor(highlighted);
+    //thickness
+    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+    glUniform1f(sizeLoc,1.0f);
+    // load data
+    glBindVertexArray(identifier->VAO);
+    glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+    return;
+}
 void updateIndex(Primitive* primitive){
     const primitiveIdentifier* identifier = primitive->getIdentifier();
     primitive->elementList.erase(std::remove_if(primitive->elementList.begin(), primitive->elementList.end(),

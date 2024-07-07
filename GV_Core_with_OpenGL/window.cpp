@@ -45,7 +45,6 @@ int initOpenGL(GLFWwindow *&window) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    
     //SDL_Init(SDL_INIT_EVERYTHING);
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -75,7 +74,8 @@ int initOpenGL(GLFWwindow *&window) {
     }
     glfwSetWindowUserPointer(window, &Camera2D::getView());
     windowPara.defaultAlpha = glfwGetWindowOpacity(window);
-    
+    glEnable(GL_PROGRAM_POINT_SIZE);
+    glEnable(GL_DEPTH_TEST);
     const GLubyte* version = glGetString(GL_VERSION);
     std::cout<<version<<std::endl;
     HAS_INIT_OPENGL_CONTEXT = true;
@@ -346,7 +346,7 @@ void renderEditPanel(){
     if (ImGui::Button("Create Element"))
         record.showCreateElementWindow = true;
     ImGui::ColorEdit4("Color", (float*)&style.drawColor);
-    ImGui::SliderFloat("Thickness", &style.thickness, 1.0f, 10.0f);
+    ImGui::SliderFloat("Thickness", &style.thickness, 1.0f, 100.0f);
     ImGui::Checkbox("Fill", &style.toFill);
     Shape& drawType = Take::holdon().drawType;
     bool& holdonToDraw = Take::holdon().holdonToDraw;

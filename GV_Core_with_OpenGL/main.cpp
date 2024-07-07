@@ -98,7 +98,7 @@ int initImGUI(GLFWwindow *window) {
     gui::spiltUI();
     ShaderStyle& style = ShaderStyle::getStyle();
     style.drawColor =  ImVec4(1.0f, 0.5f, 0.2f, 1.0f);
-    style.thickness = 1.0f;
+    style.thickness = 5.0f;
     Take& take = Take::holdon();
     take.drawType = Shape::NONE; //set as blank style
     gui::menuBarHeight = ImGui::GetFrameHeightWithSpacing() * WindowParas::getInstance().yScale;
@@ -147,11 +147,6 @@ int initStyle(){
     glEnable(GL_LINE_SMOOTH);
     checkStyleBoundary();
     windowPara.backgroundColor = {0.1f, 0.1f, 0.1f, 1.0f};
-    ShaderStyle& style = ShaderStyle::getStyle();
-    style.pointSize = 5.0f;
-    glPointSize(style.pointSize);
-    style.thickness = 1.0f;
-    glLineWidth(style.thickness);
     
     //init preview shader
     pShader previewShader (new Shader());

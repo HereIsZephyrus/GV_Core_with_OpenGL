@@ -25,6 +25,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     this->layer = static_cast<GLuint>(record.primitiveList.size())+1;
     const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
     this->color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
+    this->thickness = ShaderStyle::getStyle().thickness;
     switch (shape) {
         case Shape::POINTS:{
             this->shape = GL_POINTS;

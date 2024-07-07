@@ -101,6 +101,7 @@ private:
     std::string name;
     Primitive* m_self;
     bool holding;
+    GLfloat thickness;
 };
 
 typedef std::unique_ptr<Primitive> pPrimitive;

@@ -36,7 +36,7 @@ class Face;
 //don't recycle point/line/face index -- don't need to tackle so much elements for now.
 class Element{
 public:
-    void draw(bool highlighted);
+    virtual void draw(bool highlighted)=0;
     Element(const Primitive* primitive){
         refVertex = std::make_shared<vertexArray>(primitive->vertices);
         identifier = primitive->getIdentifier();
@@ -79,6 +79,7 @@ protected:
         glm::vec4 color;
     } style;
     TopoType type;
+    void setColor(bool highlighted);
     //ShaderPara style;
 };
 
@@ -87,7 +88,7 @@ public:
     Point(Primitive* primitive,GLuint startIndex):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
-        this->pointSize = style.pointSize;
+        this->pointSize = primitive->thickness;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_POINTS;
         vertexIndex = {startIndex};
@@ -99,6 +100,7 @@ public:
     friend class Face;
     glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
+    void draw(bool highlighted);
 protected:
     void calcGeoCenter(){
         geoCenter.x = (*refVertex)[0];
@@ -113,7 +115,7 @@ public:
     Line(Primitive* primitive,GLuint startIndex,GLuint endIndex):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
-        this->lineWidth = style.thickness;
+        this->lineWidth = primitive->thickness;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_LINES;
         vertexIndex = {startIndex,endIndex};
@@ -128,6 +130,7 @@ public:
     friend class Face;
     glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
+    void draw(bool highlighted);
 protected:
     void calcGeoCenter(){
         geoCenter.x = 0;
@@ -163,6 +166,7 @@ public:
         bindEBObuffer();
     }
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
+    void draw(bool highlighted);
 protected:
     void calcGeoCenter(){
         geoCenter.x = 0;
