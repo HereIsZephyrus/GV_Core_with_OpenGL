@@ -136,12 +136,12 @@ void createTopoElements(Primitive* lastpPrimitive){
         std::cout<<"treat as points"<<std::endl;
         //std::cout<<lastpPrimitive->getVertexNum()<<std::endl;
         for (int i = 0; i< lastpPrimitive->getVertexNum(); i++)
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i,false)) );
     }
     else if (shape == GL_LINES || shape == GL_LINE){
         std::cout<<"treat as line"<<std::endl;
         for (int i = 0; i< lastpPrimitive->getVertexNum()-1; i++)
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1,false)) );
     }
     else{
         std::cout<<"treat as face"<<std::endl;
@@ -159,13 +159,13 @@ void updateTopoElements(Primitive* lastpPrimitive){
     const GLenum shape = lastpPrimitive->getShape();
     if (shape == GL_POINTS){
         for (int i = 0; i< lastpPrimitive->getVertexNum(); i++){
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i,false)) );
             
         }
     }
     else if (shape == GL_LINES || shape == GL_LINE){
         for (int i = 0; i< lastpPrimitive->getVertexNum()-1; i++){
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1,false)) );
         }
     }
     else{

@@ -85,10 +85,13 @@ protected:
 
 class Point: public Element{
 public:
-    Point(Primitive* primitive,GLuint startIndex):
+    Point(Primitive* primitive,GLuint startIndex,bool isPartition):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
-        this->pointSize = primitive->thickness;
+        if (isPartition)
+            this->pointSize = 5.0f;
+        else
+            this->pointSize = primitive->thickness;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_POINTS;
         vertexIndex = {startIndex};
@@ -112,16 +115,19 @@ private:
 };
 class Line: public Element{
 public:
-    Line(Primitive* primitive,GLuint startIndex,GLuint endIndex):
+    Line(Primitive* primitive,GLuint startIndex,GLuint endIndex,bool isPartition):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
-        this->lineWidth = primitive->thickness;
+        if (isPartition)
+            this->lineWidth = 5.0f;
+        else
+            this->lineWidth = primitive->thickness;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_LINES;
         vertexIndex = {startIndex,endIndex};
-        point[0] = std::make_shared<Point>(primitive,vertexIndex[0]);
+        point[0] = std::make_shared<Point>(primitive,vertexIndex[0],true);
         primitive->elementList.push_back(point[0]);
-        point[1] = std::make_shared<Point>(primitive,vertexIndex[1]);
+        point[1] = std::make_shared<Point>(primitive,vertexIndex[1],true);
         primitive->elementList.push_back(point[1]);
         calcGeoCenter();
         type = TopoType::line;
@@ -155,11 +161,11 @@ public:
         const int n =  static_cast<int>((*refVertex).size()/stride);
         for (int i = 0; i<n-1; i++){
             vertexIndex.push_back(i);
-            line.push_back(std::make_shared<Line>(primitive,i,i+1));
+            line.push_back(std::make_shared<Line>(primitive,i,i+1,true));
             primitive->elementList.push_back(line.back());
         }
         vertexIndex.push_back(n-1);
-        line.push_back(std::make_shared<Line>(primitive,n-1,0));
+        line.push_back(std::make_shared<Line>(primitive,n-1,0,true));
         primitive->elementList.push_back(line.back());
         calcGeoCenter();
         type = TopoType::face;

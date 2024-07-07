@@ -149,11 +149,17 @@ int initStyle(){
     windowPara.backgroundColor = {0.1f, 0.1f, 0.1f, 1.0f};
     
     //init preview shader
-    pShader previewShader (new Shader());
-    previewShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
-    previewShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
-    previewShader->linkProgram();
-    rd::namedShader["previewShader"] = std::move(previewShader);
+    pShader previewfillShader (new Shader());
+    previewfillShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+    previewfillShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
+    previewfillShader->linkProgram();
+    rd::namedShader["previewfillShader"] = std::move(previewfillShader);
+    pShader previewlineShader (new Shader());
+    previewlineShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+    previewlineShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
+    previewlineShader->attchShader(rd::filePath("lineWidth.gs"), GL_GEOMETRY_SHADER);
+    previewlineShader->linkProgram();
+    rd::namedShader["previewlineShader"] = std::move(previewlineShader);
     //init axis
     pShader axisShader (new Shader());
     axisShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
@@ -161,7 +167,6 @@ int initStyle(){
     axisShader->linkProgram();
     rd::namedShader["axisShader"] = std::move(axisShader);
     coord::generateCoordinateAxis();
-    //rd::defaultShader = rd::namedShader["singleYellow"].get();
     return 0;
 }
 
