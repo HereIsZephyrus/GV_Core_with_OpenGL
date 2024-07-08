@@ -24,6 +24,22 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+
+template <typename T>
+T getNextEnumValue(T currentValue, const size_t size) {
+    using underlying_type = std::underlying_type_t<T>;
+    underlying_type nextValue = (static_cast<underlying_type>(currentValue) + 1)%size;
+    return static_cast<T>(nextValue);
+}
+enum class LineHeadType{
+    cube,
+    circle
+};
+enum class LineType{
+    fill,
+    dot,
+    semi
+};
 class ShaderStyle{
 public:
     static ShaderStyle& getStyle(){
@@ -32,7 +48,9 @@ public:
     }
     ShaderStyle(const ShaderStyle&) = delete;
     void operator = (const ShaderStyle&) = delete;
-    bool toFill,isCubeHead;
+    bool toFill;
+    LineHeadType headType;
+    LineType lineType;
     ImVec4 drawColor;
     GLfloat thickness,pointsize;
     void initStyle();
@@ -72,6 +90,8 @@ extern std::vector<pShader> mainShaderList;
 //extern Shader* defaultShader;
 GLchar* filePath(const char* fileName);
 std::string geneateColorShader(const ImVec4& color);
+const size_t headTypeNum = 2;
+const size_t lineTypeNum = 3;
 };
 
 #endif /* rendering_hpp */

@@ -82,5 +82,6 @@ void ShaderStyle::initStyle(){
     drawColor =  ImVec4(1.0f, 0.5f, 0.2f, 1.0f);
     thickness = 5.0f;
     pointsize = 5.0f;
-    isCubeHead = true;
+    headType = LineHeadType::cube;
+    lineType = LineType::fill;
 }

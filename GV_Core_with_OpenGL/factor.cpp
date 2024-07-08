@@ -108,12 +108,30 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
         pShader newShader(new Shader());
         newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
-        newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
         if (take.drawType == Shape::LINES){
-            if (style.isCubeHead)
-                newShader->attchShader(rd::filePath("cubeLine.gs"), GL_GEOMETRY_SHADER);
-            else
-                newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
+            switch (style.lineType) {
+                case LineType::fill:
+                    newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
+                    switch (style.headType) {
+                        case LineHeadType::cube:
+                            newShader->attchShader(rd::filePath("cubeLine.gs"), GL_GEOMETRY_SHADER);
+                            break;
+                        case LineHeadType::circle:
+                            newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case LineType::dot:
+                    newShader->attchShader(rd::filePath("dotColor.frag"),GL_FRAGMENT_SHADER);
+                    break;
+                case LineType::semi:
+                    newShader->attchShader(rd::filePath("semiColor.frag"),GL_FRAGMENT_SHADER);
+                    break;
+                default:
+                    break;
+            }
         }
         else if (take.drawType != Shape::POINTS && style.toFill == false){
             newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);

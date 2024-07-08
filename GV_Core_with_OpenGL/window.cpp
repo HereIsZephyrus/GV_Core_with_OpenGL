@@ -340,14 +340,30 @@ void renderEditPanel(){
     ImGui::SliderFloat("Pointsize", &style.pointsize, 1.0f, 50.0f);
     ImGui::Checkbox("Fill", &style.toFill);
     ImGui::SameLine();
-    if (style.isCubeHead){
-        if (ImGui::Button("CubeHead")){
-            style.isCubeHead = !style.isCubeHead;
+    if (style.headType == LineHeadType::cube){
+        if (ImGui::Button("Cube Head")){
+            style.headType = getNextEnumValue(style.headType,rd::headTypeNum);
         }
     }
-    else{
-        if (ImGui::Button("CircleHead")){
-            style.isCubeHead = !style.isCubeHead;
+    else if(style.headType == LineHeadType::circle){
+        if (ImGui::Button("Circle Head")){
+            style.headType = getNextEnumValue(style.headType,rd::headTypeNum);
+        }
+    }
+    ImGui::SameLine();
+    if (style.lineType == LineType::fill){
+        if (ImGui::Button("Fill Line")){
+            style.lineType = getNextEnumValue(style.lineType,rd::lineTypeNum);
+        }
+    }
+    else if (style.lineType == LineType::dot){
+        if (ImGui::Button("Dotted Line")){
+            style.lineType = getNextEnumValue(style.lineType,rd::lineTypeNum);
+        }
+    }
+    else if (style.lineType == LineType::semi){
+        if (ImGui::Button("Semi Line")){
+            style.lineType = getNextEnumValue(style.lineType,rd::lineTypeNum);
         }
     }
     Shape& drawType = Take::holdon().drawType;
