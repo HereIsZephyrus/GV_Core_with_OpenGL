@@ -8,7 +8,6 @@
 #ifndef primitive_hpp
 #define primitive_hpp
 
-#include <stdio.h>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
