@@ -80,9 +80,11 @@
 		326A8BE72C0A28E300E30250 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		3278B0BE2C097C5500DF6489 /* GV_Core_with_OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GV_Core_with_OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		3278B0C12C097C5500DF6489 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		327DE2C12C3AD53900021453 /* linewidth.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = linewidth.gs; sourceTree = "<group>"; };
+		327DE2C12C3AD53900021453 /* cubeLine.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = cubeLine.gs; sourceTree = "<group>"; };
+		328C8CF82C3BB206006160E6 /* circleLine.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = circleLine.gs; sourceTree = "<group>"; };
+		328C8CFA2C3BD27D006160E6 /* dotColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = dotColor.frag; sourceTree = "<group>"; };
+		328C8CFB2C3BD3C0006160E6 /* semiColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = semiColor.frag; sourceTree = "<group>"; };
 		328DF9B52C1C95000092223F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		328DF9B62C1E91600092223F /* lineWidth.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = lineWidth.frag; sourceTree = "<group>"; };
 		328DF9B72C1EB1510092223F /* fillColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillColor.frag; sourceTree = "<group>"; };
 		328DF9B82C1EE0530092223F /* shape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = shape.cpp; sourceTree = "<group>"; };
 		328DF9B92C1EE0530092223F /* shape.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = shape.hpp; sourceTree = "<group>"; };
@@ -213,10 +215,12 @@
 			isa = PBXGroup;
 			children = (
 				32C5E0A82C1987E000152CDF /* singleVertices.vs */,
-				327DE2C12C3AD53900021453 /* linewidth.gs */,
+				327DE2C12C3AD53900021453 /* cubeLine.gs */,
+				328C8CF82C3BB206006160E6 /* circleLine.gs */,
 				3229B9E22C2D3A76003693E6 /* curveVertices.vs */,
 				32C5E0AA2C19889600152CDF /* fillWhite.frag */,
-				328DF9B62C1E91600092223F /* lineWidth.frag */,
+				328C8CFA2C3BD27D006160E6 /* dotColor.frag */,
+				328C8CFB2C3BD3C0006160E6 /* semiColor.frag */,
 				328DF9B72C1EB1510092223F /* fillColor.frag */,
 			);
 			path = resources;
