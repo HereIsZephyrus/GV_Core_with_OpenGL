@@ -159,6 +159,7 @@ int initStyle(){
     previewlineShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
     previewlineShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
     previewlineShader->attchShader(rd::filePath("lineWidth.gs"), GL_GEOMETRY_SHADER);
+    previewlineShader->attchShader(rd::filePath("lineCubeHead.gs"), GL_GEOMETRY_SHADER);
     previewlineShader->linkProgram();
     rd::namedShader["previewlineShader"] = std::move(previewlineShader);
     //init axis

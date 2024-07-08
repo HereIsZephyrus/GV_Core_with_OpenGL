@@ -3,6 +3,8 @@
 layout(lines) in;
 layout(triangle_strip, max_vertices = 4) out;
 
+in vec4 endpoint[];
+out vec4 linePosition;
 uniform float thickness;
 
 void main() {
@@ -10,18 +12,18 @@ void main() {
     vec4 p1 =  gl_in[1].gl_Position;
 
     vec2 direction = normalize(p1.xy - p0.xy);
-    vec2 normal = vec2(-direction.y, direction.x) * thickness / 2.0 / 600.0;
+    vec2 normal = vec2(-direction.y, direction.x) * (thickness/ 800.0) / 2.0 ;
 
-    gl_Position = p0 + vec4(normal, 0.0, 0.0);
+    linePosition = p0 + vec4(normal, 0.0, 0.0);
     EmitVertex();
 
-    gl_Position = p0 - vec4(normal, 0.0, 0.0);
+    linePosition = p0 - vec4(normal, 0.0, 0.0);
     EmitVertex();
 
-    gl_Position = p1 + vec4(normal, 0.0, 0.0);
+    linePosition = p1 + vec4(normal, 0.0, 0.0);
     EmitVertex();
 
-    gl_Position = p1 - vec4(normal, 0.0, 0.0);
+    linePosition = p1 - vec4(normal, 0.0, 0.0);
     EmitVertex();
 
     EndPrimitive();
