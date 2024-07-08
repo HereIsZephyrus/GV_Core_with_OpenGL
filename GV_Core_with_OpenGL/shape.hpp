@@ -91,7 +91,7 @@ public:
         if (isPartition)
             this->pointSize = 5.0f;
         else
-            this->pointSize = primitive->thickness;
+            this->pointSize = primitive->pointsize;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_POINTS;
         vertexIndex = {startIndex};

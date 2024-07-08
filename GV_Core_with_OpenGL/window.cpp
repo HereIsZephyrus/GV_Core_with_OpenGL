@@ -347,6 +347,7 @@ void renderEditPanel(){
         record.showCreateElementWindow = true;
     ImGui::ColorEdit4("Color", (float*)&style.drawColor);
     ImGui::SliderFloat("Thickness", &style.thickness, 1.0f, 50.0f);
+    ImGui::SliderFloat("Pointsize", &style.pointsize, 1.0f, 50.0f);
     ImGui::Checkbox("Fill", &style.toFill);
     Shape& drawType = Take::holdon().drawType;
     bool& holdonToDraw = Take::holdon().holdonToDraw;

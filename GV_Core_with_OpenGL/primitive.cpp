@@ -25,7 +25,9 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     this->layer = static_cast<GLuint>(record.primitiveList.size())+1;
     const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
     this->color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
-    this->thickness = ShaderStyle::getStyle().thickness;
+    ShaderStyle& style = ShaderStyle::getStyle();
+    this->thickness = style.thickness;
+    this->pointsize = style.pointsize;
     switch (shape) {
         case Shape::POINTS:{
             this->shape = GL_POINTS;
@@ -83,7 +85,10 @@ void Primitive::rend(GLuint& program){
     GLuint colorLoc = glGetUniformLocation(program,"setColor");
     glUniform4f(colorLoc,color.x,color.y,color.z,color.w);
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,ShaderStyle::getStyle().thickness);
+    if (shape == GL_POINTS)
+        glUniform1f(sizeLoc,ShaderStyle::getStyle().pointsize);
+    else
+        glUniform1f(sizeLoc,ShaderStyle::getStyle().thickness);
     
     //camera
     GLuint projectionLoc = glGetUniformLocation(program, "projection");

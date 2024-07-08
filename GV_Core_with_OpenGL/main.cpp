@@ -99,6 +99,7 @@ int initImGUI(GLFWwindow *window) {
     ShaderStyle& style = ShaderStyle::getStyle();
     style.drawColor =  ImVec4(1.0f, 0.5f, 0.2f, 1.0f);
     style.thickness = 5.0f;
+    style.pointsize = 5.0f;
     Take& take = Take::holdon();
     take.drawType = Shape::NONE; //set as blank style
     gui::menuBarHeight = ImGui::GetFrameHeightWithSpacing() * WindowParas::getInstance().yScale;
