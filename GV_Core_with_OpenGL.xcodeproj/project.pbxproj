@@ -87,6 +87,7 @@
 		328C8CFB2C3BD3C0006160E6 /* semiColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = semiColor.frag; sourceTree = "<group>"; };
 		328C8CFC2C3C1D69006160E6 /* objectmodel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = objectmodel.cpp; sourceTree = "<group>"; };
 		328C8CFD2C3C1D69006160E6 /* objectmodel.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = objectmodel.hpp; sourceTree = "<group>"; };
+		328C8CFF2C3C3B5A006160E6 /* flipVertices.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = flipVertices.vs; sourceTree = "<group>"; };
 		328DF9B52C1C95000092223F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		328DF9B72C1EB1510092223F /* fillColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillColor.frag; sourceTree = "<group>"; };
 		328DF9B82C1EE0530092223F /* shape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = shape.cpp; sourceTree = "<group>"; };
@@ -224,6 +225,7 @@
 				328C8CF82C3BB206006160E6 /* circleLine.gs */,
 				3229B9E22C2D3A76003693E6 /* curveVertices.vs */,
 				32C5E0AA2C19889600152CDF /* fillWhite.frag */,
+				328C8CFF2C3C3B5A006160E6 /* flipVertices.vs */,
 				328C8CFA2C3BD27D006160E6 /* dotColor.frag */,
 				328C8CFB2C3BD3C0006160E6 /* semiColor.frag */,
 				328DF9B72C1EB1510092223F /* fillColor.frag */,
