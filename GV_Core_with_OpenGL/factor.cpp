@@ -109,8 +109,8 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
         newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
         if (take.drawType == Shape::LINES){
-            newShader->attchShader(rd::filePath("lineWidth.gs"), GL_GEOMETRY_SHADER);
-            newShader->attchShader(rd::filePath("lineCubeHead.gs"), GL_GEOMETRY_SHADER);
+            //newShader->attchShader(rd::filePath("cubeLine.gs"), GL_GEOMETRY_SHADER);
+            newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
         }
         newShader->linkProgram();
         rd::mainShaderList.push_back(std::move(newShader));
