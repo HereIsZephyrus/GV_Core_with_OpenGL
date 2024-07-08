@@ -77,3 +77,10 @@ void Shader::linkProgram(){
         std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 }
+
+void ShaderStyle::initStyle(){
+    drawColor =  ImVec4(1.0f, 0.5f, 0.2f, 1.0f);
+    thickness = 5.0f;
+    pointsize = 5.0f;
+    isCubeHead = true;
+}

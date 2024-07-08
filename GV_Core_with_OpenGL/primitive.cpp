@@ -42,7 +42,10 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
             break;
         }
         case Shape::RECTANGLE:{
-            this->shape = GL_TRIANGLE_FAN;
+            if (ShaderStyle::getStyle().toFill)
+                this->shape = GL_TRIANGLE_FAN;
+            else
+                this->shape = GL_LINE_LOOP;
             break;
         }
         case Shape::CIRCLE:{ //not achieved

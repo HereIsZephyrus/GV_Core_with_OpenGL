@@ -159,13 +159,14 @@ public:
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = primitive->shape;
         const int n =  static_cast<int>((*refVertex).size()/stride);
+        bool showLineStyle = (shape == GL_LINE_STRIP || shape == GL_LINE_LOOP);
         for (int i = 0; i<n-1; i++){
             vertexIndex.push_back(i);
-            line.push_back(std::make_shared<Line>(primitive,i,i+1,true));
+            line.push_back(std::make_shared<Line>(primitive,i,i+1,!showLineStyle));
             primitive->elementList.push_back(line.back());
         }
         vertexIndex.push_back(n-1);
-        line.push_back(std::make_shared<Line>(primitive,n-1,0,true));
+        line.push_back(std::make_shared<Line>(primitive,n-1,0,!showLineStyle));
         primitive->elementList.push_back(line.back());
         calcGeoCenter();
         type = TopoType::face;

@@ -96,10 +96,6 @@ int initImGUI(GLFWwindow *window) {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");
     gui::spiltUI();
-    ShaderStyle& style = ShaderStyle::getStyle();
-    style.drawColor =  ImVec4(1.0f, 0.5f, 0.2f, 1.0f);
-    style.thickness = 5.0f;
-    style.pointsize = 5.0f;
     Take& take = Take::holdon();
     take.drawType = Shape::NONE; //set as blank style
     gui::menuBarHeight = ImGui::GetFrameHeightWithSpacing() * WindowParas::getInstance().yScale;
@@ -138,7 +134,7 @@ static void checkStyleBoundary() {
 }
 
 int initStyle(){
-    
+    ShaderStyle::getStyle().initStyle();
     //init camera
     WindowParas& windowPara = WindowParas::getInstance();
     pCamera2D tempZeroCamera = pCamera2D(new CameraPara2D(glm::vec2(0.0f, 0.0f),1.0f,WindowParas::getInstance().SCREEN_WIDTH,WindowParas::getInstance().SCREEN_HEIGHT));

@@ -104,12 +104,18 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         }
         std::cout<<"finish draw"<<std::endl;
         Take& take = Take::holdon();
+        ShaderStyle& style = ShaderStyle::getStyle();
         pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
         pShader newShader(new Shader());
         newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
         newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
         if (take.drawType == Shape::LINES){
-            //newShader->attchShader(rd::filePath("cubeLine.gs"), GL_GEOMETRY_SHADER);
+            if (style.isCubeHead)
+                newShader->attchShader(rd::filePath("cubeLine.gs"), GL_GEOMETRY_SHADER);
+            else
+                newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
+        }
+        else if (take.drawType != Shape::POINTS && style.toFill == false){
             newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
         }
         newShader->linkProgram();

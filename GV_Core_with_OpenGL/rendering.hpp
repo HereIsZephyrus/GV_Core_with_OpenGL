@@ -32,9 +32,10 @@ public:
     }
     ShaderStyle(const ShaderStyle&) = delete;
     void operator = (const ShaderStyle&) = delete;
-    bool toFill;
+    bool toFill,isCubeHead;
     ImVec4 drawColor;
     GLfloat thickness,pointsize;
+    void initStyle();
 private:
     ShaderStyle(){}
 };
