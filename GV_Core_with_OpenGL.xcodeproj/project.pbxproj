@@ -19,6 +19,7 @@
 		323A00EE2C0AC7440056BAD1 /* commander.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00EC2C0AC7440056BAD1 /* commander.cpp */; };
 		326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 326A8BE72C0A28E300E30250 /* OpenGL.framework */; };
 		3278B0C22C097C5500DF6489 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3278B0C12C097C5500DF6489 /* main.cpp */; };
+		328C8CFE2C3C1D69006160E6 /* objectmodel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 328C8CFC2C3C1D69006160E6 /* objectmodel.cpp */; };
 		328DF9BA2C1EE0530092223F /* shape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 328DF9B82C1EE0530092223F /* shape.cpp */; };
 		32948FAD2C157E65007A0078 /* glexception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32948FAB2C157E65007A0078 /* glexception.cpp */; };
 		32C5E0992C18A14E00152CDF /* imgui_demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C5E0892C18A14E00152CDF /* imgui_demo.cpp */; };
@@ -84,6 +85,9 @@
 		328C8CF82C3BB206006160E6 /* circleLine.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = circleLine.gs; sourceTree = "<group>"; };
 		328C8CFA2C3BD27D006160E6 /* dotColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = dotColor.frag; sourceTree = "<group>"; };
 		328C8CFB2C3BD3C0006160E6 /* semiColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = semiColor.frag; sourceTree = "<group>"; };
+		328C8CFC2C3C1D69006160E6 /* objectmodel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = objectmodel.cpp; sourceTree = "<group>"; };
+		328C8CFD2C3C1D69006160E6 /* objectmodel.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = objectmodel.hpp; sourceTree = "<group>"; };
+		328C8CFF2C3C3B5A006160E6 /* flipVertices.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = flipVertices.vs; sourceTree = "<group>"; };
 		328DF9B52C1C95000092223F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		328DF9B72C1EB1510092223F /* fillColor.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillColor.frag; sourceTree = "<group>"; };
 		328DF9B82C1EE0530092223F /* shape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = shape.cpp; sourceTree = "<group>"; };
@@ -172,6 +176,8 @@
 				322E52F92C13F6E2002AFB73 /* window.hpp */,
 				323A00E62C0AC3530056BAD1 /* glad.c */,
 				3278B0C12C097C5500DF6489 /* main.cpp */,
+				328C8CFC2C3C1D69006160E6 /* objectmodel.cpp */,
+				328C8CFD2C3C1D69006160E6 /* objectmodel.hpp */,
 				322E53042C14A5CF002AFB73 /* rendering.cpp */,
 				322E53052C14A5CF002AFB73 /* rendering.hpp */,
 				322E53072C1532E6002AFB73 /* primitive.cpp */,
@@ -219,6 +225,7 @@
 				328C8CF82C3BB206006160E6 /* circleLine.gs */,
 				3229B9E22C2D3A76003693E6 /* curveVertices.vs */,
 				32C5E0AA2C19889600152CDF /* fillWhite.frag */,
+				328C8CFF2C3C3B5A006160E6 /* flipVertices.vs */,
 				328C8CFA2C3BD27D006160E6 /* dotColor.frag */,
 				328C8CFB2C3BD3C0006160E6 /* semiColor.frag */,
 				328DF9B72C1EB1510092223F /* fillColor.frag */,
@@ -292,6 +299,7 @@
 				32C5E09F2C18A14E00152CDF /* imgui.cpp in Sources */,
 				32C5E09C2C18A14E00152CDF /* imgui_impl_opengl3.cpp in Sources */,
 				32C5E0A52C19464E00152CDF /* camera.cpp in Sources */,
+				328C8CFE2C3C1D69006160E6 /* objectmodel.cpp in Sources */,
 				32948FAD2C157E65007A0078 /* glexception.cpp in Sources */,
 				3229B9E12C2BDC0C003693E6 /* factor.cpp in Sources */,
 				323A00EE2C0AC7440056BAD1 /* commander.cpp in Sources */,

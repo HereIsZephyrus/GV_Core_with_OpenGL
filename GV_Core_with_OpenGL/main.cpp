@@ -24,6 +24,7 @@
 #include "camera.hpp"
 #include "shape.hpp"
 #include "factor.hpp"
+#include "objectmodel.hpp"
 
 static int initImGUI(GLFWwindow *window);
 static int initInterect(GLFWwindow* &window);
@@ -38,6 +39,7 @@ int main(int argc, const char * argv[]) {
     initImGUI(window);
     initInterect(window);
     initStyle();
+    initObject();
     
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -66,12 +68,15 @@ int main(int argc, const char * argv[]) {
             record.state = interectState::toselect;
         }
         
-        //draw priview
+        // draw priview
         if (pr::drawPreviewPrimitive != nullptr){
             pr::drawPreviewPrimitive -> draw();
             //std::cout<<"showing preview"<<std::endl;
         }
-        
+        // draw objects
+        //obj::markers["logo"].draw();
+        for (auto object = obj::objectList.begin(); object!= obj::objectList.end(); object++)
+            (*object).draw();
         //draw axis
         if (Records::getState().showAxis && pr::axisPrimitive != nullptr){
             pr::axisPrimitive -> draw();

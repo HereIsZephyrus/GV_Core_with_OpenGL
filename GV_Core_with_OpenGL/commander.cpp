@@ -14,6 +14,7 @@
 #include "camera.hpp"
 #include "shape.hpp"
 #include "factor.hpp"
+#include "objectmodel.hpp"
 
 void Records::initIObuffer(){
     memset(keyRecord, GL_FALSE, sizeof(keyRecord));
@@ -95,7 +96,19 @@ void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
     if (!Take::holdon().holdonToDraw && action == GLFW_PRESS && record.drawingPrimitive && record.pressLeft){
         GLdouble cursorX, cursorY;
         glfwGetCursorPos(window, &cursorX, &cursorY);
-        addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+        if (Take::holdon().drawType == Shape::MARKER){
+            WindowParas& windowPara = WindowParas::getInstance();
+            const GLfloat pointSize = ShaderStyle::getStyle().pointsize;
+            const glm::vec3 position = glm::vec3(
+                                                 windowPara.normal2orthoX(windowPara.screen2normalX(cursorX))/pointSize,
+                                                 windowPara.normal2orthoY(windowPara.screen2normalY(cursorY))/pointSize,
+                                                 0.0f);
+            ObjectModel newLogo = obj::markers["logo"];
+            newLogo.setScale(pointSize);
+            newLogo.setPosition(position);
+            obj::objectList.push_back(newLogo);
+        }else
+            addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
     }
     //holdon draw method will not add middle points, which means the primitives drawed by this way has only two control points. So this situation is handled in cursorcallback
     return;

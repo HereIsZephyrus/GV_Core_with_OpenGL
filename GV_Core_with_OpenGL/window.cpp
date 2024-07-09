@@ -64,7 +64,7 @@ int initOpenGL(GLFWwindow *&window) {
     glfwSetWindowUserPointer(window, &Camera2D::getView());
     windowPara.defaultAlpha = glfwGetWindowOpacity(window);
     glEnable(GL_PROGRAM_POINT_SIZE);
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     const GLubyte* version = glGetString(GL_VERSION);
     std::cout<<version<<std::endl;
@@ -336,6 +336,7 @@ void renderEditPanel(){
     if (ImGui::Button("Create Element"))
         record.showCreateElementWindow = true;
     ImGui::ColorEdit4("Color", (float*)&style.drawColor);
+    // line style
     ImGui::SliderFloat("Thickness", &style.thickness, 1.0f, 50.0f);
     ImGui::SliderFloat("Pointsize", &style.pointsize, 1.0f, 50.0f);
     ImGui::Checkbox("Fill", &style.toFill);
@@ -368,7 +369,7 @@ void renderEditPanel(){
     }
     Shape& drawType = Take::holdon().drawType;
     bool& holdonToDraw = Take::holdon().holdonToDraw;
-    bool& showAxis = record.showAxis;
+    // clip
     if (!record.cliping && ImGui::Button("Clip")){
         record.cliping = true;
     }
@@ -380,12 +381,19 @@ void renderEditPanel(){
             drawType = Shape::LOOP;
             holdonToDraw = true;
         }
+        ImGui::SameLine();
         if (ImGui::Button("Use Polygon")){
             drawType = Shape::POLYGEN;
             holdonToDraw = false;
         }
         //std::cout<<(drawType == Shape::RECTANGLE)<<std::endl;
     }
+    ImGui::SameLine();
+    if (ImGui::Button("Draw Logo")){
+        drawType = Shape::MARKER;
+        holdonToDraw = false;
+    }
+    bool& showAxis = record.showAxis;
     ImGui::Checkbox("showAxis", &showAxis);
     ImGui::End();
 }

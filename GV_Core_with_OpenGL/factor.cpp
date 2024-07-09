@@ -11,6 +11,7 @@
 #include "camera.hpp"
 #include "shape.hpp"
 #include "factor.hpp"
+#include "objectmodel.hpp"
 
 void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods){
     Records& record = Records::getState();
@@ -53,7 +54,7 @@ static bool startDrawCheck(GLFWwindow* window, int button, int action, int mods)
     Records& record = Records::getState();
     if (!WindowParas::getInstance().mainWindowFocused)  return false; // the start points must in the window range
     if (action != GLFW_PRESS || !record.pressLeft) return false; // check left click
-    if ( record.state != interectState::drawing || Take::holdon().drawType == Shape::NONE) return false; //check ready to start
+    if ( record.state != interectState::drawing || Take::holdon().drawType == Shape::NONE ) return false; //check ready to start
     return !record.drawingPrimitive; //check aleady started
 }
 static bool finishDrawCheck(GLFWwindow* window, int button, int action, int mods){
@@ -105,6 +106,10 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         std::cout<<"finish draw"<<std::endl;
         Take& take = Take::holdon();
         ShaderStyle& style = ShaderStyle::getStyle();
+        if (take.drawType == Shape::MARKER){
+            take.drawType = Shape::NONE;
+            return;
+        }
         pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
         pShader newShader(new Shader());
         newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
@@ -170,14 +175,15 @@ static Shape mapPreviewStyle(Shape drawType){
         return Shape::LOOP;
     if (drawType == Shape::CURVE)
         return Shape::POINTS;
+    if (drawType == Shape::MARKER)
+        return Shape::POINTS;
     return drawType;
 }
 void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
-    if (Records::getState().drawingPrimitive){//generate preview
-        
+    Take& take = Take::holdon();
+    if (Records::getState().drawingPrimitive && take.drawType != Shape::MARKER){//generate preview
         //take the last point
         //WindowParas& windowPara = WindowParas::getInstance();
-        Take& take = Take::holdon();
         vertexArray tempVertices;
         vertexArray::const_reverse_iterator it = Take::holdon().drawingVertices.rbegin();
         const GLfloat startX = *(it+2),startY = *(it+1);
