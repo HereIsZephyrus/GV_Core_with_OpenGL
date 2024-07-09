@@ -36,6 +36,10 @@ void ObjectModel::addPrimitive(const Object& object,unsigned int layer){
     auto it = std::upper_bound(partitions.begin(), partitions.end(), newPartition);
     partitions.insert(it, newPartition);
 }
+void ObjectModel::addPrimitive(const ObjectArray& objects,unsigned int layer){
+    for (auto object = objects.begin(); object !=  objects.end(); object++)
+        addPrimitive(*object, layer);
+}
 void ObjectModel::useShader(){
     if (shader == nullptr){
         std::cerr<<"havn't bind shader";
@@ -88,19 +92,25 @@ void initObject(){
     objectFlipShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
     objectFlipShader->linkProgram();
     rd::namedShader["objectFlipShader"] = std::move(objectFlipShader);
-    
-    ObjectModel logo = ObjectModel(rd::namedShader["objectShader"].get());
-    for (int i = 0; i<17; i++)
-        logo.addPrimitive(obj::objVertices[i], obj::colorVertices[i], obj::centerPos[i], i);
-    //obj::markers["logo"] = logo;
-    obj::objectList.push_back(logo);
-    logo = ObjectModel(rd::namedShader["objectFlipShader"].get());
-    for (int i = 0; i<17; i++)
-        logo.addPrimitive(obj::objVertices[i], obj::colorVertices[i], obj::centerPos[i], i);
-    //obj::markers["logo"] = logo;
-    obj::objectList.push_back(logo);
 }
 namespace obj {
 std::map<std::string,ObjectModel> markers;
 std::vector<ObjectModel> objectList;
+void initLogo(){
+    ObjectArray ground,wall,door,roof;
+    for (int i = 0; i < groundCenters.size(); i++)
+        ground.push_back(Object{groundVertices[i],groundColors[i],groundCenters[i]});
+    for (int i = 0; i < wallCenters.size(); i++)
+        wall.push_back(Object{wallVertices[i],wallColors[i],wallCenters[i]});
+    for (int i = 0; i < doorCenters.size(); i++)
+        door.push_back(Object{doorVertices[i],doorColors[i],doorCenters[i]});
+    for (int i = 0; i < roofCenters.size(); i++)
+        roof.push_back(Object{roofVertices[i],roofColors[i],roofCenters[i]});
+    ObjectModel logo = ObjectModel(rd::namedShader["objectShader"].get(),rd::namedShader["objectFlipShader"].get());
+    logo.addPrimitive(ground, 1);
+    logo.addPrimitive(wall, 2);
+    logo.addPrimitive(door, 3);
+    logo.addPrimitive(roof, 4);
+    objectList.push_back(logo);
+}
 }
