@@ -6,21 +6,6 @@
 //
 
 #include "objectmodel.hpp"
-void ObjectModel::addPrimitive(const vertexArray& vertices,const glm::vec3& color,const glm::vec3& centerPos,unsigned int layer){
-    primitiveIdentifier identifier = {0,0};
-    glGenVertexArrays(1,&identifier.VAO);
-    glGenBuffers(1,&identifier.VBO);
-    glBindVertexArray(identifier.VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
-    glEnableVertexAttribArray(0);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    Partition newPartition{identifier,layer,static_cast<unsigned int>(vertices.size()/3),color,centerPos};
-    auto it = std::upper_bound(partitions.begin(), partitions.end(), newPartition);
-    partitions.insert(it, newPartition);
-}
 void ObjectModel::addPrimitive(const Object& object,unsigned int layer){
     primitiveIdentifier identifier = {0,0};
     glGenVertexArrays(1,&identifier.VAO);
@@ -41,12 +26,7 @@ void ObjectModel::addPrimitive(const ObjectArray& objects,unsigned int layer){
         addPrimitive(*object, layer);
 }
 void ObjectModel::useShader(Shader* activeShader){
-    if (activeShader == nullptr){
-        std::cerr<<"havn't bind shader";
-        return;
-    }
-    else
-        activeShader ->use();
+    activeShader ->use();
     //camera
     GLuint projectionLoc = glGetUniformLocation(activeShader->program, "projection");
     GLuint viewLoc = glGetUniformLocation(activeShader->program, "view");
@@ -60,7 +40,7 @@ void ObjectModel::useShader(Shader* activeShader){
     
 }
 void ObjectModel::draw(){
-    {
+    if (shader != nullptr){
         useShader(shader);
         GLuint modelLoc = glGetUniformLocation(shader->program,"model");
         GLuint colorLoc = glGetUniformLocation(shader->program,"setColor");
@@ -79,20 +59,20 @@ void ObjectModel::draw(){
                 glDrawArrays(GL_LINE, 0, (*it).vertexNum);
             else{
                 glDrawArrays(GL_TRIANGLE_STRIP, 0, (*it).vertexNum);
-                glUniform4f(colorLoc,0.0f,0.0f,0.0f,1.0f);
-                glDrawArrays(GL_LINE_LOOP, 0, (*it).vertexNum);
+                //glUniform4f(colorLoc,0.0f,0.0f,0.0f,1.0f);
+                //glDrawArrays(GL_LINE_LOOP, 0, (*it).vertexNum);
             }
             glBindVertexArray(0);
         }
     }
-    {
+    if (flipShader != nullptr){
         useShader(flipShader);
         GLuint modelLoc = glGetUniformLocation(flipShader->program,"model");
         GLuint colorLoc = glGetUniformLocation(flipShader->program,"setColor");
         for (auto it = partitions.begin(); it != partitions.end(); it++){
             glm::mat4 model = glm::mat4(1.0f),multi = glm::mat4(scale);
             multi[3][3] = 1.0f;
-            model[3][0] = (*it).centerPos.x + objectPosition.x;
+            model[3][0] = -(*it).centerPos.x + objectPosition.x;
             model[3][1] = (*it).centerPos.y + objectPosition.y;
             model[3][2] = (*it).centerPos.z + objectPosition.z;
             model = multi * model;
@@ -104,8 +84,8 @@ void ObjectModel::draw(){
                 glDrawArrays(GL_LINE, 0, (*it).vertexNum);
             else{
                 glDrawArrays(GL_TRIANGLE_STRIP, 0, (*it).vertexNum);
-                glUniform4f(colorLoc,0.0f,0.0f,0.0f,1.0f);
-                glDrawArrays(GL_LINE_LOOP, 0, (*it).vertexNum);
+                //glUniform4f(colorLoc,0.0f,0.0f,0.0f,1.0f);
+                //glDrawArrays(GL_LINE_LOOP, 0, (*it).vertexNum);
             }
             glBindVertexArray(0);
         }

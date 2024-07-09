@@ -64,7 +64,7 @@ int initOpenGL(GLFWwindow *&window) {
     glfwSetWindowUserPointer(window, &Camera2D::getView());
     windowPara.defaultAlpha = glfwGetWindowOpacity(window);
     glEnable(GL_PROGRAM_POINT_SIZE);
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     const GLubyte* version = glGetString(GL_VERSION);
     std::cout<<version<<std::endl;
