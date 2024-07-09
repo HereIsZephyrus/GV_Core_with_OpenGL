@@ -51,7 +51,7 @@ public:
     void setPosition(const glm::vec3 position){objectPosition = position;}
 private:
     std::vector<Partition> partitions;
-    void useShader();
+    void useShader(Shader* activeShader);
     Shader* shader;
     Shader* flipShader;
     glm::vec3 objectPosition;
