@@ -30,7 +30,8 @@ enum class Shape{
     CIRCLE,
     LOOP,
     POLYGEN,
-    CURVE
+    CURVE,
+    MARKER
 };
 struct primitiveIdentifier{
     GLuint VAO,VBO;

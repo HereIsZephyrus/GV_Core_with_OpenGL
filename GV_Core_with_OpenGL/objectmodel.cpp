@@ -122,6 +122,6 @@ void initLogo(){
     logo.addPrimitive(wall, 2);
     logo.addPrimitive(door, 3);
     logo.addPrimitive(roof, 4);
-    objectList.push_back(logo);
+    markers["logo"] = std::move(logo);
 }
 }

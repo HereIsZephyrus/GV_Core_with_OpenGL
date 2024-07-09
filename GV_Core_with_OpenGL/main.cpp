@@ -68,11 +68,14 @@ int main(int argc, const char * argv[]) {
             record.state = interectState::toselect;
         }
         
-        //draw priview
+        // draw priview
         if (pr::drawPreviewPrimitive != nullptr){
             pr::drawPreviewPrimitive -> draw();
             //std::cout<<"showing preview"<<std::endl;
         }
+        // draw objects
+        //std::cout<<obj::objectList.size()<<std::endl;
+        //obj::markers["logo"].draw();
         for (auto object = obj::objectList.begin(); object!= obj::objectList.end(); object++)
             (*object).draw();
         //draw axis

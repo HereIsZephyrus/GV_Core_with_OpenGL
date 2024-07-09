@@ -37,10 +37,16 @@ struct Object{
 typedef std::vector<Object> ObjectArray;
 class ObjectModel{
 public:
-    ObjectModel(Shader* shader,Shader* filpShader,glm::vec3 position = glm::vec3(0.0f,0.0f,0.0f)){
+    ObjectModel(){
+        this->shader = nullptr;
+        this->flipShader = nullptr;
+        this->scale = 0.0f;
+        this->objectPosition = glm::vec3(0.0f,0.0f,0.0f);
+    }
+    ObjectModel(Shader* shader,Shader* filpShader,GLfloat scale = 5.0,glm::vec3 position = glm::vec3(0.0f,0.0f,0.0f)){
         this->shader = shader;
         this->flipShader = filpShader;
-        this->scale = 10;
+        this->scale = scale;
         this->objectPosition = position;
     }
     ~ObjectModel(){partitions.clear();}
@@ -48,13 +54,14 @@ public:
     void addPrimitive(const Object& object,unsigned int layer);
     void addPrimitive(const ObjectArray& objects,unsigned int layer);
     void setPosition(const glm::vec3 position){objectPosition = position;}
+    void setScale(const int markerSize){scale = markerSize;}
 private:
     std::vector<Partition> partitions;
     void useShader(Shader* activeShader);
     Shader* shader;
     Shader* flipShader;
     glm::vec3 objectPosition;
-    int scale;
+    GLfloat scale;
 };
 //typedef std::unique_ptr<ObjectModel> pObjectModel;
 
