@@ -6,6 +6,21 @@
 //
 
 #include "objectmodel.hpp"
+void ObjectModel::addPrimitive(const vertexArray& vertices,const glm::vec3& color,const glm::vec3& centerPos,unsigned int layer){
+    primitiveIdentifier identifier = {0,0};
+    glGenVertexArrays(1,&identifier.VAO);
+    glGenBuffers(1,&identifier.VBO);
+    glBindVertexArray(identifier.VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
+    glEnableVertexAttribArray(0);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    Partition newPartition{identifier,layer,static_cast<unsigned int>(vertices.size()/3),color,centerPos};
+    auto it = std::upper_bound(partitions.begin(), partitions.end(), newPartition);
+    partitions.insert(it, newPartition);
+}
 void ObjectModel::addPrimitive(const Object& object,unsigned int layer){
     primitiveIdentifier identifier = {0,0};
     glGenVertexArrays(1,&identifier.VAO);
@@ -15,27 +30,23 @@ void ObjectModel::addPrimitive(const Object& object,unsigned int layer){
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
     glEnableVertexAttribArray(0);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(object.vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(object.vertices.data()), GL_STATIC_DRAW);
-    const unsigned int vertexNum = static_cast<unsigned int>(object.vertices.size()/3);
-    GLuint EBO = 0;
-    if (vertexNum == 4){
-        const indexArray vertexIndex = {0,2,1,3};
-        glGenBuffers(1, &EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,  static_cast<GLsizei>(vertexIndex.size() * sizeof(GLuint)), static_cast<const void*>(vertexIndex.data()), GL_STATIC_DRAW);
-    }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    Partition newPartition{identifier,EBO,layer,static_cast<unsigned int>(object.vertices.size()/3),object.color,object.centerPos};
-    partitions.push_back(newPartition);
-    //auto it = std::upper_bound(partitions.begin(), partitions.end(), newPartition);
-    //partitions.insert(it, newPartition);
+    Partition newPartition{identifier,layer,static_cast<unsigned int>(object.vertices.size()/3),object.color,object.centerPos};
+    auto it = std::upper_bound(partitions.begin(), partitions.end(), newPartition);
+    partitions.insert(it, newPartition);
 }
 void ObjectModel::addPrimitive(const ObjectArray& objects,unsigned int layer){
     for (auto object = objects.begin(); object !=  objects.end(); object++)
         addPrimitive(*object, layer);
 }
 void ObjectModel::useShader(Shader* activeShader){
-    activeShader ->use();
+    if (activeShader == nullptr){
+        std::cerr<<"havn't bind shader";
+        return;
+    }
+    else
+        activeShader ->use();
     //camera
     GLuint projectionLoc = glGetUniformLocation(activeShader->program, "projection");
     GLuint viewLoc = glGetUniformLocation(activeShader->program, "view");
@@ -49,7 +60,7 @@ void ObjectModel::useShader(Shader* activeShader){
     
 }
 void ObjectModel::draw(){
-    if (shader != nullptr){
+    {
         useShader(shader);
         GLuint modelLoc = glGetUniformLocation(shader->program,"model");
         GLuint colorLoc = glGetUniformLocation(shader->program,"setColor");
@@ -64,31 +75,24 @@ void ObjectModel::draw(){
             const glm::vec3 color = (*it).color;
             glUniform4f(colorLoc,color.x,color.y,color.z,1.0f);
             glBindVertexArray((*it).identifier.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, (*it).identifier.VBO);
-            const unsigned int vertexNum = (*it).vertexNum;
-            if (vertexNum == 2)
-                glDrawArrays(GL_LINE, 0,vertexNum);
+            if ((*it).vertexNum == 2)
+                glDrawArrays(GL_LINE, 0, (*it).vertexNum);
             else{
                 glDrawArrays(GL_TRIANGLE_STRIP, 0, (*it).vertexNum);
                 glUniform4f(colorLoc,0.0f,0.0f,0.0f,1.0f);
-                if (vertexNum == 4){
-                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (*it).outboundEBO);
-                    glDrawElements(GL_LINE_LOOP,static_cast<GLsizei>(vertexNum), GL_UNSIGNED_INT, 0);
-                }
-                else
-                    glDrawArrays(GL_LINE_LOOP, 0, vertexNum);
+                glDrawArrays(GL_LINE_LOOP, 0, (*it).vertexNum);
             }
             glBindVertexArray(0);
         }
     }
-    if (flipShader != nullptr){
+    {
         useShader(flipShader);
         GLuint modelLoc = glGetUniformLocation(flipShader->program,"model");
         GLuint colorLoc = glGetUniformLocation(flipShader->program,"setColor");
         for (auto it = partitions.begin(); it != partitions.end(); it++){
             glm::mat4 model = glm::mat4(1.0f),multi = glm::mat4(scale);
             multi[3][3] = 1.0f;
-            model[3][0] = -(*it).centerPos.x + objectPosition.x;
+            model[3][0] = (*it).centerPos.x + objectPosition.x;
             model[3][1] = (*it).centerPos.y + objectPosition.y;
             model[3][2] = (*it).centerPos.z + objectPosition.z;
             model = multi * model;
@@ -96,19 +100,12 @@ void ObjectModel::draw(){
             const glm::vec3 color = (*it).color;
             glUniform4f(colorLoc,color.x,color.y,color.z,1.0f);
             glBindVertexArray((*it).identifier.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, (*it).identifier.VBO);
-            const unsigned int vertexNum = (*it).vertexNum;
-            if (vertexNum == 2)
-                glDrawArrays(GL_LINE, 0,vertexNum);
+            if ((*it).vertexNum == 2)
+                glDrawArrays(GL_LINE, 0, (*it).vertexNum);
             else{
                 glDrawArrays(GL_TRIANGLE_STRIP, 0, (*it).vertexNum);
                 glUniform4f(colorLoc,0.0f,0.0f,0.0f,1.0f);
-                if ((*it).outboundEBO){
-                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (*it).outboundEBO);
-                    glDrawElements(GL_LINE_LOOP,static_cast<GLsizei>(vertexNum), GL_UNSIGNED_INT, 0);
-                }
-                else
-                    glDrawArrays(GL_LINE_LOOP, 0, vertexNum);
+                glDrawArrays(GL_LINE_LOOP, 0, (*it).vertexNum);
             }
             glBindVertexArray(0);
         }
@@ -144,8 +141,7 @@ void initLogo(){
     logo.addPrimitive(ground, 1);
     logo.addPrimitive(wall, 2);
     logo.addPrimitive(door, 3);
-    //logo.addPrimitive(roof, 4);
-    logo.sortArray();
+    logo.addPrimitive(roof, 4);
     objectList.push_back(logo);
 }
 }

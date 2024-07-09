@@ -24,15 +24,10 @@
 
 struct Partition{
     primitiveIdentifier identifier;
-    GLuint outboundEBO;
     unsigned int layer,vertexNum;
     glm::vec3 color,centerPos;
     bool operator<(const Partition& other) const {
         return layer < other.layer;
-    }
-    ~Partition(){
-        glDeleteVertexArrays(1,&identifier.VAO);
-        glDeleteBuffers(1,&identifier.VBO);
     }
 };
 struct Object{
@@ -50,10 +45,10 @@ public:
     }
     ~ObjectModel(){partitions.clear();}
     void draw();
+    void addPrimitive(const vertexArray& vertices,const glm::vec3& color,const glm::vec3& centerPos,unsigned int layer);
     void addPrimitive(const Object& object,unsigned int layer);
     void addPrimitive(const ObjectArray& objects,unsigned int layer);
     void setPosition(const glm::vec3 position){objectPosition = position;}
-    void sortArray(){std::sort(partitions.begin(),partitions.end());std::cout<<(*partitions.begin()).layer<<std::endl;}
 private:
     std::vector<Partition> partitions;
     void useShader(Shader* activeShader);
