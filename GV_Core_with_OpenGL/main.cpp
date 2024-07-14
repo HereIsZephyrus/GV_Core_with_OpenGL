@@ -9,11 +9,9 @@
 #include <iostream>
 #include <filesystem>
 #include <memory>
-//#include <SDL2/SDL.h>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-//#include <SDL2/SDL_opengl.h>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -25,10 +23,8 @@
 #include "shape.hpp"
 #include "factor.hpp"
 #include "objectmodel.hpp"
+#include "initialization.hpp"
 
-static int initImGUI(GLFWwindow *window);
-static int initInterect(GLFWwindow* &window);
-static int initStyle();
 static int releaseResources(GLFWwindow* &window);
 static int InterectResponseCheck(GLFWwindow* &window);
 
@@ -69,8 +65,8 @@ int main(int argc, const char * argv[]) {
         }
         
         // draw priview
-        if (pr::drawPreviewPrimitive != nullptr){
-            pr::drawPreviewPrimitive -> draw();
+        if (pr::previewPrimitive != nullptr){
+            pr::previewPrimitive -> draw();
             //std::cout<<"showing preview"<<std::endl;
         }
         // draw objects
@@ -88,87 +84,6 @@ int main(int argc, const char * argv[]) {
     }
     
     releaseResources(window);
-    return 0;
-}
-
-int initImGUI(GLFWwindow *window) {
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 410");
-    gui::spiltUI();
-    Take& take = Take::holdon();
-    take.drawType = Shape::NONE; //set as blank style
-    gui::menuBarHeight = ImGui::GetFrameHeightWithSpacing() * WindowParas::getInstance().yScale;
-    return  0;
-}
-
-int initInterect(GLFWwindow* &window){
-    Records::getState().initIObuffer();
-    glfwSetWindowPosCallback(window, windowPosCallback);
-    glfwSetWindowSizeCallback(window, windowSizeCallback);
-    glfwSetKeyCallback(window, keyBasicCallback);
-    glfwSetMouseButtonCallback(window, mouseViewCallback);
-    glfwSetScrollCallback(window, scrollCallback);
-    glfwSetCursorPosCallback(window, cursorSelectCallback);
-    glfwSetCursorEnterCallback(window, cursorFocusCallback);
-    return 0;
-}
-static void checkSourceRelevantPath(){
-    namespace fs = std::filesystem;
-    fs::path cwd = fs::current_path();
-    fs::path otherPath = "/Users/channingtong/Program/GV_Core_with_OpenGL/resources";
-    fs::path relativePath = relative(otherPath, cwd);
-    std::cout << "Current directory: " << cwd << std::endl;
-    std::cout << "Other path: " << otherPath << std::endl;
-    std::cout << "Relative path: " << relativePath << std::endl;
-}
-
-static void checkStyleBoundary() {
-    GLfloat lineWidthRange[2];
-    glGetFloatv(GL_LINE_WIDTH_RANGE, lineWidthRange);
-    std::cout << "Supported line width range: " << lineWidthRange[0] << " to " << lineWidthRange[1] << std::endl;
-    GLfloat minPointSize, maxPointSize;
-    glGetFloatv(GL_POINT_SIZE_RANGE, &minPointSize);
-    glGetFloatv(GL_POINT_SIZE_MAX, &maxPointSize);
-    std::cout << "Supported point size range: " << minPointSize << " to " << maxPointSize<< std::endl;
-}
-
-int initStyle(){
-    ShaderStyle::getStyle().initStyle();
-    //init camera
-    WindowParas& windowPara = WindowParas::getInstance();
-    pCamera2D tempZeroCamera = pCamera2D(new CameraPara2D(glm::vec2(0.0f, 0.0f),1.0f,WindowParas::getInstance().SCREEN_WIDTH,WindowParas::getInstance().SCREEN_HEIGHT));
-    cm::zeroCamera = std::move(tempZeroCamera);
-    Camera2D::getView().loadSavedPara(cm::zeroCamera.get());
-    //init primitive paras
-    glEnable(GL_LINE_SMOOTH);
-    checkStyleBoundary();
-    windowPara.backgroundColor = {0.1f, 0.1f, 0.1f, 1.0f};
-    
-    //init preview shader
-    pShader previewfillShader (new Shader());
-    previewfillShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
-    previewfillShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
-    previewfillShader->linkProgram();
-    rd::namedShader["previewfillShader"] = std::move(previewfillShader);
-    pShader previewlineShader (new Shader());
-    previewlineShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
-    previewlineShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
-    previewlineShader->attchShader(rd::filePath("cubeLine.gs"), GL_GEOMETRY_SHADER);
-    previewlineShader->linkProgram();
-    rd::namedShader["previewlineShader"] = std::move(previewlineShader);
-    //init axis
-    pShader axisShader (new Shader());
-    axisShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
-    axisShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
-    axisShader->linkProgram();
-    rd::namedShader["axisShader"] = std::move(axisShader);
-    coord::generateCoordinateAxis();
     return 0;
 }
 

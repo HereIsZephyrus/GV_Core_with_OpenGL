@@ -154,17 +154,10 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
             tempVertices = take.drawingVertices;
             addPoint(tempVertices,xpos,ypos);
         }
-            
-        //generate preview primitive
-        pPrimitive previewPrimitive(new Primitive(tempVertices,mapPreviewStyle(take.drawType),3));
-        if (take.drawType == Shape::LINES)
-            previewPrimitive -> bindShader(rd::namedShader["previewlineShader"].get());
-        else
-            previewPrimitive -> bindShader(rd::namedShader["previewfillShader"].get());
-        pr::drawPreviewPrimitive = std::move(previewPrimitive);
+        generatePreviewPrimitive(tempVertices);
     }
     else
-        pr::drawPreviewPrimitive = nullptr;
+        pr::previewPrimitive = nullptr;
     return;
 }
 void editPrimitive(){
@@ -404,4 +397,24 @@ void generateNewPrimitive(){
         clipByShape();
         take.clipShape = nullptr;
     }
+}
+void generatePreviewPrimitive(const vertexArray& tempVertices){
+    Take& take = Take::holdon();
+    pPrimitive previewPrimitive(new Primitive(tempVertices,mapPreviewStyle(take.drawType),3));
+    if (take.drawType == Shape::LINES){
+        ShaderStyle& style = ShaderStyle::getStyle();
+        switch (style.headType) {
+            case LineHeadType::cube:
+                previewPrimitive -> bindShader(rd::namedShader["previewCubeLineShader"].get());
+                break;
+            case LineHeadType::circle:
+                previewPrimitive -> bindShader(rd::namedShader["previewCircleLineShader"].get());
+                break;
+            default:
+                break;
+        }
+    }
+    else
+        previewPrimitive -> bindShader(rd::namedShader["previewfillShader"].get());
+    pr::previewPrimitive = std::move(previewPrimitive);
 }

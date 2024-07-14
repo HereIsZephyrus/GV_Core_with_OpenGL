@@ -245,6 +245,6 @@ void Primitive::useShader(){
 }
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;
-pPrimitive drawPreviewPrimitive = nullptr;
+pPrimitive previewPrimitive = nullptr;
 pPrimitive axisPrimitive = nullptr;
 }

@@ -106,7 +106,7 @@ private:
 
 typedef std::unique_ptr<Primitive> pPrimitive;
 namespace pr {
-extern pPrimitive drawPreviewPrimitive;
+extern pPrimitive previewPrimitive;
 extern pPrimitive axisPrimitive;
 extern std::vector<pPrimitive >mainPrimitiveList;
 struct spline{
