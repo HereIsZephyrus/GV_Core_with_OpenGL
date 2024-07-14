@@ -81,4 +81,7 @@ void cursorFocusCallback(GLFWwindow* window, int entered);
 void windowPosCallback(GLFWwindow* window, int xpos, int ypos);
 void windowSizeCallback(GLFWwindow* window, int width, int height);
 
+int releaseResources(GLFWwindow* &window);
+int InterectResponseCheck(GLFWwindow* &window);
+
 #endif /* commander_hpp */
