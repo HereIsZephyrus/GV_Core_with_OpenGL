@@ -26,4 +26,5 @@ void editPrimitive();
 void viewScroll(GLFWwindow* window, double xoffset, double yoffset);
 void processCursorTrace(GLFWwindow* window,double xpos, double ypos);
 bool primitiveSelectDetect(Primitive* primitive);
+void generateNewPrimitive();
 #endif /* factor_hpp */

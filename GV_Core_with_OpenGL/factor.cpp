@@ -73,21 +73,20 @@ static bool finishDrawCheck(GLFWwindow* window, int button, int action, int mods
     return false;
 }
 void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
-    Records& record = Records::getState();
     Take& take = Take::holdon();
     if (startDrawCheck(window, button, action, mods)){
-        record.drawingPrimitive = true;
-        //generate a new primitive
+        Records::getState().drawingPrimitive = true;
         std::cout<<"start draw"<<std::endl;
         take.drawingVertices.clear();
         GLdouble cursorX, cursorY;
         glfwGetCursorPos(window, &cursorX, &cursorY);
+        //generate the first point to the new primitive
         if (take.holdonToDraw)
             addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
     }
     if (finishDrawCheck(window,button,action,mods)){
-        record.drawingPrimitive = false;
-        //finish the draw and push into the formal primitive render queue
+        Records::getState().drawingPrimitive = false;
+        //finish the primitive
         if (take.holdonToDraw){
             GLdouble cursorX, cursorY;
             glfwGetCursorPos(window, &cursorX, &cursorY);
@@ -104,57 +103,8 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
             }
         }
         std::cout<<"finish draw"<<std::endl;
-        Take& take = Take::holdon();
-        ShaderStyle& style = ShaderStyle::getStyle();
-        if (take.drawType == Shape::MARKER){
-            take.drawType = Shape::NONE;
-            return;
-        }
-        pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
-        pShader newShader(new Shader());
-        newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
-        if (take.drawType == Shape::LINES){
-            switch (style.lineType) {
-                case LineType::fill:
-                    newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
-                    switch (style.headType) {
-                        case LineHeadType::cube:
-                            newShader->attchShader(rd::filePath("cubeLine.gs"), GL_GEOMETRY_SHADER);
-                            break;
-                        case LineHeadType::circle:
-                            newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case LineType::dot:
-                    newShader->attchShader(rd::filePath("dotColor.frag"),GL_FRAGMENT_SHADER);
-                    break;
-                case LineType::semi:
-                    newShader->attchShader(rd::filePath("semiColor.frag"),GL_FRAGMENT_SHADER);
-                    break;
-                default:
-                    break;
-            }
-        }
-        else if (take.drawType != Shape::POINTS && style.toFill == false){
-            newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
-        }
-        newShader->linkProgram();
-        rd::mainShaderList.push_back(std::move(newShader));
-        if (!record.cliping){
-            newPrimitive->bindShader(rd::mainShaderList.back().get());
-            pr::mainPrimitiveList.push_back(std::move(newPrimitive));
-            Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
-            createTopoElements(lastpPrimitive);
-            record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
-        }
-        else{
-            take.clipShape  =std::move(newPrimitive);
-            clipByShape();
-            take.clipShape = nullptr;
-        }
+        // push the primitive into the formal primitive render queue
+        generateNewPrimitive();
         take.drawType = Shape::NONE;
     }
 }
@@ -396,5 +346,62 @@ void editPrimitive(){
                 take.transMat = take.transMat * move;
             }
         }
+    }
+}
+void generateNewPrimitive(){
+    Take& take = Take::holdon();
+    Records& record = Records::getState();
+    ShaderStyle& style = ShaderStyle::getStyle();
+    if (take.drawType == Shape::MARKER){
+        return;
+    }
+    pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
+    pShader newShader(new Shader());
+    switch (take.drawType) {
+        case Shape::LINES:
+            newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+            switch (style.lineType) {
+                case LineType::fill:
+                    newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
+                    switch (style.headType) {
+                        case LineHeadType::cube:
+                            newShader->attchShader(rd::filePath("cubeLine.gs"), GL_GEOMETRY_SHADER);
+                            break;
+                        case LineHeadType::circle:
+                            newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case LineType::dot:
+                    newShader->attchShader(rd::filePath("dotColor.frag"),GL_FRAGMENT_SHADER);
+                    break;
+                case LineType::semi:
+                    newShader->attchShader(rd::filePath("semiColor.frag"),GL_FRAGMENT_SHADER);
+                    break;
+                default:
+                    newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
+                    break;
+            }
+            break;
+        default:
+            newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+            newShader->attchShader(rd::filePath("fillColor.frag"), GL_FRAGMENT_SHADER);
+            break;
+    }
+    newShader->linkProgram();
+    rd::mainShaderList.push_back(std::move(newShader));
+    if (!record.cliping){
+        newPrimitive->bindShader(rd::mainShaderList.back().get());
+        pr::mainPrimitiveList.push_back(std::move(newPrimitive));
+        Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
+        createTopoElements(lastpPrimitive);
+        record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
+    }
+    else{
+        take.clipShape =std::move(newPrimitive);
+        clipByShape();
+        take.clipShape = nullptr;
     }
 }

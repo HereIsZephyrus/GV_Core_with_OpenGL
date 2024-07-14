@@ -107,7 +107,8 @@ void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
             newLogo.setScale(pointSize);
             newLogo.setPosition(position);
             obj::objectList.push_back(newLogo);
-        }else
+        }
+        else
             addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
     }
     //holdon draw method will not add middle points, which means the primitives drawed by this way has only two control points. So this situation is handled in cursorcallback
