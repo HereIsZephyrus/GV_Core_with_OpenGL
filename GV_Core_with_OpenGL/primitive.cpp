@@ -49,7 +49,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
             break;
         }
         case Shape::CIRCLE:{ //not achieved
-            this->shape = GL_TRIANGLE_STRIP;
+            this->shape = GL_LINES;
             //this->indices = pr
             break;
         }

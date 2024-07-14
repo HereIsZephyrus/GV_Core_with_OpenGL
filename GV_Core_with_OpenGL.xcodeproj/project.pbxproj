@@ -81,6 +81,7 @@
 		323A00ED2C0AC7440056BAD1 /* commander.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = commander.hpp; sourceTree = "<group>"; };
 		32505E712C44115E00C6CE5D /* initialization.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = initialization.cpp; sourceTree = "<group>"; };
 		32505E722C44115E00C6CE5D /* initialization.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = initialization.hpp; sourceTree = "<group>"; };
+		32505E742C442C6100C6CE5D /* fillCircle.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillCircle.gs; sourceTree = "<group>"; };
 		326A8BE72C0A28E300E30250 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		3278B0BE2C097C5500DF6489 /* GV_Core_with_OpenGL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GV_Core_with_OpenGL; sourceTree = BUILT_PRODUCTS_DIR; };
 		3278B0C12C097C5500DF6489 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -231,6 +232,7 @@
 				3229B9E22C2D3A76003693E6 /* curveVertices.vs */,
 				32C5E0AA2C19889600152CDF /* fillWhite.frag */,
 				328C8CFF2C3C3B5A006160E6 /* flipVertices.vs */,
+				32505E742C442C6100C6CE5D /* fillCircle.gs */,
 				328C8CFA2C3BD27D006160E6 /* dotColor.frag */,
 				328C8CFB2C3BD3C0006160E6 /* semiColor.frag */,
 				328DF9B72C1EB1510092223F /* fillColor.frag */,

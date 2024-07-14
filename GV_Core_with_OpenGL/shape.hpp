@@ -191,6 +191,9 @@ protected:
 private:
     std::vector<pLine> line;
 };
+class Curve: public Element{
+    
+};
 int outboundDetect(pElement outbound);
 }
 #endif /* shape_hpp */
