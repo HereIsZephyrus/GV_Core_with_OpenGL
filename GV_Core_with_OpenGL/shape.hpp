@@ -31,7 +31,7 @@ enum class TopoType{
     line,
     face,
     curve,
-    dignoal,
+    diagnoal,
     outBound,
 };
 class Line;
@@ -277,9 +277,9 @@ private:
     GLfloat lineWidth;
     pPoint point[4];
 };
-class Dignoal: public Element{
+class Diagnoal: public Element{
 public:
-    Dignoal(Primitive* primitive ,GLuint startIndex = 0,GLuint endIndex = 1,bool notShowLineStyle = false,bool visable = true):
+    Diagnoal(Primitive* primitive ,GLuint startIndex = 0,GLuint endIndex = 1,bool notShowLineStyle = false,bool visable = true):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
         if (notShowLineStyle)
@@ -292,7 +292,7 @@ public:
         point[0] = std::make_shared<Point>(primitive,vertexIndex[startIndex],true,false);
         point[1] = std::make_shared<Point>(primitive,vertexIndex[endIndex],true,false);
         //calcGeoCenter();
-        type = TopoType::dignoal;
+        type = TopoType::diagnoal;
         this->visable = visable;
         bindEBObuffer();
     }

@@ -72,7 +72,7 @@ void OutBound::draw(bool highlighted){
     
     return;
 }
-void Dignoal::draw(bool highlighted){
+void Diagnoal::draw(bool highlighted){
     setColor(highlighted);
     //thickness
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
@@ -153,7 +153,7 @@ bool Curve::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     
     return true;
 }
-bool Dignoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
+bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     
     return true;
 }
@@ -196,7 +196,7 @@ void createTopoElements(Primitive* lastpPrimitive){
             std::cout<<"treat as curve"<<std::endl;
             break;
         case Shape::CIRCLE:
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Dignoal>(lastpPrimitive)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive)) );
             std::cout<<"treat as circle"<<std::endl;
             break;
         default:

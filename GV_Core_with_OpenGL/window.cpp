@@ -386,7 +386,6 @@ void renderEditPanel(){
             drawType = Shape::POLYGEN;
             holdonToDraw = false;
         }
-        //std::cout<<(drawType == Shape::RECTANGLE)<<std::endl;
     }
     ImGui::SameLine();
     if (ImGui::Button("Draw Logo")){

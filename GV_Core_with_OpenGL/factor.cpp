@@ -90,15 +90,7 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         if (take.holdonToDraw){
             GLdouble cursorX, cursorY;
             glfwGetCursorPos(window, &cursorX, &cursorY);
-            if (take.drawType == Shape::RECTANGLE || take.drawType == Shape::LOOP){
-                vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
-                const GLfloat startX = *(it+2),startY = *(it+1);
-                addPoint(Take::holdon().drawingVertices,cursorX, startY);
-                addPoint(Take::holdon().drawingVertices,cursorX, cursorY);
-                addPoint(Take::holdon().drawingVertices,startX, cursorY);
-            }
-            else
-                addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+            addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
         }
         std::cout<<"finish draw"<<std::endl;
         // push the primitive into the formal primitive render queue
@@ -119,7 +111,7 @@ void cursorDragingDetect(GLFWwindow* window,double xpos, double ypos){
 }
 
 static Shape mapPreviewStyle(Shape drawType){
-    if (drawType == Shape::RECTANGLE || drawType == Shape::POLYGEN || drawType ==Shape::TRIANGLE)
+    if (drawType == Shape::POLYGEN || drawType ==Shape::TRIANGLE)
         return Shape::LOOP;
     if (drawType == Shape::CURVE)
         return Shape::POINTS;
@@ -136,22 +128,8 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
         vertexArray::const_reverse_iterator it = Take::holdon().drawingVertices.rbegin();
         const GLfloat startX = *(it+2),startY = *(it+1);
         addPoint(tempVertices,startX,startY);
-        if (take.holdonToDraw){
-            if (take.drawType == Shape::LINES){
-                //std::cout<<"draw line"<<std::endl;
-                addPoint(tempVertices,xpos,ypos);
-            }
-            else if (take.drawType == Shape::RECTANGLE || take.drawType == Shape::LOOP){
-                //std::cout<<"draw rectangle"<<std::endl;
-                addPoint(tempVertices,xpos, startY);
-                addPoint(tempVertices,xpos, ypos);
-                addPoint(tempVertices,startX, ypos);
-            }
-        }
-        else{
-            tempVertices = take.drawingVertices;
-            addPoint(tempVertices,xpos,ypos);
-        }
+        tempVertices = take.drawingVertices;
+        addPoint(tempVertices,xpos,ypos);
         generatePreviewPrimitive(tempVertices);
     }
     else
@@ -384,6 +362,14 @@ void generateNewPrimitive(){
                 newShader->attchShader(rd::filePath("lineCircle.gs"), GL_GEOMETRY_SHADER);
             newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
             break;
+        case Shape::RECTANGLE:
+            newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+            if (style.toFill)
+                newShader->attchShader(rd::filePath("fillRect.gs"), GL_GEOMETRY_SHADER);
+            else
+                newShader->attchShader(rd::filePath("lineRect.gs"), GL_GEOMETRY_SHADER);
+            newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
+            break;
         default:
             newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
             newShader->attchShader(rd::filePath("fillColor.frag"), GL_FRAGMENT_SHADER);
@@ -420,6 +406,10 @@ void generatePreviewPrimitive(const vertexArray& tempVertices){
                 break;
         }
     }
+    else if (take.drawType == Shape::RECTANGLE)
+        previewPrimitive -> bindShader(rd::namedShader["previewRectangleShader"].get());
+    else if (take.drawType == Shape::CIRCLE)
+        previewPrimitive -> bindShader(rd::namedShader["previewCircleShader"].get());
     else
         previewPrimitive -> bindShader(rd::namedShader["previewfillShader"].get());
     pr::previewPrimitive = std::move(previewPrimitive);

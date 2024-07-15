@@ -1,4 +1,3 @@
-
 #version 410 core
 
 layout(lines) in;

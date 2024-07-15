@@ -41,7 +41,7 @@ class Point;
 class Line;
 class Face;
 class Curve;
-class Dignoal;
+class Diagnoal;
 }
 typedef std::shared_ptr<pr::Element> pElement;
 class Primitive{
@@ -70,7 +70,7 @@ public:
     friend class pr::Line;
     friend class pr::Face;
     friend class pr::Curve;
-    friend class pr::Dignoal;
+    friend class pr::Diagnoal;
     friend void clipByShape();
     GLsizei getVertexNum() const{return static_cast<GLsizei>(vertices.size() / stride);}
     void setName(std::string name){this->name = name;}
