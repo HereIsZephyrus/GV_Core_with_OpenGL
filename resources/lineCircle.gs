@@ -2,7 +2,7 @@
 #version 410 core
 
 layout(lines) in;
-layout(triangle_strip, max_vertices = 200) out;
+layout(line_strip, max_vertices = 200) out;
 
 uniform float thickness;
 const float PI = 3.14159;
@@ -17,18 +17,10 @@ void main() {
                     cos(dangle), -sin(dangle),
                     sin(dangle),  cos(dangle));
     vec2 offset = vec2(1.0,0.0);
-    gl_Position = center;
-    EmitVertex();
     for (int i = 0; i <= resolution; i++){
         gl_Position = center + vec4(offset * radius, 0.0, 0.0);
         EmitVertex();
-        if (i%2==1){
-            gl_Position = center;
-            EmitVertex();
-        }
         offset = angleMat * offset;
     }
-    gl_Position = center;
-    EmitVertex();
     EndPrimitive();
 }

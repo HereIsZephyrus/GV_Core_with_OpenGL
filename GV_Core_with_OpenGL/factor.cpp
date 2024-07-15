@@ -378,8 +378,10 @@ void generateNewPrimitive(){
             break;
         case Shape::CIRCLE:
             newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
-            //if (style.toFill)
+            if (style.toFill)
                 newShader->attchShader(rd::filePath("fillCircle.gs"), GL_GEOMETRY_SHADER);
+            else
+                newShader->attchShader(rd::filePath("lineCircle.gs"), GL_GEOMETRY_SHADER);
             newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
             break;
         default:
