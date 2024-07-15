@@ -131,18 +131,18 @@ int outboundDetect(pElement outbound){
 }//namespace pr
 
 void createTopoElements(Primitive* lastpPrimitive){
-    const GLenum shape = lastpPrimitive->getShape();
+    //const GLenum shape = lastpPrimitive->getShape();
     Take& take = Take::holdon();
     switch (take.drawType) {
         case Shape::POINTS:
             std::cout<<"treat as points"<<std::endl;
             for (int i = 0; i< lastpPrimitive->getVertexNum(); i++)
-                lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i,false)) );
+                lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
             break;
         case Shape::LINES:
             std::cout<<"treat as line"<<std::endl;
             for (int i = 0; i< lastpPrimitive->getVertexNum()-1; i++)
-                lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1,false)) );
+                lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1)) );
             break;
         case Shape::LOOP:
             std::cout<<"treat as face"<<std::endl;

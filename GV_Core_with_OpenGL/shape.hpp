@@ -30,7 +30,8 @@ enum class TopoType{
     point,
     line,
     face,
-    curve
+    curve,
+    diagonal
 };
 class Line;
 class Face;
@@ -55,7 +56,6 @@ public:
     GLenum getShape() const {return shape;}
     const pVertexArray& getVertexArray() const {return refVertex;}
     const indexArray& getVertexIndex() const{return vertexIndex;}
-    pVertexArray refVertex;
     virtual bool cursorSelectDetect(GLdouble xpos,GLdouble ypos) = 0;
     glm::vec2 getGeoCenter() const{return geoCenter;}
     glm::vec2 getRotateCenter() const{return rotateCenter;};
@@ -68,6 +68,7 @@ protected:
         glBindVertexArray(0);
     }
     virtual void calcGeoCenter()=0;
+    pVertexArray refVertex;
     indexArray vertexIndex;
     glm::vec2 geoCenter,rotateCenter;
     bool visable;
@@ -86,10 +87,10 @@ protected:
 
 class Point: public Element{
 public:
-    Point(Primitive* primitive,GLuint startIndex,bool showLineStyle,bool visable = true):
+    Point(Primitive* primitive,GLuint startIndex,bool notShowLineStyle = false,bool visable = true):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
-        if (showLineStyle)
+        if (notShowLineStyle)
             this->pointSize = 5.0f;
         else
             this->pointSize = primitive->pointsize;
@@ -115,21 +116,22 @@ protected:
 private:
     GLfloat pointSize;
 };
+typedef std::shared_ptr<Point> pPoint;
 class Line: public Element{
 public:
-    Line(Primitive* primitive,GLuint startIndex,GLuint endIndex,bool showLineStyle,bool visable = true):
+    Line(Primitive* primitive,GLuint startIndex,GLuint endIndex,bool notShowLineStyle = false,bool visable = true):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
-        if (showLineStyle)
+        if (notShowLineStyle)
             this->lineWidth = 5.0f;
         else
             this->lineWidth = primitive->thickness;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_LINES;
         vertexIndex = {startIndex,endIndex};
-        point[0] = std::make_shared<Point>(primitive,vertexIndex[0],true);
+        point[0] = std::make_shared<Point>(primitive,vertexIndex[0]);
         primitive->elementList.push_back(point[0]);
-        point[1] = std::make_shared<Point>(primitive,vertexIndex[1],true);
+        point[1] = std::make_shared<Point>(primitive,vertexIndex[1]);
         primitive->elementList.push_back(point[1]);
         calcGeoCenter();
         type = TopoType::line;
@@ -151,7 +153,7 @@ protected:
     }
 private:
     GLfloat lineWidth;
-    std::shared_ptr<Point> point[2];
+    pPoint point[2];
 };
 typedef std::shared_ptr<Line> pLine;
 class Face: public Element{
@@ -162,14 +164,14 @@ public:
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = primitive->shape;
         const int n =  static_cast<int>((*refVertex).size()/stride);
-        bool showLineStyle = (shape == GL_LINE_STRIP || shape == GL_LINE_LOOP);
+        bool notShowLineStyle = !(shape == GL_LINE_STRIP || shape == GL_LINE_LOOP);
         for (int i = 0; i<n-1; i++){
             vertexIndex.push_back(i);
-            line.push_back(std::make_shared<Line>(primitive,i,i+1,!showLineStyle));
+            line.push_back(std::make_shared<Line>(primitive,i,i+1,notShowLineStyle));
             primitive->elementList.push_back(line.back());
         }
         vertexIndex.push_back(n-1);
-        line.push_back(std::make_shared<Line>(primitive,n-1,0,!showLineStyle));
+        line.push_back(std::make_shared<Line>(primitive,n-1,0,notShowLineStyle));
         primitive->elementList.push_back(line.back());
         calcGeoCenter();
         type = TopoType::face;
@@ -203,6 +205,10 @@ public:
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = primitive->shape;
         const int n =  static_cast<int>((*refVertex).size()/stride);
+        for (int i = 0; i< n; i++){
+            vertexIndex.push_back(i);
+            controlPoints.push_back(std::make_shared<Point>(primitive,vertexIndex.back()));
+        }
         calcGeoCenter();
         type = TopoType::curve;
         this->visable = visable;
@@ -225,6 +231,50 @@ protected:
     }
 private:
     bool toFill;
+    std::vector<pPoint> controlPoints;
+};
+class Dignoal: public Element{
+public:
+    Dignoal(Primitive* primitive,GLuint startIndex,GLuint endIndex,bool notShowLineStyle = false,bool visable = true):
+    Element(primitive){
+        ShaderStyle& style = ShaderStyle::getStyle();
+        if (notShowLineStyle)
+            this->lineWidth = 5.0f;
+        else
+            this->lineWidth = primitive->thickness;
+        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
+        shape = GL_LINES;
+        vertexArray::const_iterator itp1 = (*refVertex).begin();
+        vertexArray::const_reverse_iterator itp2 = (*refVertex).rbegin();
+        const GLfloat p1x = *(itp1) , p1y = *(itp1+1);
+        const GLfloat p2x = *(itp2) , p2y = *(itp2+1);
+        addPoint(Take::holdon().drawingVertices, p1x, p2y);
+        addPoint(Take::holdon().drawingVertices, p1y, p2x);
+        vertexIndex = {0,2,1,3};
+        for (int i = 0; i<4; i++){
+            point[i] = std::make_shared<Point>(primitive,vertexIndex[i]);
+            primitive->elementList.push_back(point[0]);
+        }
+        calcGeoCenter();
+        type = TopoType::diagonal;
+        this->visable = visable;
+        bindEBObuffer();
+    }
+    glm::vec2 getCenterLocation() const{return geoCenter;}
+    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
+    void draw(bool highlighted);
+protected:
+    void calcGeoCenter(){
+        geoCenter.x = 0;
+        geoCenter.y = 0;
+        glm::vec2 centerLoc1 = (*point[0]).getCenterLocation(),centerLoc2 = (*point[2]).getCenterLocation();
+        geoCenter.x = (centerLoc1.x + centerLoc2.x)/2;
+        geoCenter.y = (centerLoc1.y + centerLoc2.y)/2;
+        rotateCenter = geoCenter;
+    }
+private:
+    GLfloat lineWidth;
+    pPoint point[4];
 };
 int outboundDetect(pElement outbound);
 }//namespace pr
