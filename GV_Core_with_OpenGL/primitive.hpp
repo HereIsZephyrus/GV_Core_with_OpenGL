@@ -25,7 +25,6 @@ enum class Shape{
     POINTS,
     LINES,
     TRIANGLE,
-    STRIPE,
     RECTANGLE,
     CIRCLE,
     LOOP,
@@ -37,10 +36,11 @@ struct primitiveIdentifier{
     GLuint VAO,VBO;
 };
 namespace pr {
+class Element;
 class Point;
 class Line;
 class Face;
-class Element;
+class Curve;
 }
 typedef std::shared_ptr<pr::Element> pElement;
 class Primitive{
@@ -68,6 +68,7 @@ public:
     friend class pr::Point;
     friend class pr::Line;
     friend class pr::Face;
+    friend class pr::Curve;
     friend void clipByShape();
     GLsizei getVertexNum() const{return static_cast<GLsizei>(vertices.size() / stride);}
     void setName(std::string name){this->name = name;}

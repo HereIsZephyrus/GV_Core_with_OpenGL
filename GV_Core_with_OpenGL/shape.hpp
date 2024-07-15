@@ -19,7 +19,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "primitive.hpp"
 #include "rendering.hpp"
-
+#include "commander.hpp"
 typedef std::shared_ptr<vertexArray> pVertexArray;
 void createTopoElements(Primitive* lastpPrimitive);
 void updateTopoElements(Primitive* lastpPrimitive);
@@ -29,7 +29,8 @@ void updateIndex(Primitive*);
 enum class TopoType{
     point,
     line,
-    face
+    face,
+    curve
 };
 class Line;
 class Face;
@@ -85,10 +86,10 @@ protected:
 
 class Point: public Element{
 public:
-    Point(Primitive* primitive,GLuint startIndex,bool isPartition):
+    Point(Primitive* primitive,GLuint startIndex,bool showLineStyle,bool visable = true):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
-        if (isPartition)
+        if (showLineStyle)
             this->pointSize = 5.0f;
         else
             this->pointSize = primitive->pointsize;
@@ -97,6 +98,7 @@ public:
         vertexIndex = {startIndex};
         calcGeoCenter();
         type = TopoType::point;
+        this->visable = visable;
         bindEBObuffer();
     }
     friend class Line;
@@ -115,10 +117,10 @@ private:
 };
 class Line: public Element{
 public:
-    Line(Primitive* primitive,GLuint startIndex,GLuint endIndex,bool isPartition):
+    Line(Primitive* primitive,GLuint startIndex,GLuint endIndex,bool showLineStyle,bool visable = true):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
-        if (isPartition)
+        if (showLineStyle)
             this->lineWidth = 5.0f;
         else
             this->lineWidth = primitive->thickness;
@@ -131,6 +133,7 @@ public:
         primitive->elementList.push_back(point[1]);
         calcGeoCenter();
         type = TopoType::line;
+        this->visable = visable;
         bindEBObuffer();
     }
     friend class Face;
@@ -153,7 +156,7 @@ private:
 typedef std::shared_ptr<Line> pLine;
 class Face: public Element{
 public:
-    Face(Primitive* primitive):
+    Face(Primitive* primitive,bool visable = true):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
@@ -170,6 +173,7 @@ public:
         primitive->elementList.push_back(line.back());
         calcGeoCenter();
         type = TopoType::face;
+        this->visable = visable;
         bindEBObuffer();
     }
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
@@ -192,8 +196,36 @@ private:
     std::vector<pLine> line;
 };
 class Curve: public Element{
-    
+public:
+    Curve(Primitive* primitive,bool toFill,bool visable = true):
+    Element(primitive),toFill(toFill){
+        ShaderStyle& style = ShaderStyle::getStyle();
+        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
+        shape = primitive->shape;
+        const int n =  static_cast<int>((*refVertex).size()/stride);
+        calcGeoCenter();
+        type = TopoType::curve;
+        this->visable = visable;
+        bindEBObuffer();
+    }
+    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
+    void draw(bool highlighted);
+protected:
+    void calcGeoCenter(){
+        geoCenter.x = 0;
+        geoCenter.y = 0;
+        const int vertexNum = static_cast<int>(vertexIndex.size());
+        for (auto it = (*refVertex).begin(); it != (*refVertex).end(); it +=stride){
+            geoCenter.x += *(it);
+            geoCenter.y += *(it+1);
+        }
+        geoCenter.x /= vertexNum;
+        geoCenter.y /= vertexNum;
+        rotateCenter = geoCenter;
+    }
+private:
+    bool toFill;
 };
 int outboundDetect(pElement outbound);
-}
+}//namespace pr
 #endif /* shape_hpp */

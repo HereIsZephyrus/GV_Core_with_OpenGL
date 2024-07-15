@@ -90,17 +90,15 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         if (take.holdonToDraw){
             GLdouble cursorX, cursorY;
             glfwGetCursorPos(window, &cursorX, &cursorY);
-            if (take.drawType == Shape::LINES){
-                //std::cout<<"draw line"<<std::endl;
-                addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
-            }
-            else if (take.drawType == Shape::RECTANGLE || take.drawType == Shape::LOOP){
+            if (take.drawType == Shape::RECTANGLE || take.drawType == Shape::LOOP){
                 vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
                 const GLfloat startX = *(it+2),startY = *(it+1);
                 addPoint(Take::holdon().drawingVertices,cursorX, startY);
                 addPoint(Take::holdon().drawingVertices,cursorX, cursorY);
                 addPoint(Take::holdon().drawingVertices,startX, cursorY);
             }
+            else
+                addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
         }
         std::cout<<"finish draw"<<std::endl;
         // push the primitive into the formal primitive render queue
