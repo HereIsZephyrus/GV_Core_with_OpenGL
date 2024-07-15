@@ -186,7 +186,7 @@ void createTopoElements(Primitive* lastpPrimitive){
             break;
         case Shape::RECTANGLE:
             std::cout<<"treat as face"<<std::endl;
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive)) );
             break;
         case Shape::POLYGEN:
             std::cout<<"treat as face"<<std::endl;
