@@ -45,9 +45,8 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
             this->shape = GL_LINES;
             break;
         }
-        case Shape::CIRCLE:{ //not achieved
+        case Shape::CIRCLE:{
             this->shape = GL_LINES;
-            //this->indices = pr
             break;
         }
         case Shape::LOOP:{

@@ -450,6 +450,7 @@ void renderPrimitiveSelectPanel(){
         drawType = Shape::LINES;
         holdonToDraw = true;
     }
+    ImGui::SameLine();
     if (ImGui::Button("Polygon")){
         drawType = Shape::POLYGEN;
         holdonToDraw = false;
@@ -463,6 +464,7 @@ void renderPrimitiveSelectPanel(){
         drawType = Shape::RECTANGLE;
         holdonToDraw = true;
     }
+    ImGui::SameLine();
     if (ImGui::Button("Circle")){
         drawType = Shape::CIRCLE;
         holdonToDraw = true;

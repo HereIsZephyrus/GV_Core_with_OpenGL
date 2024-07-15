@@ -373,6 +373,12 @@ void generateNewPrimitive(){
                 newShader->attchShader(rd::filePath("lineRect.gs"), GL_GEOMETRY_SHADER);
             newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
             break;
+        case Shape::POLYGEN:
+            newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+            if (!style.toFill)
+                newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
+            newShader->attchShader(rd::filePath("fillColor.frag"), GL_FRAGMENT_SHADER);
+            break;
         default:
             newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
             newShader->attchShader(rd::filePath("fillColor.frag"), GL_FRAGMENT_SHADER);
@@ -413,6 +419,8 @@ void generatePreviewPrimitive(const vertexArray& tempVertices){
         previewPrimitive -> bindShader(rd::namedShader["previewRectangleShader"].get());
     else if (take.drawType == Shape::CIRCLE)
         previewPrimitive -> bindShader(rd::namedShader["previewCircleShader"].get());
+    else if (take.drawType == Shape::POLYGEN && !ShaderStyle::getStyle().toFill)
+        previewPrimitive -> bindShader(rd::namedShader["previewCircleLineShader"].get());
     else
         previewPrimitive -> bindShader(rd::namedShader["previewfillShader"].get());
     pr::previewPrimitive = std::move(previewPrimitive);
