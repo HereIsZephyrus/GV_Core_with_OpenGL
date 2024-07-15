@@ -31,7 +31,8 @@ enum class TopoType{
     line,
     face,
     curve,
-    diagonal
+    dignoal,
+    outBound,
 };
 class Line;
 class Face;
@@ -199,15 +200,20 @@ private:
 };
 class Curve: public Element{
 public:
-    Curve(Primitive* primitive,bool toFill,bool visable = true):
-    Element(primitive),toFill(toFill){
+    Curve(Primitive* primitive,bool notShowLineStyle = false,bool visable = true):
+    Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
+        if (notShowLineStyle)
+            this->lineWidth = 5.0f;
+        else
+            this->lineWidth = primitive->thickness;
         shape = primitive->shape;
         const int n =  static_cast<int>((*refVertex).size()/stride);
         for (int i = 0; i< n; i++){
             vertexIndex.push_back(i);
             controlPoints.push_back(std::make_shared<Point>(primitive,vertexIndex.back()));
+            primitive->elementList.push_back(controlPoints.back());
         }
         calcGeoCenter();
         type = TopoType::curve;
@@ -230,33 +236,28 @@ protected:
         rotateCenter = geoCenter;
     }
 private:
-    bool toFill;
+    GLfloat lineWidth;
     std::vector<pPoint> controlPoints;
 };
-class Dignoal: public Element{
+class OutBound: public Element{
 public:
-    Dignoal(Primitive* primitive,GLuint startIndex,GLuint endIndex,bool notShowLineStyle = false,bool visable = true):
+    OutBound(Primitive* primitive,GLuint startIndex,GLuint endIndex,bool notShowLineStyle = false,bool visable = true):
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
-        if (notShowLineStyle)
-            this->lineWidth = 5.0f;
-        else
-            this->lineWidth = primitive->thickness;
+        this->lineWidth = 5.0f;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_LINES;
-        vertexArray::const_iterator itp1 = (*refVertex).begin();
-        vertexArray::const_reverse_iterator itp2 = (*refVertex).rbegin();
+        vertexArray::const_iterator itp1 = (*refVertex).begin() + startIndex * stride;
+        vertexArray::const_iterator itp2 = (*refVertex).begin() + endIndex * stride;
         const GLfloat p1x = *(itp1) , p1y = *(itp1+1);
         const GLfloat p2x = *(itp2) , p2y = *(itp2+1);
         addPoint(Take::holdon().drawingVertices, p1x, p2y);
         addPoint(Take::holdon().drawingVertices, p1y, p2x);
         vertexIndex = {0,2,1,3};
-        for (int i = 0; i<4; i++){
+        for (int i = 0; i<4; i++)
             point[i] = std::make_shared<Point>(primitive,vertexIndex[i]);
-            primitive->elementList.push_back(point[0]);
-        }
         calcGeoCenter();
-        type = TopoType::diagonal;
+        type = TopoType::outBound;
         this->visable = visable;
         bindEBObuffer();
     }
@@ -275,6 +276,41 @@ protected:
 private:
     GLfloat lineWidth;
     pPoint point[4];
+};
+class Dignoal: public Element{
+public:
+    Dignoal(Primitive* primitive ,GLuint startIndex = 0,GLuint endIndex = 1,bool notShowLineStyle = false,bool visable = true):
+    Element(primitive){
+        ShaderStyle& style = ShaderStyle::getStyle();
+        if (notShowLineStyle)
+            this->lineWidth = 5.0f;
+        else
+            this->lineWidth = primitive->thickness;
+        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
+        shape = GL_LINES;
+        vertexIndex = {startIndex,endIndex};
+        point[0] = std::make_shared<Point>(primitive,vertexIndex[startIndex],true,false);
+        point[1] = std::make_shared<Point>(primitive,vertexIndex[endIndex],true,false);
+        //calcGeoCenter();
+        type = TopoType::dignoal;
+        this->visable = visable;
+        bindEBObuffer();
+    }
+    glm::vec2 getCenterLocation() const{return geoCenter;}
+    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
+    void draw(bool highlighted);
+protected:
+    void calcGeoCenter(){
+        geoCenter.x = 0;
+        geoCenter.y = 0;
+        glm::vec2 centerLoc1 = (*point[0]).getCenterLocation(),centerLoc2 = (*point[2]).getCenterLocation();
+        geoCenter.x = (centerLoc1.x + centerLoc2.x)/2;
+        geoCenter.y = (centerLoc1.y + centerLoc2.y)/2;
+        rotateCenter = geoCenter;
+    }
+private:
+    GLfloat lineWidth;
+    pPoint point[2];
 };
 int outboundDetect(pElement outbound);
 }//namespace pr

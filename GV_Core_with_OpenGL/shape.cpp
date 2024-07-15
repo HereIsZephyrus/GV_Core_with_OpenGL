@@ -64,6 +64,26 @@ void Face::draw(bool highlighted){
     glBindVertexArray(0);
     return;
 }
+void Curve::draw(bool highlighted){
+    
+    return;
+}
+void OutBound::draw(bool highlighted){
+    
+    return;
+}
+void Dignoal::draw(bool highlighted){
+    setColor(highlighted);
+    //thickness
+    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+    glUniform1f(sizeLoc,lineWidth);
+    // load data
+    glBindVertexArray(identifier->VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+    return;
+}
 void updateIndex(Primitive* primitive){
     const primitiveIdentifier* identifier = primitive->getIdentifier();
     primitive->elementList.erase(std::remove_if(primitive->elementList.begin(), primitive->elementList.end(),
@@ -125,6 +145,18 @@ bool Face::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     }
     return inside;
 }
+bool OutBound::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
+   
+    return true;
+}
+bool Curve::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
+    
+    return true;
+}
+bool Dignoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
+    
+    return true;
+}
 int outboundDetect(pElement outbound){
     return 12;
 }
@@ -164,6 +196,7 @@ void createTopoElements(Primitive* lastpPrimitive){
             std::cout<<"treat as curve"<<std::endl;
             break;
         case Shape::CIRCLE:
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Dignoal>(lastpPrimitive)) );
             std::cout<<"treat as circle"<<std::endl;
             break;
         default:
