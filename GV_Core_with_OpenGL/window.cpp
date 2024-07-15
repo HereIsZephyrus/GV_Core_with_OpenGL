@@ -386,7 +386,6 @@ void renderEditPanel(){
             drawType = Shape::POLYGEN;
             holdonToDraw = false;
         }
-        //std::cout<<(drawType == Shape::RECTANGLE)<<std::endl;
     }
     ImGui::SameLine();
     if (ImGui::Button("Draw Logo")){
@@ -445,49 +444,38 @@ void renderPrimitiveSelectPanel(){
     if (ImGui::Button("Points")){
         drawType = Shape::POINTS;
         holdonToDraw = false;
-        record.showCreateElementWindow = false;
     }
     ImGui::SameLine();
     if (ImGui::Button("Lines")){
         drawType = Shape::LINES;
         holdonToDraw = true;
-        record.showCreateElementWindow = false;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Strip")){
-        drawType = Shape::STRIPE;
-        holdonToDraw = false;
-        record.showCreateElementWindow = false;
-    }
     if (ImGui::Button("Polygon")){
         drawType = Shape::POLYGEN;
         holdonToDraw = false;
-        record.showCreateElementWindow = false;
     }
-    ImGui::SameLine();
     if (ImGui::Button("Trangles")){
         drawType = Shape::TRIANGLE;
         holdonToDraw = false;
-        record.showCreateElementWindow = false;
     }
     ImGui::SameLine();
     if (ImGui::Button("Rectangle")){
         drawType = Shape::RECTANGLE;
         holdonToDraw = true;
-        record.showCreateElementWindow = false;
     }
+    ImGui::SameLine();
     if (ImGui::Button("Circle")){
         drawType = Shape::CIRCLE;
         holdonToDraw = true;
-        record.showCreateElementWindow = false;
     }
     ImGui::SameLine();
     if (ImGui::Button("Curve")){
         drawType = Shape::CURVE;
         holdonToDraw = false;
-        record.showCreateElementWindow = false;
     }
-    
+    if (drawType != Shape::NONE)
+        record.showCreateElementWindow = false;
     ImGui::End();
 }
 void createPrimitiveList() {

@@ -42,15 +42,11 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
             break;
         }
         case Shape::RECTANGLE:{
-            if (ShaderStyle::getStyle().toFill)
-                this->shape = GL_TRIANGLE_FAN;
-            else
-                this->shape = GL_LINE_LOOP;
+            this->shape = GL_LINES;
             break;
         }
-        case Shape::CIRCLE:{ //not achieved
-            this->shape = GL_TRIANGLE_STRIP;
-            //this->indices = pr
+        case Shape::CIRCLE:{
+            this->shape = GL_LINES;
             break;
         }
         case Shape::LOOP:{
@@ -245,6 +241,6 @@ void Primitive::useShader(){
 }
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;
-pPrimitive drawPreviewPrimitive = nullptr;
+pPrimitive previewPrimitive = nullptr;
 pPrimitive axisPrimitive = nullptr;
 }

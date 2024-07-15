@@ -67,6 +67,7 @@ void addPoint(vertexArray& array,const GLdouble cursorX, const GLdouble cursorY)
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY);
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY);
 void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY);
+void toAlignment(vertexArray& array,Shape shape);
 void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);
@@ -80,5 +81,8 @@ void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorFocusCallback(GLFWwindow* window, int entered);
 void windowPosCallback(GLFWwindow* window, int xpos, int ypos);
 void windowSizeCallback(GLFWwindow* window, int width, int height);
+
+int releaseResources(GLFWwindow* &window);
+int InterectResponseCheck(GLFWwindow* &window);
 
 #endif /* commander_hpp */

@@ -64,6 +64,26 @@ void Face::draw(bool highlighted){
     glBindVertexArray(0);
     return;
 }
+void Curve::draw(bool highlighted){
+    
+    return;
+}
+void OutBound::draw(bool highlighted){
+    
+    return;
+}
+void Diagnoal::draw(bool highlighted){
+    setColor(highlighted);
+    //thickness
+    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+    glUniform1f(sizeLoc,lineWidth);
+    // load data
+    glBindVertexArray(identifier->VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+    return;
+}
 void updateIndex(Primitive* primitive){
     const primitiveIdentifier* identifier = primitive->getIdentifier();
     primitive->elementList.erase(std::remove_if(primitive->elementList.begin(), primitive->elementList.end(),
@@ -125,27 +145,63 @@ bool Face::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     }
     return inside;
 }
+bool OutBound::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
+   
+    return true;
+}
+bool Curve::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
+    
+    return true;
+}
+bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
+    
+    return true;
+}
 int outboundDetect(pElement outbound){
     return 12;
 }
 }//namespace pr
 
 void createTopoElements(Primitive* lastpPrimitive){
-    const GLenum shape = lastpPrimitive->getShape();
-    if (shape == GL_POINTS  || shape == GL_LINE_STRIP){
-        std::cout<<"treat as points"<<std::endl;
-        //std::cout<<lastpPrimitive->getVertexNum()<<std::endl;
-        for (int i = 0; i< lastpPrimitive->getVertexNum(); i++)
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i,false)) );
-    }
-    else if (shape == GL_LINES || shape == GL_LINE){
-        std::cout<<"treat as line"<<std::endl;
-        for (int i = 0; i< lastpPrimitive->getVertexNum()-1; i++)
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1,false)) );
-    }
-    else{
-        std::cout<<"treat as face"<<std::endl;
-        lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
+    //const GLenum shape = lastpPrimitive->getShape();
+    Take& take = Take::holdon();
+    switch (take.drawType) {
+        case Shape::POINTS:
+            std::cout<<"treat as points"<<std::endl;
+            for (int i = 0; i< lastpPrimitive->getVertexNum(); i++)
+                lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i)) );
+            break;
+        case Shape::LINES:
+            std::cout<<"treat as line"<<std::endl;
+            for (int i = 0; i< lastpPrimitive->getVertexNum()-1; i++)
+                lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Line>(lastpPrimitive,i,i+1)) );
+            break;
+        case Shape::LOOP:
+            std::cout<<"treat as face"<<std::endl;
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
+            break;
+        case Shape::TRIANGLE:
+            std::cout<<"treat as face"<<std::endl;
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
+            break;
+        case Shape::RECTANGLE:
+            std::cout<<"treat as face"<<std::endl;
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive)) );
+            break;
+        case Shape::POLYGEN:
+            std::cout<<"treat as face"<<std::endl;
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
+            break;
+        case Shape::CURVE:
+            std::cout<<"treat as curve"<<std::endl;
+            break;
+        case Shape::CIRCLE:
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive)) );
+            std::cout<<"treat as circle"<<std::endl;
+            break;
+        default:
+            std::cout<<"treat as none"<<std::endl;
+            break;
     }
     return;
 }

@@ -73,88 +73,31 @@ static bool finishDrawCheck(GLFWwindow* window, int button, int action, int mods
     return false;
 }
 void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
-    Records& record = Records::getState();
     Take& take = Take::holdon();
     if (startDrawCheck(window, button, action, mods)){
-        record.drawingPrimitive = true;
-        //generate a new primitive
+        Records::getState().drawingPrimitive = true;
         std::cout<<"start draw"<<std::endl;
         take.drawingVertices.clear();
         GLdouble cursorX, cursorY;
         glfwGetCursorPos(window, &cursorX, &cursorY);
+        //generate the first point to the new primitive
         if (take.holdonToDraw)
-            addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+            addPoint(take.drawingVertices,cursorX,cursorY);
     }
     if (finishDrawCheck(window,button,action,mods)){
+        Records& record = Records::getState();
         record.drawingPrimitive = false;
-        //finish the draw and push into the formal primitive render queue
+        //finish the primitive
         if (take.holdonToDraw){
             GLdouble cursorX, cursorY;
             glfwGetCursorPos(window, &cursorX, &cursorY);
-            if (take.drawType == Shape::LINES){
-                //std::cout<<"draw line"<<std::endl;
-                addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
-            }
-            else if (take.drawType == Shape::RECTANGLE || take.drawType == Shape::LOOP){
-                vertexArray::const_reverse_iterator it = take.drawingVertices.rbegin();
-                const GLfloat startX = *(it+2),startY = *(it+1);
-                addPoint(Take::holdon().drawingVertices,cursorX, startY);
-                addPoint(Take::holdon().drawingVertices,cursorX, cursorY);
-                addPoint(Take::holdon().drawingVertices,startX, cursorY);
-            }
+            addPoint(take.drawingVertices,cursorX,cursorY);
+            if (record.pressCtrl)
+                toAlignment(take.drawingVertices,take.drawType);
         }
         std::cout<<"finish draw"<<std::endl;
-        Take& take = Take::holdon();
-        ShaderStyle& style = ShaderStyle::getStyle();
-        if (take.drawType == Shape::MARKER){
-            take.drawType = Shape::NONE;
-            return;
-        }
-        pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
-        pShader newShader(new Shader());
-        newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
-        if (take.drawType == Shape::LINES){
-            switch (style.lineType) {
-                case LineType::fill:
-                    newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
-                    switch (style.headType) {
-                        case LineHeadType::cube:
-                            newShader->attchShader(rd::filePath("cubeLine.gs"), GL_GEOMETRY_SHADER);
-                            break;
-                        case LineHeadType::circle:
-                            newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case LineType::dot:
-                    newShader->attchShader(rd::filePath("dotColor.frag"),GL_FRAGMENT_SHADER);
-                    break;
-                case LineType::semi:
-                    newShader->attchShader(rd::filePath("semiColor.frag"),GL_FRAGMENT_SHADER);
-                    break;
-                default:
-                    break;
-            }
-        }
-        else if (take.drawType != Shape::POINTS && style.toFill == false){
-            newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
-        }
-        newShader->linkProgram();
-        rd::mainShaderList.push_back(std::move(newShader));
-        if (!record.cliping){
-            newPrimitive->bindShader(rd::mainShaderList.back().get());
-            pr::mainPrimitiveList.push_back(std::move(newPrimitive));
-            Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
-            createTopoElements(lastpPrimitive);
-            record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
-        }
-        else{
-            take.clipShape  =std::move(newPrimitive);
-            clipByShape();
-            take.clipShape = nullptr;
-        }
+        // push the primitive into the formal primitive render queue
+        generateNewPrimitive();
         take.drawType = Shape::NONE;
     }
 }
@@ -171,7 +114,7 @@ void cursorDragingDetect(GLFWwindow* window,double xpos, double ypos){
 }
 
 static Shape mapPreviewStyle(Shape drawType){
-    if (drawType == Shape::RECTANGLE || drawType == Shape::POLYGEN || drawType ==Shape::TRIANGLE)
+    if (drawType == Shape::POLYGEN || drawType ==Shape::TRIANGLE)
         return Shape::LOOP;
     if (drawType == Shape::CURVE)
         return Shape::POINTS;
@@ -185,36 +128,15 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
         //take the last point
         //WindowParas& windowPara = WindowParas::getInstance();
         vertexArray tempVertices;
-        vertexArray::const_reverse_iterator it = Take::holdon().drawingVertices.rbegin();
-        const GLfloat startX = *(it+2),startY = *(it+1);
-        addPoint(tempVertices,startX,startY);
-        if (take.holdonToDraw){
-            if (take.drawType == Shape::LINES){
-                //std::cout<<"draw line"<<std::endl;
-                addPoint(tempVertices,xpos,ypos);
-            }
-            else if (take.drawType == Shape::RECTANGLE || take.drawType == Shape::LOOP){
-                //std::cout<<"draw rectangle"<<std::endl;
-                addPoint(tempVertices,xpos, startY);
-                addPoint(tempVertices,xpos, ypos);
-                addPoint(tempVertices,startX, ypos);
-            }
-        }
-        else{
+       
             tempVertices = take.drawingVertices;
-            addPoint(tempVertices,xpos,ypos);
-        }
-            
-        //generate preview primitive
-        pPrimitive previewPrimitive(new Primitive(tempVertices,mapPreviewStyle(take.drawType),3));
-        if (take.drawType == Shape::LINES)
-            previewPrimitive -> bindShader(rd::namedShader["previewlineShader"].get());
-        else
-            previewPrimitive -> bindShader(rd::namedShader["previewfillShader"].get());
-        pr::drawPreviewPrimitive = std::move(previewPrimitive);
+        addPoint(tempVertices,xpos,ypos);
+        if (Records::getState().pressCtrl)
+            toAlignment(tempVertices,take.drawType);
+        generatePreviewPrimitive(tempVertices);
     }
     else
-        pr::drawPreviewPrimitive = nullptr;
+        pr::previewPrimitive = nullptr;
     return;
 }
 void editPrimitive(){
@@ -397,4 +319,109 @@ void editPrimitive(){
             }
         }
     }
+}
+void generateNewPrimitive(){
+    Take& take = Take::holdon();
+    Records& record = Records::getState();
+    ShaderStyle& style = ShaderStyle::getStyle();
+    if (take.drawType == Shape::MARKER){
+        return;
+    }
+    pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
+    pShader newShader(new Shader());
+    switch (take.drawType) {
+        case Shape::LINES:
+            newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+            switch (style.lineType) {
+                case LineType::fill:
+                    newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
+                    switch (style.headType) {
+                        case LineHeadType::cube:
+                            newShader->attchShader(rd::filePath("cubeLine.gs"), GL_GEOMETRY_SHADER);
+                            break;
+                        case LineHeadType::circle:
+                            newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case LineType::dot:
+                    newShader->attchShader(rd::filePath("dotColor.frag"),GL_FRAGMENT_SHADER);
+                    break;
+                case LineType::semi:
+                    newShader->attchShader(rd::filePath("semiColor.frag"),GL_FRAGMENT_SHADER);
+                    break;
+                default:
+                    newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
+                    break;
+            }
+            break;
+        case Shape::CIRCLE:
+            newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+            if (style.toFill)
+                newShader->attchShader(rd::filePath("fillCircle.gs"), GL_GEOMETRY_SHADER);
+            else
+                newShader->attchShader(rd::filePath("lineCircle.gs"), GL_GEOMETRY_SHADER);
+            newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
+            break;
+        case Shape::RECTANGLE:
+            newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+            if (style.toFill)
+                newShader->attchShader(rd::filePath("fillRect.gs"), GL_GEOMETRY_SHADER);
+            else
+                newShader->attchShader(rd::filePath("lineRect.gs"), GL_GEOMETRY_SHADER);
+            newShader->attchShader(rd::filePath("fillColor.frag"),GL_FRAGMENT_SHADER);
+            break;
+        case Shape::POLYGEN:
+            newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+            if (!style.toFill)
+                newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
+            newShader->attchShader(rd::filePath("fillColor.frag"), GL_FRAGMENT_SHADER);
+            break;
+        default:
+            newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+            newShader->attchShader(rd::filePath("fillColor.frag"), GL_FRAGMENT_SHADER);
+            break;
+    }
+    newShader->linkProgram();
+    rd::mainShaderList.push_back(std::move(newShader));
+    if (!record.cliping){
+        newPrimitive->bindShader(rd::mainShaderList.back().get());
+        pr::mainPrimitiveList.push_back(std::move(newPrimitive));
+        Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
+        createTopoElements(lastpPrimitive);
+        record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
+    }
+    else{
+        take.clipShape =std::move(newPrimitive);
+        clipByShape();
+        take.clipShape = nullptr;
+    }
+}
+void generatePreviewPrimitive(const vertexArray& tempVertices){
+    Take& take = Take::holdon();
+    pPrimitive previewPrimitive(new Primitive(tempVertices,mapPreviewStyle(take.drawType),3));
+    if (take.drawType == Shape::LINES){
+        ShaderStyle& style = ShaderStyle::getStyle();
+        switch (style.headType) {
+            case LineHeadType::cube:
+                previewPrimitive -> bindShader(rd::namedShader["previewCubeLineShader"].get());
+                break;
+            case LineHeadType::circle:
+                previewPrimitive -> bindShader(rd::namedShader["previewCircleLineShader"].get());
+                break;
+            default:
+                break;
+        }
+    }
+    else if (take.drawType == Shape::RECTANGLE)
+        previewPrimitive -> bindShader(rd::namedShader["previewRectangleShader"].get());
+    else if (take.drawType == Shape::CIRCLE)
+        previewPrimitive -> bindShader(rd::namedShader["previewCircleShader"].get());
+    else if (take.drawType == Shape::POLYGEN && !ShaderStyle::getStyle().toFill)
+        previewPrimitive -> bindShader(rd::namedShader["previewCircleLineShader"].get());
+    else
+        previewPrimitive -> bindShader(rd::namedShader["previewfillShader"].get());
+    pr::previewPrimitive = std::move(previewPrimitive);
 }

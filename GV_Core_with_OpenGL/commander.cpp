@@ -64,7 +64,17 @@ void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY){
     array.push_back(orthoY);
     array.push_back(0.0f); // flat draw
 }
-
+void toAlignment(vertexArray& array,Shape shape){
+    const GLsizei stride = 3;
+    if (shape == Shape::RECTANGLE || shape == Shape::CIRCLE){
+        const GLfloat dx = array[stride] - array[0];
+        const bool isNegtive = (array[stride + 1] - array[1]) < 0;
+        GLfloat dy = dx ;
+        if (isNegtive)   dy = -dy;
+        if (dx < 0)         dy = -dy;
+        array[stride+1] = array[1] + dy;
+    }
+}
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     MeauCallback(window, key, scancode, action, mods);
@@ -107,7 +117,8 @@ void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
             newLogo.setScale(pointSize);
             newLogo.setPosition(position);
             obj::objectList.push_back(newLogo);
-        }else
+        }
+        else
             addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
     }
     //holdon draw method will not add middle points, which means the primitives drawed by this way has only two control points. So this situation is handled in cursorcallback
@@ -250,4 +261,91 @@ void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mod
         }
         }
     }
+}
+
+static bool checkCursorFocus(){
+    WindowParas& windowPara = WindowParas::getInstance();
+    GLdouble cursorX,cursorY;
+    glfwGetCursorPos(windowPara.window, &cursorX, &cursorY);
+    //std::cout<<cursorX<<' '<<cursorY<<std::endl;
+    if (cursorX < 0 || cursorX > windowPara.SCREEN_WIDTH/windowPara.xScale || cursorY< gui::menuBarHeight || cursorY > windowPara.SCREEN_HEIGHT/windowPara.yScale)
+        return  false;
+    bool openDetect = ((Records::getState().state == interectState::holding) || (Records::getState().state == interectState::toselect));
+    if (openDetect && !Records::getState().dragingMode){
+        Camera2D& camera = Camera2D::getView();
+        const GLfloat dragCameraSpeed = 10.0f,borderDetectRange = 40.0f, menuWidth = 200.0f;
+        if (cursorX < borderDetectRange){
+            camera.setDeltaPosition(camera.getPosition(), -dragCameraSpeed, 0);
+        }
+        else if (cursorX> windowPara.SCREEN_WIDTH/windowPara.xScale - borderDetectRange){
+            camera.setDeltaPosition(camera.getPosition(), dragCameraSpeed, 0);
+        }
+        if (cursorY < borderDetectRange  && cursorX > menuWidth){
+            camera.setDeltaPosition(camera.getPosition(), 0, dragCameraSpeed);
+        }
+        else if (cursorY> windowPara.SCREEN_HEIGHT/windowPara.yScale - borderDetectRange){
+            camera.setDeltaPosition(camera.getPosition(), 0, -dragCameraSpeed);
+        }
+    }
+    return true;
+}
+
+int InterectResponseCheck(GLFWwindow* &window){
+    Camera2D& camera = Camera2D::getView();
+    camera.processKeyboard(window);
+    coord::generateCoordinateAxis();
+    WindowParas::getInstance().mainWindowFocused = checkCursorFocus();
+    if (Records::getState().state == interectState::editing && WindowParas::getInstance().mainWindowFocused)
+        editPrimitive();
+    return 0;
+}
+
+int releaseResources(GLFWwindow* &window){
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    WindowParas::getInstance().window = nullptr;
+    Take::holdon().editingPrimitive = nullptr;
+    Take::holdon().drawingShader = nullptr;
+    Records::getState().primitiveList.clear();
+    return 0;
+}
+
+bool primitiveSelectDetect(Primitive* primitive){
+    GLdouble xpos,ypos;
+    WindowParas& windowPara = WindowParas::getInstance();
+    Records& record = Records::getState();
+    glfwGetCursorPos(windowPara.window, &xpos, &ypos);
+    bool selected = false;
+    if (primitive->getShape() == GL_POINTS){
+        for (auto singlePoint = primitive ->elementList.begin(); singlePoint != primitive->elementList.end(); singlePoint ++){
+            selected = (*singlePoint)->cursorSelectDetect(xpos, ypos);
+            if (selected)   break;
+        }
+    }else{
+        pElement characterPrimitive = primitive -> elementList.back();
+        selected = (*characterPrimitive).cursorSelectDetect(xpos, ypos);
+    }
+    
+    if (selected){
+        //std::cout<<"selected"<<std::endl;
+        record.state = interectState::holding;
+        if (primitive->getHold())
+            return selected;
+        else{
+            if (!record.pressCtrl)
+                Take::holdon().holdonObjList.clear();
+            Take::holdon().holdonObjList.push_back(primitive);
+        }
+        primitive->setHold(selected);
+        //std::cout<<"selected"<<Take::holdon().holdonObjList.size()<<std::endl;
+    }
+    else{
+       // std::cout<<"not selected"<<Take::holdon().holdonObjList.size()<<std::endl;
+        if (!record.pressCtrl)
+            primitive->setHold(selected);
+    }
+    return selected;
 }
