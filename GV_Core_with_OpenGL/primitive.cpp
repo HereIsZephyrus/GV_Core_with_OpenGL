@@ -61,7 +61,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
             break;;
         }
         case Shape::CURVE:{
-            this->shape = GL_LINE_STRIP;
+            this->shape = GL_POINTS;
             generateCurve();
             break;
         }

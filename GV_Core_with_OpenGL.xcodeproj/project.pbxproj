@@ -99,6 +99,7 @@
 		32909B852C44CE5100C12E61 /* lineCircle.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = lineCircle.gs; sourceTree = "<group>"; };
 		32909B862C44E9B700C12E61 /* fillRect.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillRect.gs; sourceTree = "<group>"; };
 		32909B872C44EA2100C12E61 /* lineRect.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = lineRect.gs; sourceTree = "<group>"; };
+		32909B882C457D2700C12E61 /* bezierCurve */ = {isa = PBXFileReference; lastKnownFileType = text; path = bezierCurve; sourceTree = "<group>"; };
 		32948FAB2C157E65007A0078 /* glexception.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = glexception.cpp; sourceTree = "<group>"; };
 		32948FAC2C157E65007A0078 /* glexception.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = glexception.hpp; sourceTree = "<group>"; };
 		32C5E0882C18A14E00152CDF /* imconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imconfig.h; sourceTree = "<group>"; };
@@ -239,6 +240,7 @@
 				32909B862C44E9B700C12E61 /* fillRect.gs */,
 				32909B872C44EA2100C12E61 /* lineRect.gs */,
 				32909B852C44CE5100C12E61 /* lineCircle.gs */,
+				32909B882C457D2700C12E61 /* bezierCurve */,
 				328C8CFA2C3BD27D006160E6 /* dotColor.frag */,
 				328C8CFB2C3BD3C0006160E6 /* semiColor.frag */,
 				328DF9B72C1EB1510092223F /* fillColor.frag */,
