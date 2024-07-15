@@ -82,15 +82,18 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         glfwGetCursorPos(window, &cursorX, &cursorY);
         //generate the first point to the new primitive
         if (take.holdonToDraw)
-            addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+            addPoint(take.drawingVertices,cursorX,cursorY);
     }
     if (finishDrawCheck(window,button,action,mods)){
-        Records::getState().drawingPrimitive = false;
+        Records& record = Records::getState();
+        record.drawingPrimitive = false;
         //finish the primitive
         if (take.holdonToDraw){
             GLdouble cursorX, cursorY;
             glfwGetCursorPos(window, &cursorX, &cursorY);
-            addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+            addPoint(take.drawingVertices,cursorX,cursorY);
+            if (record.pressCtrl)
+                toAlignment(take.drawingVertices,take.drawType);
         }
         std::cout<<"finish draw"<<std::endl;
         // push the primitive into the formal primitive render queue
@@ -125,11 +128,11 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
         //take the last point
         //WindowParas& windowPara = WindowParas::getInstance();
         vertexArray tempVertices;
-        vertexArray::const_reverse_iterator it = Take::holdon().drawingVertices.rbegin();
-        const GLfloat startX = *(it+2),startY = *(it+1);
-        addPoint(tempVertices,startX,startY);
-        tempVertices = take.drawingVertices;
+       
+            tempVertices = take.drawingVertices;
         addPoint(tempVertices,xpos,ypos);
+        if (Records::getState().pressCtrl)
+            toAlignment(tempVertices,take.drawType);
         generatePreviewPrimitive(tempVertices);
     }
     else

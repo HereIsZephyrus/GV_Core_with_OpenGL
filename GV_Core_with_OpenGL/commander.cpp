@@ -64,7 +64,17 @@ void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY){
     array.push_back(orthoY);
     array.push_back(0.0f); // flat draw
 }
-
+void toAlignment(vertexArray& array,Shape shape){
+    const GLsizei stride = 3;
+    if (shape == Shape::RECTANGLE || shape == Shape::CIRCLE){
+        const GLfloat dx = array[stride] - array[0];
+        const bool isNegtive = (array[stride + 1] - array[1]) < 0;
+        GLfloat dy = dx ;
+        if (isNegtive)   dy = -dy;
+        if (dx < 0)         dy = -dy;
+        array[stride+1] = array[1] + dy;
+    }
+}
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     MeauCallback(window, key, scancode, action, mods);
