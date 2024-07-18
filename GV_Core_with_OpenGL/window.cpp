@@ -342,11 +342,14 @@ std::string inputLayerName(){
     if (ImGui::Button("Confirm")) {
         pointer = nullptr;
         ImGui::End();
+        Records::getState().editingString = false;
         return inputString;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel"))
+    if (ImGui::Button("Cancel")){
+        Records::getState().editingString = false;
         pointer = nullptr;
+    }
     ImGui::End();
     return "";
 }
@@ -361,6 +364,7 @@ void renderEditPanel(){
     if (take.createLayer == nullptr){
         if (ImGui::Button("Add Primitive")){
             take.alertWindow = inputLayerName;
+            record.editingString = true;
             inputString = "";
         }
         if (take.alertWindow == inputLayerName){
@@ -561,8 +565,8 @@ void drawLayerList(const std::vector<pItem>& items,GLuint& countLayer,bool& isAc
             record.editingString = true;
             gui::editLayer = currentLayer;
         }
-        if (record.editingString && gui::editLayer == currentLayer ){
-            std::cout<<"start editing string"<<currentLayer<<std::endl;
+        if (record.editingString && gui::editLayer == currentLayer){
+            //std::cout<<"start editing string"<<currentLayer<<std::endl;
             ImGui::SetNextItemWidth(-1);
             strcpy(gui::buffer, currentName.c_str());
             if (ImGui::InputText("##editName", gui::buffer,IM_ARRAYSIZE(gui::buffer),ImGuiInputTextFlags_EnterReturnsTrue)) {
@@ -583,12 +587,19 @@ void createPrimitiveList() {
     const size_t itemsNum = Records::getState().primitiveList.size();
     GLuint countLayer = 0;
     Records& record = Records::getState();
+    Take& take = Take::holdon();
     const bool remainList = record.pressShift;
     bool isActive = false,toRearrange = false;
     std::vector<Layer>& layers = record.layerList;
     if (ImGui::BeginListBox("##", ImVec2(250,(record.layerList.size() + itemsNum) * 25.0f))) {
         for (auto layer = layers.begin(); layer!= layers.end(); layer++){
-            ImGui::Checkbox(std::string("##" + layer->name).c_str(),&layer->visable);
+            bool isSelected = (take.createLayer == &(*layer));
+            if (ImGui::Selectable(std::string("##Select" + layer->name).c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
+                take.createLayer = &(*layer);
+                record.state = interectState::drawing;
+            }
+            ImGui::SameLine();
+            ImGui::Checkbox(std::string("##Checkbox" + layer->name).c_str(),&layer->visable);
             ImGui::SameLine();
             if (ImGui::ArrowButton(std::string("##UpArrow"+ layer->name).c_str(), ImGuiDir_Up))
                 if (layer != layers.begin())
@@ -615,7 +626,7 @@ void createPrimitiveList() {
     }
     if (!remainList && !isActive && record.pressLeft){
         gui::focusedLayers.clear();
-        Take::holdon().holdonObjList.clear();
+        take.holdonObjList.clear();
     }
 }
 
