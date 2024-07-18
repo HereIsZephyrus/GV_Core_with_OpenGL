@@ -363,5 +363,6 @@ void generatePreviewPrimitive(const vertexArray& tempVertices){
 void generateNewPrimitiveList(Shape shape,Primitive* primitive){
     const int id = static_cast<int>(shape);
     gui::itemInfo[id].count++;
-    Records::getState().primitiveList.emplace_back(std::make_pair(primitive, gui::itemInfo[id].typeName + std::to_string(gui::itemInfo[id].count)));
+    primitive->layer = static_cast<GLuint>(Records::getState().primitiveList.size())+1;
+    Records::getState().primitiveList.emplace_back(item(primitive, gui::itemInfo[id].typeName + std::to_string(gui::itemInfo[id].count)));
 }

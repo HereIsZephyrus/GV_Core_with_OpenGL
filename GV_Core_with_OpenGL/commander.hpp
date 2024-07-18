@@ -23,7 +23,16 @@ enum class interectState{
     holding,//binded to the object
     editing,//edit primitive
 };
-typedef std::pair<Primitive*, std::string> item;
+struct item{
+    Primitive* primitive;
+    std::string name;
+    bool isSelected;
+    item(Primitive* primitive, std::string name){
+        this->primitive = primitive;
+        this->name = name;
+        isSelected = false;
+    }
+};
 class Records{
 public:
     static Records& getState(){

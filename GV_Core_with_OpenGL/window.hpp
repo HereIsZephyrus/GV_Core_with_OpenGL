@@ -14,6 +14,7 @@
 #include <cstring>
 #include <string>
 #include <cmath>
+#include <set>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -67,6 +68,8 @@ namespace gui {
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
 extern std::array<Layer, static_cast<int>(Shape::COUNT)> itemInfo;
+//extern std::set<GLuint> focusedLayers;
+//extern GLuint editLayer;
 void DrawGUI();
 void spiltUI();
 void createPrimitiveList();

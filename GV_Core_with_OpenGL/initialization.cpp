@@ -116,5 +116,7 @@ int initItem(){
         gui::itemInfo[i].count = 0;
         gui::itemInfo[i].typeName = typeNames[i];
     }
+    //gui::focusedLayers.clear();
+    //gui::editLayer = 0;
     return 0;
 }
