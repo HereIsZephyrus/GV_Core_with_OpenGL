@@ -27,9 +27,11 @@ enum class interectState{
 struct Item{
     Primitive* primitive;
     std::string name;
+    GLuint id;
     Item(Primitive* primitive, std::string name){
         this->primitive = primitive;
         this->name = name;
+        id = pr::itemnum++;
     }
 };
 typedef std::shared_ptr<Item> pItem;

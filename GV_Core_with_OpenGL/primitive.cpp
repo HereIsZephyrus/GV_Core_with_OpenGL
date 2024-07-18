@@ -238,4 +238,5 @@ namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;
 pPrimitive previewPrimitive = nullptr;
 pPrimitive axisPrimitive = nullptr;
+GLuint itemnum = 0;
 }

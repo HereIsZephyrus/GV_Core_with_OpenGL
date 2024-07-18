@@ -334,23 +334,25 @@ void renderSiderbar(){
 }
 std::string inputLayerName(){
     AlertWindowPointer& pointer = Take::holdon().alertWindow;
-    bool showInputDialog = true;
-    ImGui::Begin("Input Dialog", &showInputDialog, ImGuiWindowFlags_AlwaysAutoResize);
-    char buffer[256] = {};
-    if (ImGui::InputText("Layer Name", buffer, IM_ARRAYSIZE(buffer)))
-        inputString = buffer;
-    if (ImGui::Button("Confirm")) {
-        pointer = nullptr;
-        ImGui::End();
-        Records::getState().editingString = false;
-        return inputString;
+    if(ImGui::BeginPopupModal("Input Dialog", NULL, ImGuiWindowFlags_AlwaysAutoResize)){
+        char buffer[256] = {};
+        if (ImGui::InputText("Layer Name", buffer, IM_ARRAYSIZE(buffer)))
+            inputString = buffer;
+        if (ImGui::Button("Confirm")) {
+            pointer = nullptr;
+            ImGui::CloseCurrentPopup();
+            ImGui::End();
+            Records::getState().editingString = false;
+            return inputString;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel")){
+            Records::getState().editingString = false;
+            ImGui::CloseCurrentPopup();
+            pointer = nullptr;
+        }
+        ImGui::EndPopup();
     }
-    ImGui::SameLine();
-    if (ImGui::Button("Cancel")){
-        Records::getState().editingString = false;
-        pointer = nullptr;
-    }
-    ImGui::End();
     return "";
 }
 void renderEditPanel(){
@@ -364,6 +366,7 @@ void renderEditPanel(){
     if (take.createLayer == nullptr){
         if (ImGui::Button("Add Primitive")){
             take.alertWindow = inputLayerName;
+            ImGui::OpenPopup("Input Dialog");
             record.editingString = true;
             inputString = "";
         }
@@ -526,10 +529,12 @@ void renderPrimitiveSelectPanel(){
 static bool comparePrimitive(const pPrimitive& a, const pPrimitive& b) {
     return *a < *b;
 }
-void drawLayerList(const std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange){
+void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange){
     if (items.empty())
         return;
     std::vector<Primitive*>& holdonObjList = Take::holdon().holdonObjList;
+    static bool show_delete_popup = false;
+    std::vector<pItem>::iterator toDelete = items.end();
     Records& record = Records::getState();
     for (auto item = items.begin(); item!=items.end(); item++){
         countLayer++;
@@ -581,6 +586,38 @@ void drawLayerList(const std::vector<pItem>& items,GLuint& countLayer,bool& isAc
         }
         else
             ImGui::Text("%s",currentName.c_str());
+        ImGui::SameLine();
+        if (ImGui::ArrowButton(std::string("##Delete" + layerID).c_str(),ImGuiDir_Right)) {
+            std::cout<<"ready to delete"<<std::endl;
+            show_delete_popup = true;
+            toDelete = item;
+        }
+    }
+    if (show_delete_popup) {
+        ImGui::OpenPopup("Delete Confirmation");
+    }
+    if (ImGui::BeginPopupModal("Delete Confirmation", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::Text("Are you sure to delete this element?");
+        if (ImGui::Button("OK", ImVec2(120, 0))) {
+            ImGui::CloseCurrentPopup();
+            show_delete_popup = false;
+            //(*toDelete)->primitive->visable = false; //delete resource
+            //for (auto primitive = pr::mainPrimitiveList.begin(); //primitive!=pr::mainPrimitiveList.end(); primitive++){
+            //    if ((*primitive).get() == (*toDelete)->primitive){
+            //        *primitive = nullptr;
+            //        break;
+            //    }
+            //}
+            //auto itemInd = record.primitiveList.begin() + (*toDelete)->id; //delete item
+            //record.primitiveList.erase(itemInd); //delete item reference
+            //items.erase(toDelete);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+            ImGui::CloseCurrentPopup();
+            show_delete_popup = false;
+        }
+        ImGui::EndPopup();
     }
 }
 void createPrimitiveList() {

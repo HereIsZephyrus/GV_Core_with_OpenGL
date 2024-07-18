@@ -113,6 +113,7 @@ namespace pr {
 extern pPrimitive previewPrimitive;
 extern pPrimitive axisPrimitive;
 extern std::vector<pPrimitive >mainPrimitiveList;
+extern GLuint itemnum;
 struct spline{
     GLfloat a,b,c,d;
 };
