@@ -79,10 +79,10 @@ public:
     std::string getName() const {return name;}
     vertexArray vertices;//,transfered;
     std::vector<pElement> elementList;
-    GLuint layer;
-    bool visable;
+    GLuint priority;
+    bool visable,layerVisable;
     bool operator < (const Primitive& x) const{
-        return layer<x.layer;
+        return priority<x.priority;
     }
     void createOutboundElement();
     void destroyOutboundElement();
@@ -113,6 +113,7 @@ namespace pr {
 extern pPrimitive previewPrimitive;
 extern pPrimitive axisPrimitive;
 extern std::vector<pPrimitive >mainPrimitiveList;
+extern GLuint itemnum;
 struct spline{
     GLfloat a,b,c,d;
 };

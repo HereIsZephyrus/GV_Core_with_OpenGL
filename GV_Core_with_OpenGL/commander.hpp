@@ -11,6 +11,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include <memory>
 #include "primitive.hpp"
 #include "rendering.hpp"
 #include <glm/glm.hpp>
@@ -23,16 +24,28 @@ enum class interectState{
     holding,//binded to the object
     editing,//edit primitive
 };
-struct item{
+struct Item{
     Primitive* primitive;
     std::string name;
-    bool isSelected;
-    item(Primitive* primitive, std::string name){
+    GLuint id;
+    Item(Primitive* primitive, std::string name){
         this->primitive = primitive;
         this->name = name;
-        isSelected = false;
+        id = pr::itemnum++;
     }
 };
+typedef std::shared_ptr<Item> pItem;
+struct Layer{
+    std::string name;
+    std::vector<pItem> itemlist;
+    bool visable;
+    Layer(std::string name){
+        this->name = name;
+        itemlist = {};
+        visable = true;
+    }
+};
+typedef std::shared_ptr<Layer> pLayer;
 class Records{
 public:
     static Records& getState(){
@@ -49,10 +62,12 @@ public:
     void initIObuffer();
     GLfloat previewXpos,previewYpos;
     glm::vec2 previewPosition;
-    std::vector<item > primitiveList;
+    std::vector<Item> primitiveList;
+    std::vector<Layer> layerList;
 private:
     Records(){}
 };
+using AlertWindowPointer = std::string (*)();
 class Take{
 public:
     static Take& holdon(){
@@ -60,17 +75,29 @@ public:
         return instance;
     }
     Take(const Take&) = delete;
+    ~Take(){
+        editingPrimitive = nullptr;
+        createLayer = nullptr;
+        alertWindow = nullptr;
+        for (auto it = holdonObjList.begin(); it != holdonObjList.end(); it++)
+            (*it) = nullptr;
+    }
     void operator = (const Take&) = delete;
     std::vector<Primitive*> holdonObjList;
+    Layer* createLayer;
     Primitive* editingPrimitive;
-    Shader* drawingShader;
     vertexArray drawingVertices;
+    AlertWindowPointer alertWindow;
     Shape drawType;
     bool holdonToDraw; // hold on to draw or click to draw
     pPrimitive clipShape;
     glm::mat3 transMat;
 private:
-    Take(){}
+    Take(){
+        editingPrimitive = nullptr;
+        createLayer = nullptr;
+        alertWindow = nullptr;
+    }
 };
 
 void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

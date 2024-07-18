@@ -38,22 +38,6 @@ void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     MeauCallback(window, key, scancode, action, mods);
     keyModsToggle(window, key, scancode, action, mods);
-    //process view move
-    /*
-    Records& record = Records::getState();
-    double xpos,ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-    const GLfloat cameraSpeed = Camera2D::getView().getCameraSpeed(400.0f);
-    if (record.keyRecord[GLFW_KEY_W])
-        ypos += cameraSpeed;
-    if (record.keyRecord[GLFW_KEY_S])
-        ypos -= cameraSpeed;
-    if (record.keyRecord[GLFW_KEY_A])
-        xpos += cameraSpeed;
-    if (record.keyRecord[GLFW_KEY_D])
-        xpos -= cameraSpeed;
-    glfwSetCursorPos(window, xpos, ypos);
-     */
     return;
 }
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
@@ -268,8 +252,6 @@ int releaseResources(GLFWwindow* &window){
     glfwDestroyWindow(window);
     glfwTerminate();
     WindowParas::getInstance().window = nullptr;
-    Take::holdon().editingPrimitive = nullptr;
-    Take::holdon().drawingShader = nullptr;
     Records::getState().primitiveList.clear();
     return 0;
 }

@@ -22,10 +22,11 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "primitive.hpp"
+#include "commander.hpp"
 
 inline bool HAS_INIT_OPENGL_CONTEXT = false;
 int initOpenGL(GLFWwindow *&window);
-struct Layer{
+struct ItemInfo{
     int count;
     std::string typeName;
 };
@@ -67,12 +68,13 @@ constexpr GLint top_bit_code = 0x8;
 namespace gui {
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
-extern std::array<Layer, static_cast<int>(Shape::COUNT)> itemInfo;
-//extern std::set<GLuint> focusedLayers;
-//extern GLuint editLayer;
+extern std::array<ItemInfo, static_cast<int>(Shape::COUNT)> itemInfo;
+extern std::string inputString;
 void DrawGUI();
 void spiltUI();
 void createPrimitiveList();
+void drawLayerList(const std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange);
+std::string inputLayerName();
 }
 
 #endif /* window_hpp */

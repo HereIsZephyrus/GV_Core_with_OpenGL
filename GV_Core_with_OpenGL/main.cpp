@@ -43,6 +43,7 @@ int main(int argc, const char * argv[]) {
         InterectResponseCheck(window);
         bool hasHolding = false;
         Records& record = Records::getState();
+        Take& take = Take::holdon();
         //draw main primitive list
         
         bool openDetect = ((record.state == interectState::holding) || (record.state == interectState::toselect)); // whether primitives can be select
@@ -53,14 +54,14 @@ int main(int argc, const char * argv[]) {
             hasHolding |= (*primitive)->getHold();
             // draw elements
             //std::cout<<(*primitive)->layer<<std::endl;
-            if ((*primitive)->visable){
+            if ((*primitive)->visable && (*primitive)->layerVisable){
                 (*primitive)->useShader();
                 for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
                     (*element)->draw((*primitive)->getHold());
             }
         }
         if (openDetect && !hasHolding && record.pressLeft &&  !record.pressCtrl){
-            Take::holdon().holdonObjList.clear();
+            take.holdonObjList.clear();
             record.state = interectState::toselect;
         }
         
