@@ -268,8 +268,6 @@ int releaseResources(GLFWwindow* &window){
     glfwDestroyWindow(window);
     glfwTerminate();
     WindowParas::getInstance().window = nullptr;
-    Take::holdon().editingPrimitive = nullptr;
-    Take::holdon().drawingShader = nullptr;
     Records::getState().primitiveList.clear();
     return 0;
 }

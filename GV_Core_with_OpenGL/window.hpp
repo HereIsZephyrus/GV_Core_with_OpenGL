@@ -25,7 +25,7 @@
 
 inline bool HAS_INIT_OPENGL_CONTEXT = false;
 int initOpenGL(GLFWwindow *&window);
-struct Layer{
+struct ItemInfo{
     int count;
     std::string typeName;
 };
@@ -67,12 +67,12 @@ constexpr GLint top_bit_code = 0x8;
 namespace gui {
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
-extern std::array<Layer, static_cast<int>(Shape::COUNT)> itemInfo;
-//extern std::set<GLuint> focusedLayers;
-//extern GLuint editLayer;
+extern std::array<ItemInfo, static_cast<int>(Shape::COUNT)> itemInfo;
+extern std::string inputString;
 void DrawGUI();
 void spiltUI();
 void createPrimitiveList();
+std::string inputLayerName();
 }
 
 #endif /* window_hpp */

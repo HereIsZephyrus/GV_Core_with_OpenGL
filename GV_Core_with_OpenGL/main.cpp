@@ -43,6 +43,7 @@ int main(int argc, const char * argv[]) {
         InterectResponseCheck(window);
         bool hasHolding = false;
         Records& record = Records::getState();
+        Take& take = Take::holdon();
         //draw main primitive list
         
         bool openDetect = ((record.state == interectState::holding) || (record.state == interectState::toselect)); // whether primitives can be select
@@ -60,7 +61,7 @@ int main(int argc, const char * argv[]) {
             }
         }
         if (openDetect && !hasHolding && record.pressLeft &&  !record.pressCtrl){
-            Take::holdon().holdonObjList.clear();
+            take.holdonObjList.clear();
             record.state = interectState::toselect;
         }
         

@@ -79,10 +79,10 @@ public:
     std::string getName() const {return name;}
     vertexArray vertices;//,transfered;
     std::vector<pElement> elementList;
-    GLuint layer;
+    GLuint priority;
     bool visable;
     bool operator < (const Primitive& x) const{
-        return layer<x.layer;
+        return priority<x.priority;
     }
     void createOutboundElement();
     void destroyOutboundElement();

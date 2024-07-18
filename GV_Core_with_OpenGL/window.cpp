@@ -179,7 +179,11 @@ void drawScaleText(){
 namespace gui {
 unsigned int panelStackNum = 0;
 float menuBarHeight;
-std::array<Layer, static_cast<int>(Shape::COUNT)> itemInfo;
+std::array<ItemInfo, static_cast<int>(Shape::COUNT)> itemInfo;
+static char buffer[256];
+std::set<GLuint> focusedLayers;
+GLuint editLayer = 0;
+std::string inputString;
 }
 
 namespace gui{
@@ -328,15 +332,52 @@ void renderSiderbar(){
     createPrimitiveList();
     ImGui::End();
 }
+std::string inputLayerName(){
+    AlertWindowPointer& pointer = Take::holdon().alertWindow;
+    bool showInputDialog = true;
+    ImGui::Begin("Input Dialog", &showInputDialog, ImGuiWindowFlags_AlwaysAutoResize);
+    static char buffer[256] = {};
+    if (ImGui::InputText("Layer Name", buffer, IM_ARRAYSIZE(buffer)))
+        inputString = buffer;
+    if (ImGui::Button("Confirm")) {
+        pointer = nullptr;
+        ImGui::End();
+        return inputString;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Cancel"))
+        pointer = nullptr;
+    ImGui::End();
+    return "";
+}
 void renderEditPanel(){
     Records& record = Records::getState();
     ShaderStyle& style = ShaderStyle::getStyle();
     WindowParas& windowPara = WindowParas::getInstance();
+    Take& take = Take::holdon();
     ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::Begin("Edit Panel",nullptr, ImGuiWindowFlags_NoMove |ImGuiWindowFlags_NoResize);
-    if (ImGui::Button("Create Element"))
-        record.showCreateElementWindow = true;
+    if (take.createLayer == nullptr){
+        if (ImGui::Button("Add Primitive")){
+            take.alertWindow = inputLayerName;
+            inputString = "";
+        }
+        if (take.alertWindow == inputLayerName){
+            std::string layerName = take.alertWindow();
+            if (layerName != ""){
+                record.layerList.push_back(Layer(layerName));
+                take.createLayer = &record.layerList.back();
+            }
+        }
+    }
+    else{
+        if (ImGui::Button("Finish Draw"))
+            take.createLayer = nullptr;
+        ImGui::SameLine();
+        if (ImGui::Button("Create Element"))
+            record.showCreateElementWindow = true;
+    }
     ImGui::ColorEdit4("Color", (float*)&style.drawColor);
     // line style
     ImGui::SliderFloat("Thickness", &style.thickness, 1.0f, 50.0f);
@@ -475,78 +516,86 @@ void renderPrimitiveSelectPanel(){
         record.showCreateElementWindow = false;
     ImGui::End();
 }
-namespace gui{
-    static char buffer[256];
-    std::set<GLuint> focusedLayers;
-    GLuint editLayer = 0;
-}
 static bool comparePrimitive(const pPrimitive& a, const pPrimitive& b) {
     return *a < *b;
 }
 void createPrimitiveList() {
-    std::vector<item >& items = Records::getState().primitiveList;
+    std::vector<Item>& items = Records::getState().primitiveList;
     std::vector<Primitive*>& holdonObjList = Take::holdon().holdonObjList;
-    if (items.empty())
-        return;
+    //if (items.empty())
+    //    return;
     Records& record = Records::getState();
     bool isActive = false,toRearrange = false;
     const bool remainList = record.pressShift;
-    if (ImGui::BeginListBox("##", ImVec2(250, items.size() * 25.0f))) {
-        for (int i = 0; i< items.size(); i++){
-            std::string& currentName = items[i].name;
-            GLuint& currentLayer = items[i].primitive->layer;
-            if (currentLayer != i+1)
-                toRearrange = true;
-            currentLayer = i+1;
-            //std::cout<<items[i].name<<"'s layer is "<<currentLayer<<std::endl;
-            const std::string layerID = std::to_string(currentLayer);
-            bool isSelected = gui::focusedLayers.count(currentLayer);
-            if (isSelected && !items[i].primitive->getHold())
-                    holdonObjList.push_back(items[i].primitive);
-            items[i].primitive->setHold(isSelected);
-            if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)){
-                gui::editLayer = currentLayer;
-                gui::focusedLayers.insert(currentLayer);
-                record.state = interectState::holding;
-                isSelected = true;
-                isActive = true;
-            }
-            ImGui::SameLine();
-            ImGui::Checkbox(std::string("##" + layerID).c_str(),&items[i].primitive->visable);
-            ImGui::SameLine();
-            if (ImGui::ArrowButton(std::string("##UpArrow"+ layerID).c_str(), ImGuiDir_Up))
-                if (i>0)
-                    std::swap(items[i],items[i-1]);
-            ImGui::SameLine();
-            if (ImGui::ArrowButton(std::string("##DownArrow" + layerID).c_str(), ImGuiDir_Down))
-                if (i<items.size()-1)
-                    std::swap(items[i],items[i+1]);
-            ImGui::SameLine();
-            if (isSelected && record.doubleCliked && !record.editingString){
-                record.editingString = true;
-                gui::editLayer = currentLayer;
-            }
-            if (record.editingString && gui::editLayer == currentLayer ){
-                std::cout<<"start editing string"<<currentLayer<<std::endl;
-                ImGui::SetNextItemWidth(-1);
-                strcpy(gui::buffer, currentName.c_str());
-                if (ImGui::InputText("##editName", gui::buffer, IM_ARRAYSIZE(gui::buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-                    record.editingString = false;
-                    gui::editLayer = 0;
+    GLuint countLayer = 0;
+    std::cout<<record.layerList.size()<<std::endl;
+    if (ImGui::BeginListBox("##", ImVec2(250,(record.layerList.size() + items.size()) * 25.0f))) {
+        for (const auto& layer : record.layerList){
+            
+            ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+            if (ImGui::TreeNode(layer.name.c_str())) {
+                for (const auto& item : layer.itemlist){
+                    countLayer++;
+                    ImGui::Text("%s",(item->name).c_str());
                 }
-                currentName = gui::buffer;
-                if (record.keyRecord[GLFW_KEY_ENTER] ||ImGui::IsItemDeactivated()) {
-                    record.editingString = false;
-                    gui::editLayer = 0;
-                }
+                ImGui::TreePop();
             }
-            else
-                ImGui::Text("%s",currentName.c_str());
         }
-        if (!remainList && !isActive && record.pressLeft){
-            gui::focusedLayers.clear();
-            holdonObjList.clear();
-        }
+        //for (int i = 0; i< items.size(); i++){
+        //    std::string& currentName = items[i].name;
+        //    GLuint& currentLayer = items[i].primitive->priority;
+        //    if (currentLayer != i+1)
+        //        toRearrange = true;
+        //    currentLayer = i+1;
+        //    //std::cout<<items[i].name<<"'s layer is "<<currentLayer<<std::endl;
+        //    const std::string layerID = std::to_string(currentLayer);
+        //    bool isSelected = gui::focusedLayers.count(currentLayer);
+        //    if (isSelected && !items[i].primitive->getHold())
+        //            holdonObjList.push_back(items[i].primitive);
+        //    items[i].primitive->setHold(isSelected);
+        //    if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | //ImGuiSelectableFlags_AllowItemOverlap)){
+        //        gui::editLayer = currentLayer;
+        //        gui::focusedLayers.insert(currentLayer);
+        //        record.state = interectState::holding;
+        //        isSelected = true;
+        //        isActive = true;
+        //    }
+        //    ImGui::SameLine();
+        //    ImGui::Checkbox(std::string("##" + layerID).c_str(),&items[i].primitive->visable);
+        //    ImGui::SameLine();
+        //    if (ImGui::ArrowButton(std::string("##UpArrow"+ layerID).c_str(), ImGuiDir_Up))
+        //        if (i>0)
+        //            std::swap(items[i],items[i-1]);
+        //    ImGui::SameLine();
+        //    if (ImGui::ArrowButton(std::string("##DownArrow" + layerID).c_str(), ImGuiDir_Down))
+        //        if (i<items.size()-1)
+        //            std::swap(items[i],items[i+1]);
+        //    ImGui::SameLine();
+        //    if (isSelected && record.doubleCliked && !record.editingString){
+        //        record.editingString = true;
+        //        gui::editLayer = currentLayer;
+        //    }
+        //    if (record.editingString && gui::editLayer == currentLayer ){
+        //        std::cout<<"start editing string"<<currentLayer<<std::endl;
+        //        ImGui::SetNextItemWidth(-1);
+        //        strcpy(gui::buffer, currentName.c_str());
+        //        if (ImGui::InputText("##editName", gui::buffer, IM_ARRAYSIZE(gui::buffer), //ImGuiInputTextFlags_EnterReturnsTrue)) {
+        //            record.editingString = false;
+        //            gui::editLayer = 0;
+        //        }
+        //        currentName = gui::buffer;
+        //        if (record.keyRecord[GLFW_KEY_ENTER] ||ImGui::IsItemDeactivated()) {
+        //            record.editingString = false;
+        //            gui::editLayer = 0;
+        //        }
+        //    }
+        //    else
+        //        ImGui::Text("%s",currentName.c_str());
+        //}
+        //if (!remainList && !isActive && record.pressLeft){
+        //    gui::focusedLayers.clear();
+        //    holdonObjList.clear();
+        //}
         ImGui::EndListBox();
     }
     if (toRearrange){
