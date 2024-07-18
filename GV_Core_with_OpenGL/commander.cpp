@@ -23,6 +23,7 @@ void Records::initIObuffer(){
     pressAlt = GL_FALSE;
     pressShift = GL_FALSE;
     pressCtrl = GL_FALSE;
+    doubleCliked = GL_FALSE;
     dragingMode = GL_FALSE;
     drawingPrimitive = GL_FALSE;
     showAxis = GL_TRUE;
@@ -58,6 +59,7 @@ void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     mouseModsToggle(window, button, action, mods);
     drawModsToggle(window, button, action, mods);
+    doubleClickDetected(window, button, action, mods);
     //tackle ondraw behavior
     GLdouble cursorX, cursorY;
     glfwGetCursorPos(window, &cursorX, &cursorY);
@@ -83,6 +85,7 @@ void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
 void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     mouseModsToggle(window, button, action, mods);
+    doubleClickDetected(window, button, action, mods);
     if (Records::getState().dragingMode){
         // drag to move window
         WindowParas& windowPara = WindowParas::getInstance();
@@ -113,6 +116,7 @@ void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
 void mouseEditCallback(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     mouseModsToggle(window, button, action, mods);
+    doubleClickDetected(window, button, action, mods);
     WindowParas& windowPara = WindowParas::getInstance();
     if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT) {
         Records& record = Records::getState();
@@ -423,4 +427,17 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
     else
         pr::previewPrimitive = nullptr;
     return;
+}
+void doubleClickDetected(GLFWwindow* window, int button, int action, int mods){
+    GLdouble& lastClickTime = WindowParas::getInstance().lastClickTime;
+    GLboolean& doubleClickState = Records::getState().doubleCliked;
+    const float doubleClikBias = 0.2;
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+            GLdouble currentTime = glfwGetTime();
+            if (currentTime - lastClickTime < doubleClikBias) 
+                doubleClickState = GL_TRUE;
+            else
+                doubleClickState = GL_FALSE;
+            lastClickTime = currentTime;
+        }
 }

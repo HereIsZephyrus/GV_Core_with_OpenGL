@@ -32,7 +32,7 @@ public:
     }
     Records(const Records&) = delete;
     void operator = (const Records&) = delete;
-    GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
+    GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt,doubleCliked;
     bool dragingMode,drawingPrimitive,cliping,draging;
     bool showCreateElementWindow;
     bool showAxis;
@@ -83,6 +83,7 @@ void cursorDragingDetect(GLFWwindow* window, double xpos, double ypos);
 void drawModsToggle(GLFWwindow* window, int button, int action, int mods);
 void viewScroll(GLFWwindow* window, double xoffset, double yoffset);
 void processCursorTrace(GLFWwindow* window,double xpos, double ypos);
+void doubleClickDetected(GLFWwindow* window, int button, int action, int mods);
 bool primitiveSelectDetect(Primitive* primitive);
 
 int releaseResources(GLFWwindow* &window);

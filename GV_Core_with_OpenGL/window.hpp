@@ -44,6 +44,7 @@ public:
     GLfloat xScale,yScale;
     GLfloat defaultAlpha;
     bool mainWindowFocused;
+    GLdouble lastClickTime = 0.0;
     ImVec4 backgroundColor;
     GLfloat screen2normalX(GLdouble screenX);
     GLfloat screen2normalY(GLdouble screenY);
