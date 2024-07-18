@@ -24,7 +24,6 @@ enum class Shape{
     NONE,
     POINTS,
     LINES,
-    TRIANGLE,
     RECTANGLE,
     CIRCLE,
     LOOP,

@@ -37,10 +37,6 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
             this->shape = GL_LINES;
             break;
         }
-        case Shape::TRIANGLE:{
-            this->shape = GL_TRIANGLES;
-            break;
-        }
         case Shape::RECTANGLE:{
             this->shape = GL_LINES;
             break;
@@ -62,7 +58,6 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
         }
         case Shape::CURVE:{
             this->shape = GL_POINTS;
-            generateCurve();
             break;
         }
         default:{

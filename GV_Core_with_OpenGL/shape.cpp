@@ -65,7 +65,16 @@ void Face::draw(bool highlighted){
     return;
 }
 void Curve::draw(bool highlighted){
-    
+    setColor(highlighted);
+    //thickness
+    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+    glUniform1f(sizeLoc,lineWidth);
+    //std::cout<<"print curve"<<std::endl;
+    // load data
+    glBindVertexArray(identifier->VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
     return;
 }
 void OutBound::draw(bool highlighted){
@@ -180,10 +189,6 @@ void createTopoElements(Primitive* lastpPrimitive){
             std::cout<<"treat as face"<<std::endl;
             lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
             break;
-        case Shape::TRIANGLE:
-            std::cout<<"treat as face"<<std::endl;
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
-            break;
         case Shape::RECTANGLE:
             std::cout<<"treat as face"<<std::endl;
             lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive)) );
@@ -193,6 +198,7 @@ void createTopoElements(Primitive* lastpPrimitive){
             lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Face>(lastpPrimitive)) );
             break;
         case Shape::CURVE:
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Curve>(lastpPrimitive)) );
             std::cout<<"treat as curve"<<std::endl;
             break;
         case Shape::CIRCLE:

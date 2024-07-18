@@ -78,11 +78,12 @@ void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
         Records::getState().drawingPrimitive = true;
         std::cout<<"start draw"<<std::endl;
         take.drawingVertices.clear();
-        GLdouble cursorX, cursorY;
-        glfwGetCursorPos(window, &cursorX, &cursorY);
         //generate the first point to the new primitive
-        if (take.holdonToDraw)
+        if (take.holdonToDraw){
+            GLdouble cursorX, cursorY;
+            glfwGetCursorPos(window, &cursorX, &cursorY);
             addPoint(take.drawingVertices,cursorX,cursorY);
+        }
     }
     if (finishDrawCheck(window,button,action,mods)){
         Records& record = Records::getState();
@@ -114,7 +115,7 @@ void cursorDragingDetect(GLFWwindow* window,double xpos, double ypos){
 }
 
 static Shape mapPreviewStyle(Shape drawType){
-    if (drawType == Shape::POLYGEN || drawType ==Shape::TRIANGLE)
+    if (drawType == Shape::POLYGEN)
         return Shape::LOOP;
     if (drawType == Shape::CURVE)
         return Shape::POINTS;
@@ -324,9 +325,8 @@ void generateNewPrimitive(){
     Take& take = Take::holdon();
     Records& record = Records::getState();
     ShaderStyle& style = ShaderStyle::getStyle();
-    if (take.drawType == Shape::MARKER){
+    if (take.drawType == Shape::MARKER)
         return;
-    }
     pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
     pShader newShader(new Shader());
     switch (take.drawType) {
@@ -397,6 +397,7 @@ void generateNewPrimitive(){
         pr::mainPrimitiveList.push_back(std::move(newPrimitive));
         Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
         createTopoElements(lastpPrimitive);
+        //std::cout<<lastpPrimitive->getVertexNum()<<std::endl;
         record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
     }
     else{

@@ -110,8 +110,8 @@ public:
     void draw(bool highlighted);
 protected:
     void calcGeoCenter(){
-        geoCenter.x = (*refVertex)[0];
-        geoCenter.y = (*refVertex)[1];
+        geoCenter.x = (*refVertex)[vertexIndex[0]* stride];
+        geoCenter.y = (*refVertex)[vertexIndex[0]* stride + 1];
         rotateCenter = geoCenter;
     }
 private:
@@ -219,6 +219,7 @@ public:
         type = TopoType::curve;
         this->visable = visable;
         bindEBObuffer();
+        //std::cout<<controlPoints.size()<<std::endl;
     }
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
     void draw(bool highlighted);

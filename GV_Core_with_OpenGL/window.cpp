@@ -455,11 +455,6 @@ void renderPrimitiveSelectPanel(){
         drawType = Shape::POLYGEN;
         holdonToDraw = false;
     }
-    if (ImGui::Button("Trangles")){
-        drawType = Shape::TRIANGLE;
-        holdonToDraw = false;
-    }
-    ImGui::SameLine();
     if (ImGui::Button("Rectangle")){
         drawType = Shape::RECTANGLE;
         holdonToDraw = true;
