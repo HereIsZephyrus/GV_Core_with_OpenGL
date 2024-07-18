@@ -336,7 +336,7 @@ std::string inputLayerName(){
     AlertWindowPointer& pointer = Take::holdon().alertWindow;
     bool showInputDialog = true;
     ImGui::Begin("Input Dialog", &showInputDialog, ImGuiWindowFlags_AlwaysAutoResize);
-    static char buffer[256] = {};
+    char buffer[256] = {};
     if (ImGui::InputText("Layer Name", buffer, IM_ARRAYSIZE(buffer)))
         inputString = buffer;
     if (ImGui::Button("Confirm")) {
@@ -372,8 +372,11 @@ void renderEditPanel(){
         }
     }
     else{
-        if (ImGui::Button("Finish Draw"))
+        if (ImGui::Button("Finish Draw")){
+            if (take.createLayer->itemlist.empty())
+                record.layerList.pop_back();
             take.createLayer = nullptr;
+        }
         ImGui::SameLine();
         if (ImGui::Button("Create Element"))
             record.showCreateElementWindow = true;
@@ -519,88 +522,86 @@ void renderPrimitiveSelectPanel(){
 static bool comparePrimitive(const pPrimitive& a, const pPrimitive& b) {
     return *a < *b;
 }
-void createPrimitiveList() {
-    std::vector<Item>& items = Records::getState().primitiveList;
+void drawLayerList(const std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange){
+    if (items.empty())
+        return;
     std::vector<Primitive*>& holdonObjList = Take::holdon().holdonObjList;
-    //if (items.empty())
-    //    return;
     Records& record = Records::getState();
-    bool isActive = false,toRearrange = false;
-    const bool remainList = record.pressShift;
+    for (auto item = items.begin(); item!=items.end(); item++){
+        countLayer++;
+        std::string& currentName = (*item)->name;
+        GLuint& currentLayer = (*item)->primitive->priority;
+        if (currentLayer != countLayer)
+            toRearrange = true;
+        currentLayer = countLayer;
+        const std::string layerID = std::to_string(countLayer);
+        bool isSelected = gui::focusedLayers.count(currentLayer);
+        if (isSelected && !(*item)->primitive->getHold())
+            holdonObjList.push_back((*item)->primitive);
+        (*item)->primitive->setHold(isSelected);
+        if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
+            gui::editLayer = currentLayer;
+            gui::focusedLayers.insert(currentLayer);
+            record.state = interectState::holding;
+            isSelected = true;
+            isActive = true;
+        }
+        ImGui::SameLine();
+        ImGui::Checkbox(std::string("##" + layerID).c_str(),&((*item)->primitive->visable));
+        ImGui::SameLine();
+        if (ImGui::ArrowButton(std::string("##UpArrow"+ layerID).c_str(), ImGuiDir_Up))
+            if (item != items.begin())
+                std::swap(**item,**(item-1));
+        ImGui::SameLine();
+        if (ImGui::ArrowButton(std::string("##DownArrow" + layerID).c_str(), ImGuiDir_Down))
+            if (item != items.end()-1)
+                std::swap(**item,**(item+1));
+        ImGui::SameLine();
+        if (isSelected && record.doubleCliked && !record.editingString){
+            record.editingString = true;
+            gui::editLayer = currentLayer;
+        }
+        if (record.editingString && gui::editLayer == currentLayer ){
+            std::cout<<"start editing string"<<currentLayer<<std::endl;
+            ImGui::SetNextItemWidth(-1);
+            strcpy(gui::buffer, currentName.c_str());
+            if (ImGui::InputText("##editName", gui::buffer,IM_ARRAYSIZE(gui::buffer),ImGuiInputTextFlags_EnterReturnsTrue)) {
+                record.editingString = false;
+                gui::editLayer = 0;
+            }
+            currentName = gui::buffer;
+            if (record.keyRecord[GLFW_KEY_ENTER] ||ImGui::IsItemDeactivated()) {
+                record.editingString = false;
+                gui::editLayer = 0;
+            }
+        }
+        else
+            ImGui::Text("%s",currentName.c_str());
+    }
+}
+void createPrimitiveList() {
+    const size_t itemsNum = Records::getState().primitiveList.size();
     GLuint countLayer = 0;
-    std::cout<<record.layerList.size()<<std::endl;
-    if (ImGui::BeginListBox("##", ImVec2(250,(record.layerList.size() + items.size()) * 25.0f))) {
+    Records& record = Records::getState();
+    const bool remainList = record.pressShift;
+    bool isActive = false,toRearrange = false;
+    if (ImGui::BeginListBox("##", ImVec2(250,(record.layerList.size() + itemsNum) * 25.0f))) {
         for (const auto& layer : record.layerList){
-            
             ImGui::SetNextItemOpen(true, ImGuiCond_Once);
             if (ImGui::TreeNode(layer.name.c_str())) {
-                for (const auto& item : layer.itemlist){
-                    countLayer++;
-                    ImGui::Text("%s",(item->name).c_str());
-                }
+                drawLayerList(layer.itemlist,countLayer,isActive,toRearrange);
                 ImGui::TreePop();
             }
         }
-        //for (int i = 0; i< items.size(); i++){
-        //    std::string& currentName = items[i].name;
-        //    GLuint& currentLayer = items[i].primitive->priority;
-        //    if (currentLayer != i+1)
-        //        toRearrange = true;
-        //    currentLayer = i+1;
-        //    //std::cout<<items[i].name<<"'s layer is "<<currentLayer<<std::endl;
-        //    const std::string layerID = std::to_string(currentLayer);
-        //    bool isSelected = gui::focusedLayers.count(currentLayer);
-        //    if (isSelected && !items[i].primitive->getHold())
-        //            holdonObjList.push_back(items[i].primitive);
-        //    items[i].primitive->setHold(isSelected);
-        //    if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | //ImGuiSelectableFlags_AllowItemOverlap)){
-        //        gui::editLayer = currentLayer;
-        //        gui::focusedLayers.insert(currentLayer);
-        //        record.state = interectState::holding;
-        //        isSelected = true;
-        //        isActive = true;
-        //    }
-        //    ImGui::SameLine();
-        //    ImGui::Checkbox(std::string("##" + layerID).c_str(),&items[i].primitive->visable);
-        //    ImGui::SameLine();
-        //    if (ImGui::ArrowButton(std::string("##UpArrow"+ layerID).c_str(), ImGuiDir_Up))
-        //        if (i>0)
-        //            std::swap(items[i],items[i-1]);
-        //    ImGui::SameLine();
-        //    if (ImGui::ArrowButton(std::string("##DownArrow" + layerID).c_str(), ImGuiDir_Down))
-        //        if (i<items.size()-1)
-        //            std::swap(items[i],items[i+1]);
-        //    ImGui::SameLine();
-        //    if (isSelected && record.doubleCliked && !record.editingString){
-        //        record.editingString = true;
-        //        gui::editLayer = currentLayer;
-        //    }
-        //    if (record.editingString && gui::editLayer == currentLayer ){
-        //        std::cout<<"start editing string"<<currentLayer<<std::endl;
-        //        ImGui::SetNextItemWidth(-1);
-        //        strcpy(gui::buffer, currentName.c_str());
-        //        if (ImGui::InputText("##editName", gui::buffer, IM_ARRAYSIZE(gui::buffer), //ImGuiInputTextFlags_EnterReturnsTrue)) {
-        //            record.editingString = false;
-        //            gui::editLayer = 0;
-        //        }
-        //        currentName = gui::buffer;
-        //        if (record.keyRecord[GLFW_KEY_ENTER] ||ImGui::IsItemDeactivated()) {
-        //            record.editingString = false;
-        //            gui::editLayer = 0;
-        //        }
-        //    }
-        //    else
-        //        ImGui::Text("%s",currentName.c_str());
-        //}
-        //if (!remainList && !isActive && record.pressLeft){
-        //    gui::focusedLayers.clear();
-        //    holdonObjList.clear();
-        //}
         ImGui::EndListBox();
     }
     if (toRearrange){
         std::stable_sort(pr::mainPrimitiveList.begin(),pr::mainPrimitiveList.end(),comparePrimitive);
         std::cout<<"ReArrange"<<std::endl;
+    }
+    if (!remainList && !isActive && record.pressLeft){
+        gui::focusedLayers.clear();
+        Take::holdon().holdonObjList.clear();
     }
 }
 

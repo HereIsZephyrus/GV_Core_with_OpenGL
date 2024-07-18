@@ -22,6 +22,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "primitive.hpp"
+#include "commander.hpp"
 
 inline bool HAS_INIT_OPENGL_CONTEXT = false;
 int initOpenGL(GLFWwindow *&window);
@@ -72,6 +73,7 @@ extern std::string inputString;
 void DrawGUI();
 void spiltUI();
 void createPrimitiveList();
+void drawLayerList(const std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange);
 std::string inputLayerName();
 }
 
