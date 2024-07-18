@@ -27,4 +27,5 @@ int initImGUI(GLFWwindow *window);
 int initInterect(GLFWwindow* &window);
 int initStyle();
 int initShaders();
+int initItem();
 #endif /* initialization_hpp */

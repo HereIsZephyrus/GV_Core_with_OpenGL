@@ -10,19 +10,24 @@
 #include <cstring>
 #include <string>
 #include <cmath>
-#define GLEW_STATIC
+#include <array>
 #include <cstring>
 #include <string>
 #include <cmath>
+#define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "primitive.hpp"
 
 inline bool HAS_INIT_OPENGL_CONTEXT = false;
 int initOpenGL(GLFWwindow *&window);
-// build a singleton to manage all window vars
+struct Layer{
+    int count;
+    std::string typeName;
+};
 class WindowParas{
 public:
     static WindowParas& getInstance(){
@@ -60,6 +65,7 @@ constexpr GLint top_bit_code = 0x8;
 namespace gui {
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
+extern std::array<Layer, static_cast<int>(Shape::COUNT)> itemInfo;
 void DrawGUI();
 void spiltUI();
 void createPrimitiveList();

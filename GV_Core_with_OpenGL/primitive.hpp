@@ -21,7 +21,6 @@
 typedef std::vector<GLfloat> vertexArray;
 typedef std::vector<GLuint> indexArray;
 enum class Shape{
-    NONE,
     POINTS,
     LINES,
     RECTANGLE,
@@ -29,7 +28,9 @@ enum class Shape{
     LOOP,
     POLYGEN,
     CURVE,
-    MARKER
+    MARKER,
+    COUNT,
+    NONE,
 };
 struct primitiveIdentifier{
     GLuint VAO,VBO;

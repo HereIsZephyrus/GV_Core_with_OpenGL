@@ -178,6 +178,7 @@ void drawScaleText(){
 namespace gui {
 unsigned int panelStackNum = 0;
 float menuBarHeight;
+std::array<Layer, static_cast<int>(Shape::COUNT)> itemInfo;
 }
 
 namespace gui{
@@ -475,40 +476,20 @@ void renderPrimitiveSelectPanel(){
 }
 void createPrimitiveList() {
     std::vector<item >& items = Records::getState().primitiveList;
-    for (int i = 0; i < items.size(); i++) {
-        int currentIndex = i;
-        items[i].first->layer = i+1;
-        bool isHovered = ImGui::IsItemHovered();
-        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-            ImGui::SetDragDropPayload("TEXT_LIST_ITEM", &currentIndex, sizeof(int));
-            if (isHovered) {
-                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
+    //int selected_item = 0;
+    if (items.empty())
+        return;
+    if (ImGui::BeginListBox("##", ImVec2(250, items.size() * 20))) {
+        for (auto it = items.begin(); it != items.end(); it++){
+            std::string& currentName = it->second;
+            bool is_selected = false; // 检查是否被选中
+            if (ImGui::Selectable(currentName.c_str(), is_selected)){
+                //selected_item = i;
             }
-            ImGui::Text("%s", items[currentIndex].second.c_str());
-            if (isHovered) {
-                ImGui::PopStyleColor(2);
-            }
-            ImGui::EndDragDropSource();
+            if (is_selected)
+                ImGui::SetItemDefaultFocus();
         }
-        if (isHovered) {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
-        }
-        ImGui::TextUnformatted(items[currentIndex].second.c_str());
-        if (isHovered) {
-            ImGui::PopStyleColor(2);
-        }
-        if (ImGui::BeginDragDropTarget()) {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXT_LIST_ITEM")) {
-                int sourceIndex = *(const int*)payload->Data;
-                std::swap(items[currentIndex], items[sourceIndex]);
-            }
-            ImGui::EndDragDropTarget();
-            std::sort(pr::mainPrimitiveList.begin(),pr::mainPrimitiveList.end());
-        }
-
-        ImGui::Separator();
+        ImGui::EndListBox();
     }
 }
 

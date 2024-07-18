@@ -315,7 +315,8 @@ void generateNewPrimitive(){
         Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
         createTopoElements(lastpPrimitive);
         //std::cout<<lastpPrimitive->getVertexNum()<<std::endl;
-        record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
+        generateNewPrimitiveList(take.drawType,lastpPrimitive);
+        //record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
     }
     else{
         take.clipShape =std::move(newPrimitive);
@@ -358,4 +359,9 @@ void generatePreviewPrimitive(const vertexArray& tempVertices){
     else
         previewPrimitive -> bindShader(rd::namedShader["previewfillShader"].get());
     pr::previewPrimitive = std::move(previewPrimitive);
+}
+void generateNewPrimitiveList(Shape shape,Primitive* primitive){
+    const int id = static_cast<int>(shape);
+    gui::itemInfo[id].count++;
+    Records::getState().primitiveList.emplace_back(std::make_pair(primitive, gui::itemInfo[id].typeName + std::to_string(gui::itemInfo[id].count)));
 }

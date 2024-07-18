@@ -4,8 +4,9 @@
 //
 //  Created by ChanningTong on 7/14/24.
 //
-
+#include <cstring>
 #include "initialization.hpp"
+#include "window.hpp"
 
 int initImGUI(GLFWwindow *window) {
     IMGUI_CHECKVERSION();
@@ -66,7 +67,7 @@ int initStyle(){
     checkStyleBoundary();
     windowPara.backgroundColor = {0.1f, 0.1f, 0.1f, 1.0f};
     initShaders();
-    
+    initItem();
     coord::generateCoordinateAxis();
     return 0;
 }
@@ -107,5 +108,13 @@ int initShaders(){
     previewCircleShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
     previewCircleShader->linkProgram();
     rd::namedShader["previewCircleShader"] = std::move(previewCircleShader);
+    return 0;
+}
+int initItem(){
+    const std::string typeNames[]= {"point","line","rectangle","circle","polygen","polygen","curve","logo"};
+    for (int i = 0; i<static_cast<int>(Shape::COUNT); i++){
+        gui::itemInfo[i].count = 0;
+        gui::itemInfo[i].typeName = typeNames[i];
+    }
     return 0;
 }
