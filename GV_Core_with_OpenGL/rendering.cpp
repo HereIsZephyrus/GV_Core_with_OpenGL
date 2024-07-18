@@ -84,4 +84,5 @@ void ShaderStyle::initStyle(){
     pointsize = 5.0f;
     headType = LineHeadType::cube;
     lineType = LineType::fill;
+    toFill = true;
 }

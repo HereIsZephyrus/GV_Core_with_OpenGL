@@ -485,6 +485,7 @@ static bool comparePrimitive(const pPrimitive& a, const pPrimitive& b) {
 }
 void createPrimitiveList() {
     std::vector<item >& items = Records::getState().primitiveList;
+    std::vector<Primitive*>& holdonObjList = Take::holdon().holdonObjList;
     if (items.empty())
         return;
     Records& record = Records::getState();
@@ -500,9 +501,13 @@ void createPrimitiveList() {
             //std::cout<<items[i].name<<"'s layer is "<<currentLayer<<std::endl;
             const std::string layerID = std::to_string(currentLayer);
             bool isSelected = gui::focusedLayers.count(currentLayer);
+            if (isSelected && !items[i].primitive->getHold())
+                    holdonObjList.push_back(items[i].primitive);
+            items[i].primitive->setHold(isSelected);
             if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)){
                 gui::editLayer = currentLayer;
                 gui::focusedLayers.insert(currentLayer);
+                record.state = interectState::holding;
                 isSelected = true;
                 isActive = true;
             }
@@ -538,8 +543,10 @@ void createPrimitiveList() {
             else
                 ImGui::Text("%s",currentName.c_str());
         }
-        if (!remainList && !isActive && record.pressLeft)
+        if (!remainList && !isActive && record.pressLeft){
             gui::focusedLayers.clear();
+            holdonObjList.clear();
+        }
         ImGui::EndListBox();
     }
     if (toRearrange){
