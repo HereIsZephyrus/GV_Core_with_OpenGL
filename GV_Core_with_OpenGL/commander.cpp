@@ -64,7 +64,7 @@ void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
     //tackle ondraw behavior
     GLdouble cursorX, cursorY;
     glfwGetCursorPos(window, &cursorX, &cursorY);
-    if (Take::holdon().drawType == Shape::MARKER){
+    if (Take::holdon().drawType == Shape::MARKER && WindowParas::getInstance().mainWindowFocused){
         WindowParas& windowPara = WindowParas::getInstance();
         const GLfloat pointSize = ShaderStyle::getStyle().pointsize;
         const glm::vec3 position = glm::vec3(

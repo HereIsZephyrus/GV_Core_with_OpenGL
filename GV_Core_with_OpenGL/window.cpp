@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstring>
 #include <string>
+#include <algorithm>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -484,22 +485,34 @@ void createPrimitiveList() {
     if (items.empty())
         return;
     Records& record = Records::getState();
-    bool isActive = false;
+    bool isActive = false,toRearrange = false;
     const bool remainList = record.pressShift;
     if (ImGui::BeginListBox("##", ImVec2(250, items.size() * 25.0f))) {
         for (int i = 0; i< items.size(); i++){
             std::string& currentName = items[i].name;
             GLuint& currentLayer = items[i].primitive->layer;
+            if (currentLayer != i+1)
+                toRearrange = true;
+            currentLayer = i+1;
+            //std::cout<<items[i].name<<"'s layer is "<<currentLayer<<std::endl;
+            const std::string layerID = std::to_string(currentLayer);
             bool isSelected = gui::focusedLayers.count(currentLayer);
-            if (ImGui::Selectable(std::to_string(currentLayer).c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)){
+            if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)){
                 gui::editLayer = currentLayer;
                 gui::focusedLayers.insert(currentLayer);
-                //std::cout<<"selected layer:"<<currentLayer<<std::endl;
                 isSelected = true;
                 isActive = true;
             }
             ImGui::SameLine();
-            ImGui::Checkbox(std::string("##" + std::to_string(currentLayer)).c_str(),&items[i].primitive->visable);
+            ImGui::Checkbox(std::string("##" + layerID).c_str(),&items[i].primitive->visable);
+            ImGui::SameLine();
+            if (ImGui::ArrowButton(std::string("##UpArrow"+ layerID).c_str(), ImGuiDir_Up))
+                if (i>0)
+                    std::swap(items[i],items[i-1]);
+            ImGui::SameLine();
+            if (ImGui::ArrowButton(std::string("##DownArrow" + layerID).c_str(), ImGuiDir_Down))
+                if (i<items.size()-1)
+                    std::swap(items[i],items[i+1]);
             ImGui::SameLine();
             if (isSelected && record.doubleCliked && !record.editingString){
                 record.editingString = true;
@@ -525,6 +538,10 @@ void createPrimitiveList() {
         if (!remainList && !isActive && record.pressLeft)
             gui::focusedLayers.clear();
         ImGui::EndListBox();
+    }
+    if (toRearrange){
+        std::stable_sort(pr::mainPrimitiveList.begin(),pr::mainPrimitiveList.end());
+        std::cout<<"ReArrange"<<std::endl;
     }
 }
 
