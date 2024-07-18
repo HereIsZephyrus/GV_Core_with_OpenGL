@@ -480,6 +480,9 @@ namespace gui{
     std::set<GLuint> focusedLayers;
     GLuint editLayer = 0;
 }
+static bool comparePrimitive(const pPrimitive& a, const pPrimitive& b) {
+    return *a < *b;
+}
 void createPrimitiveList() {
     std::vector<item >& items = Records::getState().primitiveList;
     if (items.empty())
@@ -540,7 +543,7 @@ void createPrimitiveList() {
         ImGui::EndListBox();
     }
     if (toRearrange){
-        std::stable_sort(pr::mainPrimitiveList.begin(),pr::mainPrimitiveList.end());
+        std::stable_sort(pr::mainPrimitiveList.begin(),pr::mainPrimitiveList.end(),comparePrimitive);
         std::cout<<"ReArrange"<<std::endl;
     }
 }
