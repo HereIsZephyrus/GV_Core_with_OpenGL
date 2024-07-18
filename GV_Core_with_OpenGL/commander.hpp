@@ -34,8 +34,8 @@ public:
     void operator = (const Records&) = delete;
     GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt,doubleCliked;
     bool dragingMode,drawingPrimitive,cliping,draging;
-    bool showCreateElementWindow;
-    bool showAxis;
+    bool showCreateElementWindow,showAxis;
+    bool editingString;
     interectState state;
     void initIObuffer();
     GLfloat previewXpos,previewYpos;

@@ -80,6 +80,7 @@ public:
     vertexArray vertices;//,transfered;
     std::vector<pElement> elementList;
     GLuint layer;
+    bool visable;
     bool operator < (const Primitive& x) const{
         return layer<x.layer;
     }

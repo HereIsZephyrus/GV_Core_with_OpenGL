@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstring>
 #include <string>
+#include <set>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -474,20 +475,55 @@ void renderPrimitiveSelectPanel(){
         record.showCreateElementWindow = false;
     ImGui::End();
 }
+namespace gui{
+    static char buffer[256];
+    std::set<int> focusedLayers;
+}
 void createPrimitiveList() {
     std::vector<item >& items = Records::getState().primitiveList;
     //int selected_item = 0;
     if (items.empty())
         return;
-    if (ImGui::BeginListBox("##", ImVec2(250, items.size() * 20))) {
-        for (auto it = items.begin(); it != items.end(); it++){
-            std::string& currentName = it->second;
-            bool is_selected = false; // 检查是否被选中
-            if (ImGui::Selectable(currentName.c_str(), is_selected)){
-                //selected_item = i;
+    Records& record = Records::getState();
+    const bool remainList = record.pressShift;
+    if (ImGui::BeginListBox("##", ImVec2(250, items.size() * 25.0f))) {
+        for (int i = 0; i< items.size(); i++){
+            std::string& currentName = items[i].second;
+            GLuint& currentLayer = items[i].first->layer;
+            if (!remainList)
+                gui::focusedLayers.clear();
+            bool isSelected = gui::focusedLayers.count(currentLayer);
+            if (ImGui::Selectable("##Selectable", &isSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)){
+                // Selectable 被点击时的处理逻辑
+                gui::focusedLayers.insert(currentLayer);
             }
-            if (is_selected)
-                ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+            ImGui::Checkbox("##",&items[i].first->visable);
+            ImGui::SameLine();
+            if (isSelected && record.doubleCliked){
+                std::cout<<"start editing string"<<std::endl;
+                record.editingString = true;
+            }
+            if (record.editingString ){
+                ImGui::SetNextItemWidth(-1);
+                strcpy(gui::buffer, currentName.c_str());
+                if (record.keyRecord[GLFW_KEY_ENTER])
+                    record.editingString = false;
+                if (ImGui::InputText("##edit_text", gui::buffer, IM_ARRAYSIZE(gui::buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                    record.editingString = false;
+                }
+                currentName = gui::buffer;
+                if (ImGui::IsItemDeactivated()) {
+                    record.editingString = false;
+                }
+            }
+            else
+                ImGui::Text("%s",currentName.c_str());
+            if (isSelected){
+                //ImGui::SetItemDefaultFocus();
+                std::cout<<currentLayer<<std::endl;
+                //focus primitive
+            }
         }
         ImGui::EndListBox();
     }

@@ -20,6 +20,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     this->vertices = vertices;
     this->elementList.clear();
     this->holding = false;
+    this->visable = true;
     this->transMat = glm::mat4(1.0f);
     Records& record = Records::getState();
     this->layer = static_cast<GLuint>(record.primitiveList.size())+1;

@@ -26,7 +26,8 @@ void Records::initIObuffer(){
     doubleCliked = GL_FALSE;
     dragingMode = GL_FALSE;
     drawingPrimitive = GL_FALSE;
-    showAxis = GL_TRUE;
+    showAxis = true;
+    editingString = false;
     cliping = GL_FALSE;
     draging = GL_FALSE;
     state = interectState::toselect;
@@ -312,6 +313,8 @@ bool primitiveSelectDetect(Primitive* primitive){
 
 void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods){
     Records& record = Records::getState();
+    if (record.editingString)
+        return;
     if (action == GLFW_PRESS){
         //std::cout<<"press "<<key<<std::endl;
         record.keyRecord[key] = GL_TRUE;
@@ -434,7 +437,7 @@ void doubleClickDetected(GLFWwindow* window, int button, int action, int mods){
     const float doubleClikBias = 0.2;
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
             GLdouble currentTime = glfwGetTime();
-            if (currentTime - lastClickTime < doubleClikBias) 
+            if (currentTime - lastClickTime < doubleClikBias)
                 doubleClickState = GL_TRUE;
             else
                 doubleClickState = GL_FALSE;
