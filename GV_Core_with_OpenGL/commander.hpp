@@ -63,11 +63,7 @@ public:
 private:
     Take(){}
 };
-void addPoint(vertexArray& array,const GLdouble cursorX, const GLdouble cursorY);
-void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY);
-void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY);
-void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY);
-void toAlignment(vertexArray& array,Shape shape);
+
 void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);
@@ -81,6 +77,13 @@ void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorFocusCallback(GLFWwindow* window, int entered);
 void windowPosCallback(GLFWwindow* window, int xpos, int ypos);
 void windowSizeCallback(GLFWwindow* window, int width, int height);
+void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods);
+void mouseModsToggle(GLFWwindow* window, int button, int action, int mods);
+void cursorDragingDetect(GLFWwindow* window, double xpos, double ypos);
+void drawModsToggle(GLFWwindow* window, int button, int action, int mods);
+void viewScroll(GLFWwindow* window, double xoffset, double yoffset);
+void processCursorTrace(GLFWwindow* window,double xpos, double ypos);
+bool primitiveSelectDetect(Primitive* primitive);
 
 int releaseResources(GLFWwindow* &window);
 int InterectResponseCheck(GLFWwindow* &window);

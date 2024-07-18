@@ -20,6 +20,7 @@
 #include "primitive.hpp"
 #include "rendering.hpp"
 #include "commander.hpp"
+#include "factor.hpp"
 typedef std::shared_ptr<vertexArray> pVertexArray;
 void createTopoElements(Primitive* lastpPrimitive);
 void updateTopoElements(Primitive* lastpPrimitive);
