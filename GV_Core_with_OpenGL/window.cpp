@@ -481,35 +481,35 @@ namespace gui{
 }
 void createPrimitiveList() {
     std::vector<item >& items = Records::getState().primitiveList;
-    //int selected_item = 0;
     if (items.empty())
         return;
     Records& record = Records::getState();
-    const bool remainList = record.pressShift || (!record.pressLeft && gui::focusedLayers.size()>1);
+    bool isActive = false;
+    const bool remainList = record.pressShift;
     if (ImGui::BeginListBox("##", ImVec2(250, items.size() * 25.0f))) {
         for (int i = 0; i< items.size(); i++){
             std::string& currentName = items[i].name;
             GLuint& currentLayer = items[i].primitive->layer;
-            if (!remainList)
-                gui::focusedLayers.clear();
-            gui::focusedLayers.insert(gui::editLayer);
             bool isSelected = gui::focusedLayers.count(currentLayer);
             if (ImGui::Selectable(std::to_string(currentLayer).c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)){
                 gui::editLayer = currentLayer;
                 gui::focusedLayers.insert(currentLayer);
+                //std::cout<<"selected layer:"<<currentLayer<<std::endl;
+                isSelected = true;
+                isActive = true;
             }
             ImGui::SameLine();
             ImGui::Checkbox(std::string("##" + std::to_string(currentLayer)).c_str(),&items[i].primitive->visable);
             ImGui::SameLine();
             if (isSelected && record.doubleCliked && !record.editingString){
-                std::cout<<"start editing string"<<std::endl;
                 record.editingString = true;
                 gui::editLayer = currentLayer;
             }
             if (record.editingString && gui::editLayer == currentLayer ){
+                std::cout<<"start editing string"<<currentLayer<<std::endl;
                 ImGui::SetNextItemWidth(-1);
                 strcpy(gui::buffer, currentName.c_str());
-                if (ImGui::InputText("##edit_text", gui::buffer, IM_ARRAYSIZE(gui::buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                if (ImGui::InputText("##editName", gui::buffer, IM_ARRAYSIZE(gui::buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
                     record.editingString = false;
                     gui::editLayer = 0;
                 }
@@ -522,6 +522,8 @@ void createPrimitiveList() {
             else
                 ImGui::Text("%s",currentName.c_str());
         }
+        if (!remainList && !isActive && record.pressLeft)
+            gui::focusedLayers.clear();
         ImGui::EndListBox();
     }
 }
