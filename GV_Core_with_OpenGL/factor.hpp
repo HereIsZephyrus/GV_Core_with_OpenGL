@@ -8,24 +8,24 @@
 #ifndef factor_hpp
 #define factor_hpp
 #include <memory>
+#include <vector>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <vector>
-#include "primitive.hpp"
-#include "rendering.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "primitive.hpp"
+#include "rendering.hpp"
+#include "window.hpp"
 
-void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods);
-void mouseModsToggle(GLFWwindow* window, int button, int action, int mods);
-void cursorDragingDetect(GLFWwindow* window, double xpos, double ypos);
-void drawModsToggle(GLFWwindow* window, int button, int action, int mods);
+void addPoint(vertexArray& array,const GLdouble cursorX, const GLdouble cursorY);
+void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY);
+void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY);
+void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY);
+void toAlignment(vertexArray& array,Shape shape);
 void editPrimitive();
-void viewScroll(GLFWwindow* window, double xoffset, double yoffset);
-void processCursorTrace(GLFWwindow* window,double xpos, double ypos);
-bool primitiveSelectDetect(Primitive* primitive);
 void generateNewPrimitive();
 void generatePreviewPrimitive(const vertexArray&);
+void generateNewPrimitiveList(Shape shape,Primitive* primitive);
 #endif /* factor_hpp */

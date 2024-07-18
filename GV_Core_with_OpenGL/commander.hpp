@@ -23,7 +23,16 @@ enum class interectState{
     holding,//binded to the object
     editing,//edit primitive
 };
-typedef std::pair<Primitive*, std::string> item;
+struct item{
+    Primitive* primitive;
+    std::string name;
+    bool isSelected;
+    item(Primitive* primitive, std::string name){
+        this->primitive = primitive;
+        this->name = name;
+        isSelected = false;
+    }
+};
 class Records{
 public:
     static Records& getState(){
@@ -32,10 +41,10 @@ public:
     }
     Records(const Records&) = delete;
     void operator = (const Records&) = delete;
-    GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt;
+    GLboolean keyRecord[GLFW_KEY_LAST+1],pressLeft,pressRight,pressCtrl,pressShift,pressAlt,doubleCliked;
     bool dragingMode,drawingPrimitive,cliping,draging;
-    bool showCreateElementWindow;
-    bool showAxis;
+    bool showCreateElementWindow,showAxis;
+    bool editingString;
     interectState state;
     void initIObuffer();
     GLfloat previewXpos,previewYpos;
@@ -63,11 +72,7 @@ public:
 private:
     Take(){}
 };
-void addPoint(vertexArray& array,const GLdouble cursorX, const GLdouble cursorY);
-void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY);
-void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY);
-void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY);
-void toAlignment(vertexArray& array,Shape shape);
+
 void MeauCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods);
@@ -81,6 +86,14 @@ void cursorSelectCallback(GLFWwindow* window, double xpos, double ypos);
 void cursorFocusCallback(GLFWwindow* window, int entered);
 void windowPosCallback(GLFWwindow* window, int xpos, int ypos);
 void windowSizeCallback(GLFWwindow* window, int width, int height);
+void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods);
+void mouseModsToggle(GLFWwindow* window, int button, int action, int mods);
+void cursorDragingDetect(GLFWwindow* window, double xpos, double ypos);
+void drawModsToggle(GLFWwindow* window, int button, int action, int mods);
+void viewScroll(GLFWwindow* window, double xoffset, double yoffset);
+void processCursorTrace(GLFWwindow* window,double xpos, double ypos);
+void doubleClickDetected(GLFWwindow* window, int button, int action, int mods);
+bool primitiveSelectDetect(Primitive* primitive);
 
 int releaseResources(GLFWwindow* &window);
 int InterectResponseCheck(GLFWwindow* &window);

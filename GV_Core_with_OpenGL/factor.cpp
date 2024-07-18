@@ -13,131 +13,49 @@
 #include "factor.hpp"
 #include "objectmodel.hpp"
 
-void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods){
-    Records& record = Records::getState();
-    if (action == GLFW_PRESS){
-        //std::cout<<"press "<<key<<std::endl;
-        record.keyRecord[key] = GL_TRUE;
-        if (record.keyRecord[GLFW_KEY_LEFT_CONTROL] || record.keyRecord[GLFW_KEY_RIGHT_CONTROL]) record.pressCtrl = GL_TRUE;
-        if (record.keyRecord[GLFW_KEY_LEFT_SHIFT] || record.keyRecord[GLFW_KEY_RIGHT_SHIFT])  record.pressShift = GL_TRUE;
-        if (record.keyRecord[GLFW_KEY_LEFT_ALT] || record.keyRecord[GLFW_KEY_RIGHT_ALT])    record.pressAlt = GL_TRUE;
-        
-    }
-    if (action == GLFW_RELEASE){
-        //std::cout<<"release "<<key<<std::endl;
-        record.keyRecord[key] = GL_FALSE;
-        if (!record.keyRecord[GLFW_KEY_LEFT_CONTROL] && !record.keyRecord[GLFW_KEY_RIGHT_CONTROL]) record.pressCtrl = GL_FALSE;
-        if (!record.keyRecord[GLFW_KEY_LEFT_SHIFT] && !record.keyRecord[GLFW_KEY_RIGHT_SHIFT])  record.pressShift = GL_FALSE;
-        if (!record.keyRecord[GLFW_KEY_LEFT_ALT] && !record.keyRecord[GLFW_KEY_RIGHT_ALT])    record.pressAlt = GL_FALSE;
-    }
-}
-void mouseModsToggle(GLFWwindow* window, int button, int action, int mods){
-    Records& record = Records::getState();
-    if (action == GLFW_PRESS){
-        if (button == GLFW_MOUSE_BUTTON_LEFT)
-            record.pressLeft = GL_TRUE;
-        if (button == GLFW_MOUSE_BUTTON_RIGHT)
-            record.pressRight = GL_TRUE;
-    }
-    if (action == GLFW_RELEASE){
-        if (button == GLFW_MOUSE_BUTTON_LEFT)
-            record.pressLeft = GL_FALSE;
-        if (button == GLFW_MOUSE_BUTTON_RIGHT)
-            record.pressRight = GL_FALSE;
-    }
-}
-void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
-    Camera2D::getView().processScroll(window, xoffset, yoffset, Records::getState().pressCtrl, Records::getState().pressAlt);
-    coord::generateCoordinateAxis();
-}
-static bool startDrawCheck(GLFWwindow* window, int button, int action, int mods){
-    Records& record = Records::getState();
-    if (!WindowParas::getInstance().mainWindowFocused)  return false; // the start points must in the window range
-    if (action != GLFW_PRESS || !record.pressLeft) return false; // check left click
-    if ( record.state != interectState::drawing || Take::holdon().drawType == Shape::NONE ) return false; //check ready to start
-    return !record.drawingPrimitive; //check aleady started
-}
-static bool finishDrawCheck(GLFWwindow* window, int button, int action, int mods){
-    Records& record = Records::getState();
-    if (!record.drawingPrimitive) return false; //check under drawing
-    if (action == GLFW_PRESS){//click right to stop
-        if (button == GLFW_MOUSE_BUTTON_RIGHT && !Take::holdon().holdonToDraw)
-            return true;
-        return false;
-    }
-    else if (action == GLFW_RELEASE){//release left to stop
-        if (button == GLFW_MOUSE_BUTTON_LEFT && Take::holdon().holdonToDraw)
-            return true;
-        return false;
-    }
-    return false;
-}
-void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
-    Take& take = Take::holdon();
-    if (startDrawCheck(window, button, action, mods)){
-        Records::getState().drawingPrimitive = true;
-        std::cout<<"start draw"<<std::endl;
-        take.drawingVertices.clear();
-        GLdouble cursorX, cursorY;
-        glfwGetCursorPos(window, &cursorX, &cursorY);
-        //generate the first point to the new primitive
-        if (take.holdonToDraw)
-            addPoint(take.drawingVertices,cursorX,cursorY);
-    }
-    if (finishDrawCheck(window,button,action,mods)){
-        Records& record = Records::getState();
-        record.drawingPrimitive = false;
-        //finish the primitive
-        if (take.holdonToDraw){
-            GLdouble cursorX, cursorY;
-            glfwGetCursorPos(window, &cursorX, &cursorY);
-            addPoint(take.drawingVertices,cursorX,cursorY);
-            if (record.pressCtrl)
-                toAlignment(take.drawingVertices,take.drawType);
-        }
-        std::cout<<"finish draw"<<std::endl;
-        // push the primitive into the formal primitive render queue
-        generateNewPrimitive();
-        take.drawType = Shape::NONE;
-    }
-}
-void cursorDragingDetect(GLFWwindow* window,double xpos, double ypos){
-    Records& record = Records::getState();
-    WindowParas& windowPara = WindowParas::getInstance();
-    if (record.draging){
-        const GLfloat cursorX =windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
-        const GLfloat cursorY =windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
-        const GLfloat dX = (record.previewXpos - cursorX);
-        const GLfloat dY = (record.previewYpos - cursorY);
-        Camera2D::getView().setDeltaPosition(record.previewPosition,dX,dY);
-    }
-}
 
-static Shape mapPreviewStyle(Shape drawType){
-    if (drawType == Shape::POLYGEN || drawType ==Shape::TRIANGLE)
-        return Shape::LOOP;
-    if (drawType == Shape::CURVE)
-        return Shape::POINTS;
-    if (drawType == Shape::MARKER)
-        return Shape::POINTS;
-    return drawType;
+void addPoint(vertexArray& array,const GLdouble cursorX,const GLdouble cursorY){
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat normalX = windowPara.screen2normalX(cursorX);
+    const GLfloat normalY = windowPara.screen2normalY(cursorY);
+    const GLfloat x = windowPara.normal2orthoX(normalX);
+    const GLfloat y = windowPara.normal2orthoY(normalY);
+    array.push_back(x);
+    array.push_back(y);
+    array.push_back(0.0f); // flat draw
+    //std::cout<<"add control point"<<std::endl;
 }
-void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
-    Take& take = Take::holdon();
-    if (Records::getState().drawingPrimitive && take.drawType != Shape::MARKER){//generate preview
-        //take the last point
-        //WindowParas& windowPara = WindowParas::getInstance();
-        vertexArray tempVertices;
-       
-            tempVertices = take.drawingVertices;
-        addPoint(tempVertices,xpos,ypos);
-        if (Records::getState().pressCtrl)
-            toAlignment(tempVertices,take.drawType);
-        generatePreviewPrimitive(tempVertices);
+void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY){
+    array.push_back(orthoX);
+    array.push_back(orthoY);
+    array.push_back(0.0f); // flat draw
+}
+void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY){
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat normalY = windowPara.screen2normalY(cursorY);
+    const GLfloat y = windowPara.normal2orthoY(normalY);
+    array.push_back(orthoX);
+    array.push_back(y);
+    array.push_back(0.0f); // flat draw
+}
+void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY){
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat normalX = windowPara.screen2normalX(cursorX);
+    const GLfloat x = windowPara.normal2orthoX(normalX);
+    array.push_back(x);
+    array.push_back(orthoY);
+    array.push_back(0.0f); // flat draw
+}
+void toAlignment(vertexArray& array,Shape shape){
+    const GLsizei stride = 3;
+    if (shape == Shape::RECTANGLE || shape == Shape::CIRCLE){
+        const GLfloat dx = array[stride] - array[0];
+        const bool isNegtive = (array[stride + 1] - array[1]) < 0;
+        GLfloat dy = dx ;
+        if (isNegtive)   dy = -dy;
+        if (dx < 0)         dy = -dy;
+        array[stride+1] = array[1] + dy;
     }
-    else
-        pr::previewPrimitive = nullptr;
-    return;
 }
 void editPrimitive(){
     Take& take = Take::holdon();
@@ -324,9 +242,8 @@ void generateNewPrimitive(){
     Take& take = Take::holdon();
     Records& record = Records::getState();
     ShaderStyle& style = ShaderStyle::getStyle();
-    if (take.drawType == Shape::MARKER){
+    if (take.drawType == Shape::MARKER)
         return;
-    }
     pPrimitive newPrimitive (new Primitive(take.drawingVertices, take.drawType, 3));
     pShader newShader(new Shader());
     switch (take.drawType) {
@@ -379,6 +296,12 @@ void generateNewPrimitive(){
                 newShader->attchShader(rd::filePath("circleLine.gs"), GL_GEOMETRY_SHADER);
             newShader->attchShader(rd::filePath("fillColor.frag"), GL_FRAGMENT_SHADER);
             break;
+        case Shape::CURVE:
+            newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
+            if (!style.toFill)
+                newShader->attchShader(rd::filePath("bezierCurve.gs"), GL_GEOMETRY_SHADER);
+            newShader->attchShader(rd::filePath("fillColor.frag"), GL_FRAGMENT_SHADER);
+            break;
         default:
             newShader->attchShader(rd::filePath("singleVertices.vs"),GL_VERTEX_SHADER);
             newShader->attchShader(rd::filePath("fillColor.frag"), GL_FRAGMENT_SHADER);
@@ -391,13 +314,25 @@ void generateNewPrimitive(){
         pr::mainPrimitiveList.push_back(std::move(newPrimitive));
         Primitive* lastpPrimitive = pr::mainPrimitiveList.back().get();
         createTopoElements(lastpPrimitive);
-        record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
+        //std::cout<<lastpPrimitive->getVertexNum()<<std::endl;
+        generateNewPrimitiveList(take.drawType,lastpPrimitive);
+        //record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
     }
     else{
         take.clipShape =std::move(newPrimitive);
         clipByShape();
         take.clipShape = nullptr;
     }
+}
+
+static Shape mapPreviewStyle(Shape drawType){
+    if (drawType == Shape::POLYGEN)
+        return Shape::LOOP;
+    if (drawType == Shape::CURVE)
+        return Shape::POINTS;
+    if (drawType == Shape::MARKER)
+        return Shape::POINTS;
+    return drawType;
 }
 void generatePreviewPrimitive(const vertexArray& tempVertices){
     Take& take = Take::holdon();
@@ -424,4 +359,10 @@ void generatePreviewPrimitive(const vertexArray& tempVertices){
     else
         previewPrimitive -> bindShader(rd::namedShader["previewfillShader"].get());
     pr::previewPrimitive = std::move(previewPrimitive);
+}
+void generateNewPrimitiveList(Shape shape,Primitive* primitive){
+    const int id = static_cast<int>(shape);
+    gui::itemInfo[id].count++;
+    primitive->layer = static_cast<GLuint>(Records::getState().primitiveList.size())+1;
+    Records::getState().primitiveList.emplace_back(item(primitive, gui::itemInfo[id].typeName + std::to_string(gui::itemInfo[id].count)));
 }

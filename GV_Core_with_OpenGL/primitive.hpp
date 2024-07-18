@@ -21,16 +21,16 @@
 typedef std::vector<GLfloat> vertexArray;
 typedef std::vector<GLuint> indexArray;
 enum class Shape{
-    NONE,
     POINTS,
     LINES,
-    TRIANGLE,
     RECTANGLE,
     CIRCLE,
     LOOP,
     POLYGEN,
     CURVE,
-    MARKER
+    MARKER,
+    COUNT,
+    NONE,
 };
 struct primitiveIdentifier{
     GLuint VAO,VBO;
@@ -80,6 +80,7 @@ public:
     vertexArray vertices;//,transfered;
     std::vector<pElement> elementList;
     GLuint layer;
+    bool visable;
     bool operator < (const Primitive& x) const{
         return layer<x.layer;
     }

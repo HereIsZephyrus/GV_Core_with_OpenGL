@@ -20,9 +20,8 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     this->vertices = vertices;
     this->elementList.clear();
     this->holding = false;
+    this->visable = true;
     this->transMat = glm::mat4(1.0f);
-    Records& record = Records::getState();
-    this->layer = static_cast<GLuint>(record.primitiveList.size())+1;
     const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
     this->color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
     ShaderStyle& style = ShaderStyle::getStyle();
@@ -35,10 +34,6 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
         }
         case Shape::LINES:{
             this->shape = GL_LINES;
-            break;
-        }
-        case Shape::TRIANGLE:{
-            this->shape = GL_TRIANGLES;
             break;
         }
         case Shape::RECTANGLE:{
@@ -61,8 +56,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
             break;;
         }
         case Shape::CURVE:{
-            this->shape = GL_LINE_STRIP;
-            generateCurve();
+            this->shape = GL_POINTS;
             break;
         }
         default:{

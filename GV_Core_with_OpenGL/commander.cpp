@@ -23,58 +23,17 @@ void Records::initIObuffer(){
     pressAlt = GL_FALSE;
     pressShift = GL_FALSE;
     pressCtrl = GL_FALSE;
+    doubleCliked = GL_FALSE;
     dragingMode = GL_FALSE;
     drawingPrimitive = GL_FALSE;
-    showAxis = GL_TRUE;
+    showAxis = true;
+    editingString = false;
     cliping = GL_FALSE;
     draging = GL_FALSE;
     state = interectState::toselect;
     primitiveList.clear();
 }
 
-void addPoint(vertexArray& array,const GLdouble cursorX,const GLdouble cursorY){
-    WindowParas& windowPara = WindowParas::getInstance();
-    const GLfloat normalX = windowPara.screen2normalX(cursorX);
-    const GLfloat normalY = windowPara.screen2normalY(cursorY);
-    const GLfloat x = windowPara.normal2orthoX(normalX);
-    const GLfloat y = windowPara.normal2orthoY(normalY);
-    array.push_back(x);
-    array.push_back(y);
-    array.push_back(0.0f); // flat draw
-    //std::cout<<"add control point"<<std::endl;
-}
-void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY){
-    array.push_back(orthoX);
-    array.push_back(orthoY);
-    array.push_back(0.0f); // flat draw
-}
-void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY){
-    WindowParas& windowPara = WindowParas::getInstance();
-    const GLfloat normalY = windowPara.screen2normalY(cursorY);
-    const GLfloat y = windowPara.normal2orthoY(normalY);
-    array.push_back(orthoX);
-    array.push_back(y);
-    array.push_back(0.0f); // flat draw
-}
-void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY){
-    WindowParas& windowPara = WindowParas::getInstance();
-    const GLfloat normalX = windowPara.screen2normalX(cursorX);
-    const GLfloat x = windowPara.normal2orthoX(normalX);
-    array.push_back(x);
-    array.push_back(orthoY);
-    array.push_back(0.0f); // flat draw
-}
-void toAlignment(vertexArray& array,Shape shape){
-    const GLsizei stride = 3;
-    if (shape == Shape::RECTANGLE || shape == Shape::CIRCLE){
-        const GLfloat dx = array[stride] - array[0];
-        const bool isNegtive = (array[stride + 1] - array[1]) < 0;
-        GLfloat dy = dx ;
-        if (isNegtive)   dy = -dy;
-        if (dx < 0)         dy = -dy;
-        array[stride+1] = array[1] + dy;
-    }
-}
 void keyBasicCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     MeauCallback(window, key, scancode, action, mods);
@@ -101,32 +60,33 @@ void mouseDrawCallback(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     mouseModsToggle(window, button, action, mods);
     drawModsToggle(window, button, action, mods);
+    doubleClickDetected(window, button, action, mods);
     //tackle ondraw behavior
-    Records& record = Records::getState();
-    if (!Take::holdon().holdonToDraw && action == GLFW_PRESS && record.drawingPrimitive && record.pressLeft){
-        GLdouble cursorX, cursorY;
-        glfwGetCursorPos(window, &cursorX, &cursorY);
-        if (Take::holdon().drawType == Shape::MARKER){
-            WindowParas& windowPara = WindowParas::getInstance();
-            const GLfloat pointSize = ShaderStyle::getStyle().pointsize;
-            const glm::vec3 position = glm::vec3(
-                                                 windowPara.normal2orthoX(windowPara.screen2normalX(cursorX))/pointSize,
-                                                 windowPara.normal2orthoY(windowPara.screen2normalY(cursorY))/pointSize,
-                                                 0.0f);
-            ObjectModel newLogo = obj::markers["logo"];
-            newLogo.setScale(pointSize);
-            newLogo.setPosition(position);
-            obj::objectList.push_back(newLogo);
-        }
-        else
-            addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
+    GLdouble cursorX, cursorY;
+    glfwGetCursorPos(window, &cursorX, &cursorY);
+    if (Take::holdon().drawType == Shape::MARKER && WindowParas::getInstance().mainWindowFocused){
+        WindowParas& windowPara = WindowParas::getInstance();
+        const GLfloat pointSize = ShaderStyle::getStyle().pointsize;
+        const glm::vec3 position = glm::vec3(
+                                             windowPara.normal2orthoX(windowPara.screen2normalX(cursorX))/pointSize,
+                                             windowPara.normal2orthoY(windowPara.screen2normalY(cursorY))/pointSize,
+                                             0.0f);
+        ObjectModel newLogo = obj::markers["logo"];
+        newLogo.setScale(pointSize);
+        newLogo.setPosition(position);
+        obj::objectList.push_back(newLogo);
+        return;
     }
+    Records& record = Records::getState();
+    if (!Take::holdon().holdonToDraw && action == GLFW_PRESS && record.drawingPrimitive && record.pressLeft)
+        addPoint(Take::holdon().drawingVertices,cursorX,cursorY);
     //holdon draw method will not add middle points, which means the primitives drawed by this way has only two control points. So this situation is handled in cursorcallback
     return;
 }
 void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     mouseModsToggle(window, button, action, mods);
+    doubleClickDetected(window, button, action, mods);
     if (Records::getState().dragingMode){
         // drag to move window
         WindowParas& windowPara = WindowParas::getInstance();
@@ -157,6 +117,7 @@ void mouseViewCallback(GLFWwindow* window, int button, int action, int mods){
 void mouseEditCallback(GLFWwindow* window, int button, int action, int mods){
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     mouseModsToggle(window, button, action, mods);
+    doubleClickDetected(window, button, action, mods);
     WindowParas& windowPara = WindowParas::getInstance();
     if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT) {
         Records& record = Records::getState();
@@ -348,4 +309,138 @@ bool primitiveSelectDetect(Primitive* primitive){
             primitive->setHold(selected);
     }
     return selected;
+}
+
+void keyModsToggle(GLFWwindow* window, int key, int scancode, int action, int mods){
+    Records& record = Records::getState();
+    if (record.editingString)
+        return;
+    if (action == GLFW_PRESS){
+        //std::cout<<"press "<<key<<std::endl;
+        record.keyRecord[key] = GL_TRUE;
+        if (record.keyRecord[GLFW_KEY_LEFT_CONTROL] || record.keyRecord[GLFW_KEY_RIGHT_CONTROL]) record.pressCtrl = GL_TRUE;
+        if (record.keyRecord[GLFW_KEY_LEFT_SHIFT] || record.keyRecord[GLFW_KEY_RIGHT_SHIFT])  record.pressShift = GL_TRUE;
+        if (record.keyRecord[GLFW_KEY_LEFT_ALT] || record.keyRecord[GLFW_KEY_RIGHT_ALT])    record.pressAlt = GL_TRUE;
+        
+    }
+    if (action == GLFW_RELEASE){
+        //std::cout<<"release "<<key<<std::endl;
+        record.keyRecord[key] = GL_FALSE;
+        if (!record.keyRecord[GLFW_KEY_LEFT_CONTROL] && !record.keyRecord[GLFW_KEY_RIGHT_CONTROL]) record.pressCtrl = GL_FALSE;
+        if (!record.keyRecord[GLFW_KEY_LEFT_SHIFT] && !record.keyRecord[GLFW_KEY_RIGHT_SHIFT])  record.pressShift = GL_FALSE;
+        if (!record.keyRecord[GLFW_KEY_LEFT_ALT] && !record.keyRecord[GLFW_KEY_RIGHT_ALT])    record.pressAlt = GL_FALSE;
+    }
+}
+void mouseModsToggle(GLFWwindow* window, int button, int action, int mods){
+    Records& record = Records::getState();
+    if (action == GLFW_PRESS){
+        if (button == GLFW_MOUSE_BUTTON_LEFT)
+            record.pressLeft = GL_TRUE;
+        if (button == GLFW_MOUSE_BUTTON_RIGHT)
+            record.pressRight = GL_TRUE;
+    }
+    if (action == GLFW_RELEASE){
+        if (button == GLFW_MOUSE_BUTTON_LEFT)
+            record.pressLeft = GL_FALSE;
+        if (button == GLFW_MOUSE_BUTTON_RIGHT)
+            record.pressRight = GL_FALSE;
+    }
+}
+void viewScroll(GLFWwindow* window, double xoffset, double yoffset){
+    Camera2D::getView().processScroll(window, xoffset, yoffset, Records::getState().pressCtrl, Records::getState().pressAlt);
+    coord::generateCoordinateAxis();
+}
+static bool startDrawCheck(GLFWwindow* window, int button, int action, int mods){
+    Records& record = Records::getState();
+    if (!WindowParas::getInstance().mainWindowFocused)  return false; // the start points must in the window range
+    if (action != GLFW_PRESS || !record.pressLeft) return false; // check left click
+    if ( record.state != interectState::drawing || Take::holdon().drawType == Shape::NONE ) return false; //check ready to start
+    return !record.drawingPrimitive; //check aleady started
+}
+static bool finishDrawCheck(GLFWwindow* window, int button, int action, int mods){
+    Records& record = Records::getState();
+    if (!record.drawingPrimitive) return false; //check under drawing
+    if (action == GLFW_PRESS){//click right to stop
+        if (button == GLFW_MOUSE_BUTTON_RIGHT && !Take::holdon().holdonToDraw)
+            return true;
+        return false;
+    }
+    else if (action == GLFW_RELEASE){//release left to stop
+        if (button == GLFW_MOUSE_BUTTON_LEFT && Take::holdon().holdonToDraw)
+            return true;
+        return false;
+    }
+    return false;
+}
+void drawModsToggle(GLFWwindow* window, int button, int action, int mods){
+    Take& take = Take::holdon();
+    if (startDrawCheck(window, button, action, mods)){
+        Records::getState().drawingPrimitive = true;
+        std::cout<<"start draw"<<std::endl;
+        take.drawingVertices.clear();
+        //generate the first point to the new primitive
+        if (take.holdonToDraw){
+            GLdouble cursorX, cursorY;
+            glfwGetCursorPos(window, &cursorX, &cursorY);
+            addPoint(take.drawingVertices,cursorX,cursorY);
+        }
+    }
+    if (finishDrawCheck(window,button,action,mods)){
+        Records& record = Records::getState();
+        record.drawingPrimitive = false;
+        //finish the primitive
+        if (take.holdonToDraw){
+            GLdouble cursorX, cursorY;
+            glfwGetCursorPos(window, &cursorX, &cursorY);
+            addPoint(take.drawingVertices,cursorX,cursorY);
+            if (record.pressCtrl)
+                toAlignment(take.drawingVertices,take.drawType);
+        }
+        std::cout<<"finish draw"<<std::endl;
+        // push the primitive into the formal primitive render queue
+        generateNewPrimitive();
+        take.drawType = Shape::NONE;
+    }
+}
+void cursorDragingDetect(GLFWwindow* window,double xpos, double ypos){
+    Records& record = Records::getState();
+    WindowParas& windowPara = WindowParas::getInstance();
+    if (record.draging){
+        const GLfloat cursorX =windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+        const GLfloat cursorY =windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+        const GLfloat dX = (record.previewXpos - cursorX);
+        const GLfloat dY = (record.previewYpos - cursorY);
+        Camera2D::getView().setDeltaPosition(record.previewPosition,dX,dY);
+    }
+}
+
+void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
+    Take& take = Take::holdon();
+    if (Records::getState().drawingPrimitive && take.drawType != Shape::MARKER){//generate preview
+        //take the last point
+        //WindowParas& windowPara = WindowParas::getInstance();
+        vertexArray tempVertices;
+       
+            tempVertices = take.drawingVertices;
+        addPoint(tempVertices,xpos,ypos);
+        if (Records::getState().pressCtrl)
+            toAlignment(tempVertices,take.drawType);
+        generatePreviewPrimitive(tempVertices);
+    }
+    else
+        pr::previewPrimitive = nullptr;
+    return;
+}
+void doubleClickDetected(GLFWwindow* window, int button, int action, int mods){
+    GLdouble& lastClickTime = WindowParas::getInstance().lastClickTime;
+    GLboolean& doubleClickState = Records::getState().doubleCliked;
+    const float doubleClikBias = 0.2;
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+            GLdouble currentTime = glfwGetTime();
+            if (currentTime - lastClickTime < doubleClikBias)
+                doubleClickState = GL_TRUE;
+            else
+                doubleClickState = GL_FALSE;
+            lastClickTime = currentTime;
+        }
 }

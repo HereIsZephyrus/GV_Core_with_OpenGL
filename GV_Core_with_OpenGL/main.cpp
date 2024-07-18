@@ -52,9 +52,12 @@ int main(int argc, const char * argv[]) {
                  primitiveSelectDetect((*primitive).get());
             hasHolding |= (*primitive)->getHold();
             // draw elements
-            (*primitive)->useShader();
-            for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
-                (*element)->draw((*primitive)->getHold());
+            //std::cout<<(*primitive)->layer<<std::endl;
+            if ((*primitive)->visable){
+                (*primitive)->useShader();
+                for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
+                    (*element)->draw((*primitive)->getHold());
+            }
         }
         if (openDetect && !hasHolding && record.pressLeft &&  !record.pressCtrl){
             Take::holdon().holdonObjList.clear();

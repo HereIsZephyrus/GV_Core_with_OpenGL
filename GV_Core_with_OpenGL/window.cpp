@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstring>
 #include <string>
+#include <algorithm>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -178,6 +179,7 @@ void drawScaleText(){
 namespace gui {
 unsigned int panelStackNum = 0;
 float menuBarHeight;
+std::array<Layer, static_cast<int>(Shape::COUNT)> itemInfo;
 }
 
 namespace gui{
@@ -455,11 +457,6 @@ void renderPrimitiveSelectPanel(){
         drawType = Shape::POLYGEN;
         holdonToDraw = false;
     }
-    if (ImGui::Button("Trangles")){
-        drawType = Shape::TRIANGLE;
-        holdonToDraw = false;
-    }
-    ImGui::SameLine();
     if (ImGui::Button("Rectangle")){
         drawType = Shape::RECTANGLE;
         holdonToDraw = true;
@@ -478,42 +475,83 @@ void renderPrimitiveSelectPanel(){
         record.showCreateElementWindow = false;
     ImGui::End();
 }
+namespace gui{
+    static char buffer[256];
+    std::set<GLuint> focusedLayers;
+    GLuint editLayer = 0;
+}
+static bool comparePrimitive(const pPrimitive& a, const pPrimitive& b) {
+    return *a < *b;
+}
 void createPrimitiveList() {
     std::vector<item >& items = Records::getState().primitiveList;
-    for (int i = 0; i < items.size(); i++) {
-        int currentIndex = i;
-        items[i].first->layer = i+1;
-        bool isHovered = ImGui::IsItemHovered();
-        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-            ImGui::SetDragDropPayload("TEXT_LIST_ITEM", &currentIndex, sizeof(int));
-            if (isHovered) {
-                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
+    std::vector<Primitive*>& holdonObjList = Take::holdon().holdonObjList;
+    if (items.empty())
+        return;
+    Records& record = Records::getState();
+    bool isActive = false,toRearrange = false;
+    const bool remainList = record.pressShift;
+    if (ImGui::BeginListBox("##", ImVec2(250, items.size() * 25.0f))) {
+        for (int i = 0; i< items.size(); i++){
+            std::string& currentName = items[i].name;
+            GLuint& currentLayer = items[i].primitive->layer;
+            if (currentLayer != i+1)
+                toRearrange = true;
+            currentLayer = i+1;
+            //std::cout<<items[i].name<<"'s layer is "<<currentLayer<<std::endl;
+            const std::string layerID = std::to_string(currentLayer);
+            bool isSelected = gui::focusedLayers.count(currentLayer);
+            if (isSelected && !items[i].primitive->getHold())
+                    holdonObjList.push_back(items[i].primitive);
+            items[i].primitive->setHold(isSelected);
+            if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)){
+                gui::editLayer = currentLayer;
+                gui::focusedLayers.insert(currentLayer);
+                record.state = interectState::holding;
+                isSelected = true;
+                isActive = true;
             }
-            ImGui::Text("%s", items[currentIndex].second.c_str());
-            if (isHovered) {
-                ImGui::PopStyleColor(2);
+            ImGui::SameLine();
+            ImGui::Checkbox(std::string("##" + layerID).c_str(),&items[i].primitive->visable);
+            ImGui::SameLine();
+            if (ImGui::ArrowButton(std::string("##UpArrow"+ layerID).c_str(), ImGuiDir_Up))
+                if (i>0)
+                    std::swap(items[i],items[i-1]);
+            ImGui::SameLine();
+            if (ImGui::ArrowButton(std::string("##DownArrow" + layerID).c_str(), ImGuiDir_Down))
+                if (i<items.size()-1)
+                    std::swap(items[i],items[i+1]);
+            ImGui::SameLine();
+            if (isSelected && record.doubleCliked && !record.editingString){
+                record.editingString = true;
+                gui::editLayer = currentLayer;
             }
-            ImGui::EndDragDropSource();
-        }
-        if (isHovered) {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
-        }
-        ImGui::TextUnformatted(items[currentIndex].second.c_str());
-        if (isHovered) {
-            ImGui::PopStyleColor(2);
-        }
-        if (ImGui::BeginDragDropTarget()) {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TEXT_LIST_ITEM")) {
-                int sourceIndex = *(const int*)payload->Data;
-                std::swap(items[currentIndex], items[sourceIndex]);
+            if (record.editingString && gui::editLayer == currentLayer ){
+                std::cout<<"start editing string"<<currentLayer<<std::endl;
+                ImGui::SetNextItemWidth(-1);
+                strcpy(gui::buffer, currentName.c_str());
+                if (ImGui::InputText("##editName", gui::buffer, IM_ARRAYSIZE(gui::buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                    record.editingString = false;
+                    gui::editLayer = 0;
+                }
+                currentName = gui::buffer;
+                if (record.keyRecord[GLFW_KEY_ENTER] ||ImGui::IsItemDeactivated()) {
+                    record.editingString = false;
+                    gui::editLayer = 0;
+                }
             }
-            ImGui::EndDragDropTarget();
-            std::sort(pr::mainPrimitiveList.begin(),pr::mainPrimitiveList.end());
+            else
+                ImGui::Text("%s",currentName.c_str());
         }
-
-        ImGui::Separator();
+        if (!remainList && !isActive && record.pressLeft){
+            gui::focusedLayers.clear();
+            holdonObjList.clear();
+        }
+        ImGui::EndListBox();
+    }
+    if (toRearrange){
+        std::stable_sort(pr::mainPrimitiveList.begin(),pr::mainPrimitiveList.end(),comparePrimitive);
+        std::cout<<"ReArrange"<<std::endl;
     }
 }
 
