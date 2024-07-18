@@ -54,7 +54,7 @@ int main(int argc, const char * argv[]) {
             hasHolding |= (*primitive)->getHold();
             // draw elements
             //std::cout<<(*primitive)->layer<<std::endl;
-            if ((*primitive)->visable){
+            if ((*primitive)->visable && (*primitive)->layerVisable){
                 (*primitive)->useShader();
                 for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
                     (*element)->draw((*primitive)->getHold());

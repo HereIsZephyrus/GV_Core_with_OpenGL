@@ -21,6 +21,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     this->elementList.clear();
     this->holding = false;
     this->visable = true;
+    this->layerVisable = true;
     this->transMat = glm::mat4(1.0f);
     const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
     this->color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};

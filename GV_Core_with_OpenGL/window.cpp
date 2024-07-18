@@ -585,11 +585,25 @@ void createPrimitiveList() {
     Records& record = Records::getState();
     const bool remainList = record.pressShift;
     bool isActive = false,toRearrange = false;
+    std::vector<Layer>& layers = record.layerList;
     if (ImGui::BeginListBox("##", ImVec2(250,(record.layerList.size() + itemsNum) * 25.0f))) {
-        for (const auto& layer : record.layerList){
-            ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-            if (ImGui::TreeNode(layer.name.c_str())) {
-                drawLayerList(layer.itemlist,countLayer,isActive,toRearrange);
+        for (auto layer = layers.begin(); layer!= layers.end(); layer++){
+            ImGui::Checkbox(std::string("##" + layer->name).c_str(),&layer->visable);
+            ImGui::SameLine();
+            if (ImGui::ArrowButton(std::string("##UpArrow"+ layer->name).c_str(), ImGuiDir_Up))
+                if (layer != layers.begin())
+                    std::swap(*layer,*(layer-1));
+            ImGui::SameLine();
+            if (ImGui::ArrowButton(std::string("##DownArrow" + layer->name).c_str(), ImGuiDir_Down))
+                if (layer != layers.end()-1)
+                    std::swap(*layer,*(layer+1));
+            ImGui::SameLine();
+            if (layer->visable)
+                ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+            for (auto item : layer->itemlist)
+                item->primitive->layerVisable = layer->visable;
+            if (ImGui::TreeNode(layer->name.c_str())) {
+                drawLayerList(layer->itemlist,countLayer,isActive,toRearrange);
                 ImGui::TreePop();
             }
         }

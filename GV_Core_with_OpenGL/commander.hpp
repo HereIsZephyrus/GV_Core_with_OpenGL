@@ -36,9 +36,11 @@ typedef std::shared_ptr<Item> pItem;
 struct Layer{
     std::string name;
     std::vector<pItem> itemlist;
+    bool visable;
     Layer(std::string name){
         this->name = name;
         itemlist = {};
+        visable = true;
     }
 };
 typedef std::shared_ptr<Layer> pLayer;
