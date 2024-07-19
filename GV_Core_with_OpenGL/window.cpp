@@ -331,6 +331,9 @@ void renderSiderbar(){
     ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH,sidebarHeight - menuBarHeight), ImGuiCond_Always);
     ImGui::Begin("sidebar",nullptr,ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
     //ImGui::Text("This is the main sidebar");
+    Take& take = Take::holdon();
+    if (take.alertWindow == gui::confirmDelete)
+        take.alertWindow();
     createPrimitiveList();
     ImGui::End();
 }
@@ -350,8 +353,8 @@ std::string inputLayerName(){
         ImGui::SameLine();
         if (ImGui::Button("Cancel")){
             Records::getState().editingString = false;
-            ImGui::CloseCurrentPopup();
             pointer = nullptr;
+            ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
     }
@@ -562,7 +565,6 @@ static bool comparePrimitive(const pPrimitive& a, const pPrimitive& b) {
 void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange){
     if (items.empty())
         return;
-    static bool show_delete_popup = false;
     std::vector<pItem>::iterator toDelete = items.end();
     Records& record = Records::getState();
     bool remainList = record.pressCtrl || record.pressShift;
@@ -573,9 +575,9 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
         if (currentLayer != countLayer)
             toRearrange = true;
         currentLayer = countLayer;
-        const std::string layerID = std::to_string(countLayer);
+        const std::string buttonIdentifier = std::to_string(countLayer);
         bool isSelected = gui::focusedLayers.count(currentLayer);
-        if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
+        if (ImGui::Selectable(buttonIdentifier.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
             gui::editLayer = currentLayer;
             if (!remainList && record.state == interectState::holding){
                 gui::focusedLayers.clear();
@@ -593,15 +595,17 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
         if (!isSelected && !remainList)
                 (*item)->primitive->setHold(false);
         ImGui::SameLine();
-        ImGui::Checkbox(std::string("##" + layerID).c_str(),&((*item)->primitive->visable));
+        ImGui::Checkbox(std::string("##" + buttonIdentifier).c_str(),&((*item)->primitive->visable));
         ImGui::SameLine();
-        if (ImGui::ArrowButton(std::string("##UpArrow"+ layerID).c_str(), ImGuiDir_Up))
+        if (ImGui::ArrowButton(std::string("##UpArrow"+ buttonIdentifier).c_str(), ImGuiDir_Up))
             if (item != items.begin())
                 std::swap(**item,**(item-1));
         ImGui::SameLine();
-        if (ImGui::ArrowButton(std::string("##DownArrow" + layerID).c_str(), ImGuiDir_Down))
+        if (ImGui::ArrowButton(std::string("##DownArrow" + buttonIdentifier).c_str(), ImGuiDir_Down))
             if (item != items.end()-1)
                 std::swap(**item,**(item+1));
+        ImGui::SameLine();
+        deleteButton(buttonIdentifier);
         ImGui::SameLine();
         if (isSelected && record.doubleCliked && !record.editingString){
             record.editingString = true;
@@ -624,38 +628,47 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
         else
             ImGui::Text("%s",currentName.c_str());
         ImGui::SameLine();
-        if (ImGui::ArrowButton(std::string("##Delete" + layerID).c_str(),ImGuiDir_Right)) {
-            std::cout<<"ready to delete"<<std::endl;
-            show_delete_popup = true;
-            toDelete = item;
+        if (ImGui::ArrowButton(std::string("##Delete" + buttonIdentifier).c_str(),ImGuiDir_Right)) {
+            
         }
     }
-    if (show_delete_popup) {
-        ImGui::OpenPopup("Delete Confirmation");
-    }
+}
+std::string confirmDelete(){
+    std::cout<<"prepare"<<std::endl;
+    AlertWindowPointer& pointer = Take::holdon().alertWindow;
     if (ImGui::BeginPopupModal("Delete Confirmation", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        std::cout<<"rendering"<<std::endl;
         ImGui::Text("Are you sure to delete this element?");
-        if (ImGui::Button("OK", ImVec2(120, 0))) {
+        if (ImGui::Button("OK")) {
+            pointer = nullptr;
             ImGui::CloseCurrentPopup();
-            show_delete_popup = false;
-            //(*toDelete)->primitive->visable = false; //delete resource
-            //for (auto primitive = pr::mainPrimitiveList.begin(); //primitive!=pr::mainPrimitiveList.end(); primitive++){
-            //    if ((*primitive).get() == (*toDelete)->primitive){
-            //        *primitive = nullptr;
-            //        break;
-            //    }
-            //}
-            //auto itemInd = record.primitiveList.begin() + (*toDelete)->id; //delete item
-            //record.primitiveList.erase(itemInd); //delete item reference
-            //items.erase(toDelete);
         }
         ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+        if (ImGui::Button("Cancel")) {
+            pointer = nullptr;
             ImGui::CloseCurrentPopup();
-            show_delete_popup = false;
         }
         ImGui::EndPopup();
     }
+    return "";
+}
+void deleteButton(std::string name) {
+    ImGuiStyle& style = ImGui::GetStyle();
+    const ImVec4 defaultButtonColor = style.Colors[ImGuiCol_Button];
+    const ImVec4 defaultButtonHoveredColor = style.Colors[ImGuiCol_ButtonHovered];
+    const ImVec4 defaultButtonActiveColor = style.Colors[ImGuiCol_ButtonActive];
+    style.Colors[ImGuiCol_Button] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(1.0f, 0.5f, 0.5f, 1.0f);
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.8f, 0.0f, 0.0f, 1.0f);
+    if (ImGui::Button(std::string("##delete"+ name).c_str())) {
+        std::cout<<"ready to delete"<<std::endl;
+        Take::holdon().alertWindow = confirmDelete;
+        ImGui::OpenPopup("Delete Confirmation");
+        //toDelete = item;
+    }
+    style.Colors[ImGuiCol_Button] = defaultButtonColor;
+    style.Colors[ImGuiCol_ButtonHovered] = defaultButtonHoveredColor;
+    style.Colors[ImGuiCol_ButtonActive] = defaultButtonActiveColor;
 }
 void createPrimitiveList() {
     const size_t itemsNum = Records::getState().primitiveList.size();
@@ -668,26 +681,29 @@ void createPrimitiveList() {
     if (ImGui::BeginListBox("##", ImVec2(250,(record.layerList.size() + itemsNum) * 25.0f))) {
         for (auto layer = layers.begin(); layer!= layers.end(); layer++){
             bool isSelected = (take.activeLayer == &(*layer));
-            if (ImGui::Selectable(std::string("##Select" + layer->name).c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
+            std::string buttonIdentifier = layer->name + std::to_string(countLayer);
+            if (ImGui::Selectable(std::string("##Select" + buttonIdentifier).c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
                 take.activeLayer = &(*layer);
                 record.state = interectState::drawing;
             }
             ImGui::SameLine();
-            ImGui::Checkbox(std::string("##Checkbox" + layer->name).c_str(),&layer->visable);
+            ImGui::Checkbox(std::string("##Checkbox" + buttonIdentifier).c_str(),&layer->visable);
             ImGui::SameLine();
-            if (ImGui::ArrowButton(std::string("##UpArrow"+ layer->name).c_str(), ImGuiDir_Up))
+            if (ImGui::ArrowButton(std::string("##UpArrow"+ buttonIdentifier).c_str(), ImGuiDir_Up))
                 if (layer != layers.begin())
                     std::swap(*layer,*(layer-1));
             ImGui::SameLine();
-            if (ImGui::ArrowButton(std::string("##DownArrow" + layer->name).c_str(), ImGuiDir_Down))
+            if (ImGui::ArrowButton(std::string("##DownArrow" + buttonIdentifier).c_str(), ImGuiDir_Down))
                 if (layer != layers.end()-1)
                     std::swap(*layer,*(layer+1));
+            ImGui::SameLine();
+            deleteButton(buttonIdentifier);
             ImGui::SameLine();
             if (layer->visable)
                 ImGui::SetNextItemOpen(true, ImGuiCond_Once);
             for (auto item : layer->itemlist)
                 item->primitive->layerVisable = layer->visable;
-            if (ImGui::TreeNode(layer->name.c_str())) {
+            if (ImGui::TreeNode(buttonIdentifier.c_str())) {
                 drawLayerList(layer->itemlist,countLayer,isActive,toRearrange);
                 ImGui::TreePop();
             }

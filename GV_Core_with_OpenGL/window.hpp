@@ -79,7 +79,9 @@ void DrawGUI();
 void spiltUI();
 void createPrimitiveList();
 void drawLayerList(const std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange);
+void deleteButton(std::string name);
 std::string inputLayerName();
+std::string confirmDelete();
 }
 
 #endif /* window_hpp */
