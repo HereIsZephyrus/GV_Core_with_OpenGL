@@ -24,6 +24,7 @@
 typedef std::shared_ptr<vertexArray> pVertexArray;
 void createTopoElements(Primitive* lastpPrimitive);
 void updateTopoElements(Primitive* lastpPrimitive);
+void changePrimitiveAttribute(Primitive* rawPrimitive);
 GLfloat distancePointToLineSQ(GLfloat x1,GLfloat y1,GLfloat x2,GLfloat y2, GLfloat x0, GLfloat y0);
 namespace pr {
 void updateIndex(Primitive*);
@@ -108,6 +109,7 @@ public:
     friend class Face;
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
     void draw(bool highlighted);
+    void setPointSize(GLfloat newSize){pointSize = newSize;}
 protected:
     void calcGeoCenter(){
         geoCenter.x = (*refVertex)[vertexIndex[0]* stride];
@@ -143,6 +145,7 @@ public:
     glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
     void draw(bool highlighted);
+    void setLineWidth(GLfloat newWidth){lineWidth = newWidth;}
 protected:
     void calcGeoCenter(){
         geoCenter.x = 0;
@@ -301,6 +304,7 @@ public:
     glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
     void draw(bool highlighted);
+    void setLineWidth(GLfloat newWidth){lineWidth = newWidth;}
 protected:
     void calcGeoCenter(){
         geoCenter.x = 0;
@@ -315,6 +319,7 @@ private:
     pPoint point[2];
     bool isCircle,isFill;
 };
+//typedef std::shared_ptr<Diagnoal> pDiagnoal;
 int outboundDetect(pElement outbound);
 }//namespace pr
 #endif /* shape_hpp */

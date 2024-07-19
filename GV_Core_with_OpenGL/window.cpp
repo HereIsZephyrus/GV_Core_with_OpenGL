@@ -485,7 +485,32 @@ void renderPrimitivePanel(){
             }
         }
     }
+    if (record.state == interectState::holding){
+        ImGui::End();
+        return;
+    }
+    ShaderStyle& style = ShaderStyle::getStyle();
+    bool changed = false;
+    glm::vec4 nowColor = take.editingPrimitive->getColor();
+    style.drawColor = {nowColor.x,nowColor.y,nowColor.z,nowColor.w};
+    if (ImGui::ColorEdit4("Color", (float*)&style.drawColor)){
+        changed = true;
+        take.editingPrimitive->setColor(style.drawColor);
+    }
+    style.thickness = take.editingPrimitive->getThickness();
+    if (ImGui::SliderFloat("Thickness", &style.thickness, 1.0f, 50.0f)){
+        changed = true;
+        take.editingPrimitive->setThickness(style.thickness);
+    }
+    style.pointsize = take.editingPrimitive->getPointSize();
+    if (ImGui::SliderFloat("Pointsize", &style.pointsize, 1.0f, 50.0f)){
+        changed = true;
+        take.editingPrimitive->setPointsize(style.pointsize);
+    }
+    ImGui::Checkbox("Fill", &style.toFill);
     ImGui::End();
+    if (changed)
+        changePrimitiveAttribute(take.editingPrimitive);
 }
 
 void renderPrimitiveSelectPanel(){

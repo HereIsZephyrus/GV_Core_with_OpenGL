@@ -259,7 +259,6 @@ int releaseResources(GLFWwindow* &window){
 bool primitiveSelectDetect(Primitive* primitive){
     GLdouble xpos,ypos;
     WindowParas& windowPara = WindowParas::getInstance();
-    Records& record = Records::getState();
     glfwGetCursorPos(windowPara.window, &xpos, &ypos);
     bool selected = false;
     if (primitive->getShape() == GL_POINTS){

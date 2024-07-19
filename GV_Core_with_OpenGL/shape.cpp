@@ -252,7 +252,17 @@ void createTopoElements(Primitive* lastpPrimitive){
     }
     return;
 }
-
+void changePrimitiveAttribute(Primitive* rawPrimitive){
+    for (auto element: rawPrimitive->elementList){
+        element->setColor(rawPrimitive->getColor());
+        if (element->getType() == pr::TopoType::point)
+            dynamic_cast<pr::Point*>(element.get())->setPointSize(rawPrimitive->getPointSize());
+        else if (element->getType() == pr::TopoType::line)
+            dynamic_cast<pr::Line*>(element.get())->setLineWidth(rawPrimitive->getThickness());
+        else if (element->getType() == pr::TopoType::diagnoal)
+            dynamic_cast<pr::Diagnoal*>(element.get())->setLineWidth(rawPrimitive->getThickness());
+    }
+}
 void updateTopoElements(Primitive* lastpPrimitive){
     ShaderStyle& style = ShaderStyle::getStyle();
     const ImVec4 nowColor = style.drawColor;
@@ -263,7 +273,6 @@ void updateTopoElements(Primitive* lastpPrimitive){
     if (shape == GL_POINTS){
         for (int i = 0; i< lastpPrimitive->getVertexNum(); i++){
             lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i,false)) );
-            
         }
     }
     else if (shape == GL_LINES || shape == GL_LINE){
