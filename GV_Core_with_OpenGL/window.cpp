@@ -577,7 +577,7 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
         bool isSelected = gui::focusedLayers.count(currentLayer);
         if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
             gui::editLayer = currentLayer;
-            if (!remainList){
+            if (!remainList && record.state == interectState::holding){
                 gui::focusedLayers.clear();
                 Take::holdon().holdonObjList.clear();
             }

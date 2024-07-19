@@ -47,13 +47,13 @@ int main(int argc, const char * argv[]) {
         upstreamStatus();
         //draw main primitive list
         
-        bool openDetect = (! record.drawingPrimitive) && (take.alertWindow == nullptr); // whether primitives can be select
+        bool openDetect = (! record.drawingPrimitive) && (record.state != interectState::editing)&&(take.alertWindow == nullptr); // whether primitives can be select
         bool remainList = record.pressCtrl || record.pressShift;
         for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
             // detect hold
             if (WindowParas::getInstance().mainWindowFocused && openDetect && !record.dragingMode && record.pressLeft){
                 bool selectThisPrimitive = primitiveSelectDetect(primitive->get());
-                if (!remainList && selectThisPrimitive && !(*primitive)->getHold()){
+                if (openDetect && !remainList && record.state == interectState::holding && selectThisPrimitive && !(*primitive)->getHold()){
                     gui::focusedLayers.clear();
                     take.holdonObjList.clear();
                 }
@@ -76,7 +76,7 @@ int main(int argc, const char * argv[]) {
                     (*element)->draw((*primitive)->getHold());
             }
         }
-        if (openDetect && !hasHolding && !gui::isActive && record.pressLeft){
+        if (openDetect && record.state == interectState::holding && !hasHolding && !gui::isActive && record.pressLeft){
             gui::focusedLayers.clear();
             take.holdonObjList.clear();
             if (gui::lastState != interectState::none){
