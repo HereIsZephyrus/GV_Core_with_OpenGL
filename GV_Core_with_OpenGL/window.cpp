@@ -339,6 +339,7 @@ void renderSiderbar(){
 }
 std::string inputLayerName(){
     AlertWindowPointer& pointer = Take::holdon().alertWindow;
+    ImGui::OpenPopup("Input Dialog");
     if(ImGui::BeginPopupModal("Input Dialog", NULL, ImGuiWindowFlags_AlwaysAutoResize)){
         char buffer[256] = {};
         if (ImGui::InputText("Layer Name", buffer, IM_ARRAYSIZE(buffer)))
@@ -371,7 +372,6 @@ void renderEditPanel(){
     if (take.activeLayer == nullptr){
         if (ImGui::Button("Add Primitive")){
             take.alertWindow = inputLayerName;
-            ImGui::OpenPopup("Input Dialog");
             record.editingString = true;
             inputString = "";
         }
@@ -635,6 +635,7 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
 }
 std::string confirmDelete(){
     std::cout<<"prepare"<<std::endl;
+    ImGui::OpenPopup("Delete Confirmation");
     AlertWindowPointer& pointer = Take::holdon().alertWindow;
     if (ImGui::BeginPopupModal("Delete Confirmation", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         std::cout<<"rendering"<<std::endl;
@@ -663,7 +664,6 @@ void deleteButton(std::string name) {
     if (ImGui::Button(std::string("##delete"+ name).c_str())) {
         std::cout<<"ready to delete"<<std::endl;
         Take::holdon().alertWindow = confirmDelete;
-        ImGui::OpenPopup("Delete Confirmation");
         //toDelete = item;
     }
     style.Colors[ImGuiCol_Button] = defaultButtonColor;
