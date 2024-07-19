@@ -633,7 +633,7 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
             ImGui::Text("%s",currentName.c_str());
         ImGui::SameLine();
         if (ImGui::ArrowButton(std::string("##Locate" + buttonIdentifier).c_str(),ImGuiDir_Right)) {
-            
+            Camera2D::getView().setPosition((*item)->primitive->elementList.front()->getGeoCenter());
         }
     }
     if (toDelete)
