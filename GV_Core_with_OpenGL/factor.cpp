@@ -366,5 +366,18 @@ void generateNewPrimitiveList(Shape shape,Primitive* primitive){
     Records& record = Records::getState();
     primitive->priority = static_cast<GLuint>(record.primitiveList.size())+1;
     record.primitiveList.emplace_back(Item(primitive, gui::itemInfo[id].typeName + std::to_string(gui::itemInfo[id].count)));
-    Take::holdon().createLayer->itemlist.push_back(std::make_shared<Item>(record.primitiveList.back()));
+    Take::holdon().activeLayer->itemlist.push_back(std::make_shared<Item>(record.primitiveList.back()));
+}
+void upstreamStatus(){
+    Records& record = Records::getState();
+    Take& take = Take::holdon();
+    if (record.state != interectState::holding && record.state != interectState::editing)
+        gui::lastState = record.state;
+    else if (gui::lastState == interectState::none)
+        gui::lastState = interectState::toselect;
+    if (record.state != interectState::drawing && take.activeLayer != nullptr){ //stop without finish primitive
+        if (take.activeLayer->itemlist.empty())
+            record.layerList.pop_back();
+        take.activeLayer = nullptr;
+    }
 }

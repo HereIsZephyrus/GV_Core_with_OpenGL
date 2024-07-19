@@ -24,7 +24,8 @@
 typedef std::shared_ptr<vertexArray> pVertexArray;
 void createTopoElements(Primitive* lastpPrimitive);
 void updateTopoElements(Primitive* lastpPrimitive);
-
+void changePrimitiveAttribute(Primitive* rawPrimitive);
+GLfloat distancePointToLineSQ(GLfloat x1,GLfloat y1,GLfloat x2,GLfloat y2, GLfloat x0, GLfloat y0);
 namespace pr {
 void updateIndex(Primitive*);
 enum class TopoType{
@@ -93,7 +94,7 @@ public:
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
         if (notShowLineStyle)
-            this->pointSize = 5.0f;
+            this->pointSize = 2.0f;
         else
             this->pointSize = primitive->pointsize;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
@@ -106,9 +107,9 @@ public:
     }
     friend class Line;
     friend class Face;
-    glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
     void draw(bool highlighted);
+    void setPointSize(GLfloat newSize){pointSize = newSize;}
 protected:
     void calcGeoCenter(){
         geoCenter.x = (*refVertex)[vertexIndex[0]* stride];
@@ -125,15 +126,15 @@ public:
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
         if (notShowLineStyle)
-            this->lineWidth = 5.0f;
+            this->lineWidth = 2.0f;
         else
             this->lineWidth = primitive->thickness;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_LINES;
         vertexIndex = {startIndex,endIndex};
-        point[0] = std::make_shared<Point>(primitive,vertexIndex[0]);
+        point[0] = std::make_shared<Point>(primitive,vertexIndex[0],notShowLineStyle);
         primitive->elementList.push_back(point[0]);
-        point[1] = std::make_shared<Point>(primitive,vertexIndex[1]);
+        point[1] = std::make_shared<Point>(primitive,vertexIndex[1],notShowLineStyle);
         primitive->elementList.push_back(point[1]);
         calcGeoCenter();
         type = TopoType::line;
@@ -144,11 +145,12 @@ public:
     glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
     void draw(bool highlighted);
+    void setLineWidth(GLfloat newWidth){lineWidth = newWidth;}
 protected:
     void calcGeoCenter(){
         geoCenter.x = 0;
         geoCenter.y = 0;
-        glm::vec2 centerLoc1 = (*point[0]).getCenterLocation(),centerLoc2 = (*point[1]).getCenterLocation();
+        glm::vec2 centerLoc1 = point[0]->getGeoCenter(),centerLoc2 = point[1]->getGeoCenter();
         geoCenter.x = (centerLoc1.x + centerLoc2.x)/2;
         geoCenter.y = (centerLoc1.y + centerLoc2.y)/2;
         rotateCenter = geoCenter;
@@ -270,7 +272,7 @@ protected:
     void calcGeoCenter(){
         geoCenter.x = 0;
         geoCenter.y = 0;
-        glm::vec2 centerLoc1 = (*point[0]).getCenterLocation(),centerLoc2 = (*point[2]).getCenterLocation();
+        glm::vec2 centerLoc1 = point[0]->getGeoCenter(),centerLoc2 = point[2]->getGeoCenter();
         geoCenter.x = (centerLoc1.x + centerLoc2.x)/2;
         geoCenter.y = (centerLoc1.y + centerLoc2.y)/2;
         rotateCenter = geoCenter;
@@ -281,19 +283,20 @@ private:
 };
 class Diagnoal: public Element{
 public:
-    Diagnoal(Primitive* primitive ,GLuint startIndex = 0,GLuint endIndex = 1,bool notShowLineStyle = false,bool visable = true):
-    Element(primitive){
+    Diagnoal(Primitive* primitive ,bool isCircle,GLuint startIndex = 0,GLuint endIndex = 1,bool notShowLineStyle = false,bool visable = true):
+    Element(primitive),isCircle(isCircle){
         ShaderStyle& style = ShaderStyle::getStyle();
         if (notShowLineStyle)
             this->lineWidth = 5.0f;
         else
             this->lineWidth = primitive->thickness;
+        this->isFill = style.toFill;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_LINES;
         vertexIndex = {startIndex,endIndex};
         point[0] = std::make_shared<Point>(primitive,vertexIndex[startIndex],true,false);
         point[1] = std::make_shared<Point>(primitive,vertexIndex[endIndex],true,false);
-        //calcGeoCenter();
+        calcGeoCenter();
         type = TopoType::diagnoal;
         this->visable = visable;
         bindEBObuffer();
@@ -301,11 +304,12 @@ public:
     glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
     void draw(bool highlighted);
+    void setLineWidth(GLfloat newWidth){lineWidth = newWidth;}
 protected:
     void calcGeoCenter(){
         geoCenter.x = 0;
         geoCenter.y = 0;
-        glm::vec2 centerLoc1 = (*point[0]).getCenterLocation(),centerLoc2 = (*point[2]).getCenterLocation();
+        glm::vec2 centerLoc1 = point[0]->getGeoCenter(),centerLoc2 = point[1]->getGeoCenter();
         geoCenter.x = (centerLoc1.x + centerLoc2.x)/2;
         geoCenter.y = (centerLoc1.y + centerLoc2.y)/2;
         rotateCenter = geoCenter;
@@ -313,7 +317,9 @@ protected:
 private:
     GLfloat lineWidth;
     pPoint point[2];
+    bool isCircle,isFill;
 };
+//typedef std::shared_ptr<Diagnoal> pDiagnoal;
 int outboundDetect(pElement outbound);
 }//namespace pr
 #endif /* shape_hpp */

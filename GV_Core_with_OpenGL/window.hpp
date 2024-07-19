@@ -66,10 +66,15 @@ constexpr GLint right_bit_code = 0x2;
 constexpr GLint button_bit_code = 0x4;
 constexpr GLint top_bit_code = 0x8;
 namespace gui {
+constexpr GLfloat detactBias = 0.48f;
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
+extern interectState lastState;
 extern std::array<ItemInfo, static_cast<int>(Shape::COUNT)> itemInfo;
 extern std::string inputString;
+extern std::set<GLuint> focusedLayers;
+extern GLuint editLayer ;
+extern bool isActive;
 void DrawGUI();
 void spiltUI();
 void createPrimitiveList();

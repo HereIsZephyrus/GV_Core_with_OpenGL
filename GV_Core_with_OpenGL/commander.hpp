@@ -23,6 +23,7 @@ enum class interectState{
     toselect,//to select feature
     holding,//binded to the object
     editing,//edit primitive
+    none,//for reset
 };
 struct Item{
     Primitive* primitive;
@@ -77,14 +78,14 @@ public:
     Take(const Take&) = delete;
     ~Take(){
         editingPrimitive = nullptr;
-        createLayer = nullptr;
+        activeLayer = nullptr;
         alertWindow = nullptr;
         for (auto it = holdonObjList.begin(); it != holdonObjList.end(); it++)
             (*it) = nullptr;
     }
     void operator = (const Take&) = delete;
     std::vector<Primitive*> holdonObjList;
-    Layer* createLayer;
+    Layer* activeLayer;
     Primitive* editingPrimitive;
     vertexArray drawingVertices;
     AlertWindowPointer alertWindow;
@@ -95,7 +96,7 @@ public:
 private:
     Take(){
         editingPrimitive = nullptr;
-        createLayer = nullptr;
+        activeLayer = nullptr;
         alertWindow = nullptr;
     }
 };

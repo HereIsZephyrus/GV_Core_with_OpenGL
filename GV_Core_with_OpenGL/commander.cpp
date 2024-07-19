@@ -215,10 +215,10 @@ static bool checkCursorFocus(){
     //std::cout<<cursorX<<' '<<cursorY<<std::endl;
     if (cursorX < 0 || cursorX > windowPara.SCREEN_WIDTH/windowPara.xScale || cursorY< gui::menuBarHeight || cursorY > windowPara.SCREEN_HEIGHT/windowPara.yScale)
         return  false;
-    bool openDetect = ((Records::getState().state == interectState::holding) || (Records::getState().state == interectState::toselect));
-    if (openDetect && !Records::getState().dragingMode){
+    //bool openDetect = ((Records::getState().state == interectState::holding) || (Records::getState().state == interectState::toselect));
+    if (!Records::getState().dragingMode){
         Camera2D& camera = Camera2D::getView();
-        const GLfloat dragCameraSpeed = 10.0f,borderDetectRange = 40.0f, menuWidth = 200.0f;
+        const GLfloat dragCameraSpeed = 10.0f * camera.getZoom(),borderDetectRange = 40.0f, menuWidth = 200.0f;
         if (cursorX < borderDetectRange){
             camera.setDeltaPosition(camera.getPosition(), -dragCameraSpeed, 0);
         }
@@ -259,7 +259,6 @@ int releaseResources(GLFWwindow* &window){
 bool primitiveSelectDetect(Primitive* primitive){
     GLdouble xpos,ypos;
     WindowParas& windowPara = WindowParas::getInstance();
-    Records& record = Records::getState();
     glfwGetCursorPos(windowPara.window, &xpos, &ypos);
     bool selected = false;
     if (primitive->getShape() == GL_POINTS){
@@ -270,25 +269,6 @@ bool primitiveSelectDetect(Primitive* primitive){
     }else{
         pElement characterPrimitive = primitive -> elementList.back();
         selected = (*characterPrimitive).cursorSelectDetect(xpos, ypos);
-    }
-    
-    if (selected){
-        //std::cout<<"selected"<<std::endl;
-        record.state = interectState::holding;
-        if (primitive->getHold())
-            return selected;
-        else{
-            if (!record.pressCtrl)
-                Take::holdon().holdonObjList.clear();
-            Take::holdon().holdonObjList.push_back(primitive);
-        }
-        primitive->setHold(selected);
-        //std::cout<<"selected"<<Take::holdon().holdonObjList.size()<<std::endl;
-    }
-    else{
-       // std::cout<<"not selected"<<Take::holdon().holdonObjList.size()<<std::endl;
-        if (!record.pressCtrl)
-            primitive->setHold(selected);
     }
     return selected;
 }
@@ -400,10 +380,8 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
     Take& take = Take::holdon();
     if (Records::getState().drawingPrimitive && take.drawType != Shape::MARKER){//generate preview
         //take the last point
-        //WindowParas& windowPara = WindowParas::getInstance();
         vertexArray tempVertices;
-       
-            tempVertices = take.drawingVertices;
+        tempVertices = take.drawingVertices;
         addPoint(tempVertices,xpos,ypos);
         if (Records::getState().pressCtrl)
             toAlignment(tempVertices,take.drawType);

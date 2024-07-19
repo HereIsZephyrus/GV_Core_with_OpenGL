@@ -16,16 +16,15 @@
 Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
-    m_self = this;
     this->vertices = vertices;
     this->elementList.clear();
     this->holding = false;
     this->visable = true;
     this->layerVisable = true;
     this->transMat = glm::mat4(1.0f);
-    const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
-    this->color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
+    this->drawType = shape;
     ShaderStyle& style = ShaderStyle::getStyle();
+    setColor(style.drawColor);
     this->thickness = style.thickness;
     this->pointsize = style.pointsize;
     switch (shape) {
@@ -75,15 +74,6 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     updateVertex();
 }
 void Primitive::rend(GLuint& program){
-    const glm::vec4 color = previewStyle::color;
-    GLuint colorLoc = glGetUniformLocation(program,"setColor");
-    glUniform4f(colorLoc,color.x,color.y,color.z,color.w);
-    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    if (shape == GL_POINTS)
-        glUniform1f(sizeLoc,ShaderStyle::getStyle().pointsize);
-    else
-        glUniform1f(sizeLoc,ShaderStyle::getStyle().thickness);
-    
     //camera
     GLuint projectionLoc = glGetUniformLocation(program, "projection");
     GLuint viewLoc = glGetUniformLocation(program, "view");
@@ -95,6 +85,15 @@ void Primitive::rend(GLuint& program){
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    
+    const glm::vec4 color = previewStyle::color;
+    GLuint colorLoc = glGetUniformLocation(program,"setColor");
+    glUniform4f(colorLoc,color.x,color.y,color.z,color.w);
+    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+    if ((drawType == Shape::RECTANGLE || drawType == Shape::CIRCLE || drawType == Shape::POLYGEN) && ShaderStyle::getStyle().toFill)
+        glUniform1f(sizeLoc,2.0f);
+    else
+        glUniform1f(sizeLoc,ShaderStyle::getStyle().thickness / camera.getZoom());
 }
 void Primitive::draw(){
     //std::cout<<"Draw is running"<<std::endl;

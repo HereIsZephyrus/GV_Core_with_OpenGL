@@ -44,27 +44,46 @@ int main(int argc, const char * argv[]) {
         bool hasHolding = false;
         Records& record = Records::getState();
         Take& take = Take::holdon();
+        upstreamStatus();
         //draw main primitive list
         
-        bool openDetect = ((record.state == interectState::holding) || (record.state == interectState::toselect)); // whether primitives can be select
+        bool openDetect = (! record.drawingPrimitive) && (record.state != interectState::editing)&&(take.alertWindow == nullptr); // whether primitives can be select
+        bool remainList = record.pressCtrl || record.pressShift;
         for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
             // detect hold
-            if (WindowParas::getInstance().mainWindowFocused && openDetect && !record.dragingMode && record.pressLeft)
-                 primitiveSelectDetect((*primitive).get());
+            if (WindowParas::getInstance().mainWindowFocused && openDetect && !record.dragingMode && record.pressLeft){
+                bool selectThisPrimitive = primitiveSelectDetect(primitive->get());
+                if (openDetect && !remainList && record.state == interectState::holding && selectThisPrimitive && !(*primitive)->getHold()){
+                    gui::focusedLayers.clear();
+                    take.holdonObjList.clear();
+                }
+                if (selectThisPrimitive){
+                    record.state = interectState::holding;
+                    if (gui::focusedLayers.count((*primitive)->priority) == 0)
+                        Take::holdon().holdonObjList.push_back(primitive->get());
+                    (*primitive)->setHold(true);
+                    gui::focusedLayers.insert((*primitive)->priority);
+                    gui::editLayer = (*primitive)->priority;
+                }
+                else if (!remainList)
+                        (*primitive)->setHold(false);
+            }
             hasHolding |= (*primitive)->getHold();
             // draw elements
-            //std::cout<<(*primitive)->layer<<std::endl;
             if ((*primitive)->visable && (*primitive)->layerVisable){
                 (*primitive)->useShader();
                 for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
                     (*element)->draw((*primitive)->getHold());
             }
         }
-        if (openDetect && !hasHolding && record.pressLeft &&  !record.pressCtrl){
+        if (openDetect && record.state == interectState::holding && !hasHolding && !gui::isActive && record.pressLeft){
+            gui::focusedLayers.clear();
             take.holdonObjList.clear();
-            record.state = interectState::toselect;
+            if (gui::lastState != interectState::none){
+                record.state = gui::lastState;
+                gui::lastState = interectState::none;
+            }
         }
-        
         // draw priview
         if (pr::previewPrimitive != nullptr){
             pr::previewPrimitive -> draw();

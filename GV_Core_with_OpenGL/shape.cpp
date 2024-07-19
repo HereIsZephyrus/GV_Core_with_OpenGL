@@ -12,27 +12,16 @@ namespace pr{
 void Element::setColor(bool highlighted){
     //color
     GLuint colorLoc = glGetUniformLocation(shader->program,"setColor");
-    if (highlighted){
-        ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
-        if (shape == GL_POINTS || shape == GL_POINT){
-            glUniform4f(colorLoc,1-backgroundColor.x,1-backgroundColor.y,1-backgroundColor.z,1.0f);
-        }else if (shape ==GL_LINES || shape == GL_LINE_LOOP){
-            glUniform4f(colorLoc,1-backgroundColor.x - 0.2f,1-backgroundColor.y - 0.2f,1-backgroundColor.z - 0.2f,1.0f);
-        }
-        else{
-            //glUnrangtaiform4f(colorLoc,style.color.x+ 0.1f,style.color.y+ 0.1f,style.color.z+0.1f,style.color.w);
-            glUniform4f(colorLoc,style.color.x + 0.1f,style.color.y+ 0.1f,style.color.z + 0.1f,style.color.w);
-        }
-    }
-    else{
-        glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
-    }
+    GLuint brightLoc = glGetUniformLocation(shader->program,"brightness");
+    glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
+    glUniform1f(brightLoc,1+0.2f*static_cast<int>(highlighted));
 }
 void Point::draw(bool highlighted){
     setColor(highlighted);
     //thickness
+    const GLfloat zoom = Camera2D::getView().getZoom();
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,pointSize);
+    glUniform1f(sizeLoc,pointSize / zoom);
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -43,8 +32,9 @@ void Point::draw(bool highlighted){
 void Line::draw(bool highlighted){
     setColor(highlighted);
     //thickness
+    const GLfloat zoom = Camera2D::getView().getZoom();
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,lineWidth);
+    glUniform1f(sizeLoc,lineWidth / zoom);
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -56,7 +46,7 @@ void Face::draw(bool highlighted){
     setColor(highlighted);
     //thickness
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,1.0f);
+    glUniform1f(sizeLoc,2.0f);
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -67,8 +57,9 @@ void Face::draw(bool highlighted){
 void Curve::draw(bool highlighted){
     setColor(highlighted);
     //thickness
+    const GLfloat zoom = Camera2D::getView().getZoom();
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,lineWidth);
+    glUniform1f(sizeLoc,lineWidth / zoom);
     //std::cout<<"print curve"<<std::endl;
     // load data
     glBindVertexArray(identifier->VAO);
@@ -84,8 +75,9 @@ void OutBound::draw(bool highlighted){
 void Diagnoal::draw(bool highlighted){
     setColor(highlighted);
     //thickness
+    const GLfloat zoom = Camera2D::getView().getZoom();
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,lineWidth);
+    glUniform1f(sizeLoc,lineWidth / zoom);
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -108,11 +100,18 @@ bool Point::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
     const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
     const GLfloat& pointX = (*refVertex)[vertexIndex[0] * stride],pointY = (*refVertex)[vertexIndex[0] * stride + 1];
-    const GLfloat pointDetectRange = 5.0f;
-    if ((cursorX - pointX) * (cursorX - pointX) + (cursorY - pointY) * (cursorY - pointY) <= pointDetectRange * pointDetectRange){
+    const GLfloat pointDetectRange = gui::detactBias * Camera2D::getView().getZoom();
+    if ((cursorX - pointX) * (cursorX - pointX) + (cursorY - pointY) * (cursorY - pointY) <= pointDetectRange * pointDetectRange * pointSize * pointSize){
         return true;
     }
     return false;
+}
+GLfloat distancePointToLineSQ(GLfloat x1,GLfloat y1,GLfloat x2,GLfloat y2, GLfloat x0, GLfloat y0) {
+    const GLfloat m = (y2 - y1) / (x2 - x1);
+    const GLfloat b = y1 - m * x1;
+    const float a = std::abs(m * x0 - y0 + b);
+    GLfloat distance = a * a / (m * m + 1);
+    return distance;
 }
 bool Line::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     WindowParas& windowPara = WindowParas::getInstance();
@@ -122,17 +121,17 @@ bool Line::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     const GLfloat& pointX1 = (*refVertex)[vertexIndex[0] * stride],pointY1 = (*refVertex)[vertexIndex[0] * stride + 1];
     const GLfloat& pointX2 = (*refVertex)[vertexIndex[1] * stride],pointY2 = (*refVertex)[vertexIndex[1] * stride + 1];
     const GLfloat zoom = Camera2D::getView().getZoom();
-    const GLfloat lineAngleRange = 0.2f * zoom, paralellRange = 5.0f * zoom;
+    const GLfloat paralellRange = gui::detactBias * zoom;
     bool inTheRange = false,onTheSlop = false;
     if (abs(pointX2- pointX1)< paralellRange){
         inTheRange = (cursorY > pointY1) != (cursorY > pointY2);
-        onTheSlop = (abs(pointX1 - cursorX)< paralellRange) || (abs(pointX2 - cursorX)< paralellRange);
+        onTheSlop = (abs(pointX1 - cursorX)< paralellRange * lineWidth) || (abs(pointX2 - cursorX)< paralellRange * lineWidth);
     }else if (abs(pointY2 - pointY1)<paralellRange){
         inTheRange = (cursorX > pointX1) != (cursorX > pointX2);
-        onTheSlop = (abs(pointY1 - cursorY)< paralellRange) || (abs(pointY2 - cursorY)< paralellRange);
+        onTheSlop = (abs(pointY1 - cursorY)< paralellRange * lineWidth) || (abs(pointY2 - cursorY)< paralellRange * lineWidth);
     }else{
         inTheRange = ((cursorX > pointX1) != (cursorX > pointX2)) && (cursorY > pointY1) != (cursorY > pointY2);
-        onTheSlop = abs((cursorX - pointX1)/ (cursorY - pointY1) - (pointX2 - pointX1)/ (pointY2 - pointY1)) <= lineAngleRange;
+        onTheSlop = distancePointToLineSQ(pointX1,pointY1,pointX2,pointY2,cursorX,cursorY)<= paralellRange * paralellRange* lineWidth * lineWidth;
     }
     if (inTheRange && onTheSlop)
         return true;
@@ -156,15 +155,57 @@ bool Face::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
 }
 bool OutBound::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
    
-    return true;
+    return false;
 }
 bool Curve::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     
-    return true;
+    return false;
 }
 bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
-    
-    return true;
+    WindowParas& windowPara = WindowParas::getInstance();
+    //std::cout<<"detect Diagnoal"<<std::endl;
+    const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+    const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+    if (isCircle){
+        const GLfloat a = abs(point[0]->getGeoCenter().x - geoCenter.x), b = abs(point[0]->getGeoCenter().y - geoCenter.y);
+        const GLfloat xaxis = (cursorX - geoCenter.x) * (cursorX - geoCenter.x);
+        const GLfloat yaxis = (cursorY - geoCenter.y) * (cursorY - geoCenter.y) ;
+        if (isFill)
+            return xaxis / (a * a) + yaxis / (b * b) <= 1;
+        else{
+            GLfloat currentLineWidth = lineWidth * Camera2D::getView().getZoom();
+            bool outside = xaxis / ((a + currentLineWidth/2) * (a + currentLineWidth/2) )+ yaxis / ((b + currentLineWidth/2) * (b + lineWidth/2)) <=1;
+            bool inside = xaxis / ((a - currentLineWidth/2) * (a - currentLineWidth/2) )+ yaxis / ((b - currentLineWidth/2) * (b - lineWidth/2)) >=1;
+            return outside && inside;
+        }
+    }else{
+        GLfloat minX,minY,maxX,maxY;
+        if (point[0]->getGeoCenter().x > point[1]->getGeoCenter().x){
+            minX = point[1]->getGeoCenter().x;
+            maxX = point[0]->getGeoCenter().x;
+        }
+        else{
+            minX = point[0]->getGeoCenter().x;
+            maxX = point[1]->getGeoCenter().x;
+        }
+        if (point[0]->getGeoCenter().y > point[1]->getGeoCenter().y){
+            minY = point[1]->getGeoCenter().y;
+            maxY = point[0]->getGeoCenter().y;
+        }
+        else{
+            minY = point[0]->getGeoCenter().y;
+            maxY = point[1]->getGeoCenter().y;
+        }
+        if (isFill)
+            return cursorX >= minX && cursorX <= maxX && cursorY >= minY && cursorY <= maxY;
+        else{
+            GLfloat currentLineWidth = lineWidth * Camera2D::getView().getZoom()* gui::detactBias;
+            bool outside = cursorX >= (minX - currentLineWidth/2) && cursorX <= (maxX + currentLineWidth/2) && (cursorY >= minY-currentLineWidth/2) && (cursorY <= maxY + currentLineWidth/2);
+            bool inside = cursorX >= (minX + currentLineWidth/2) && cursorX <= (maxX - currentLineWidth/2) && (cursorY >= minY + currentLineWidth/2) && (cursorY <= maxY - currentLineWidth/2);
+            return outside && !inside;
+        }
+    }
+    return false;
 }
 int outboundDetect(pElement outbound){
     return 12;
@@ -191,7 +232,7 @@ void createTopoElements(Primitive* lastpPrimitive){
             break;
         case Shape::RECTANGLE:
             std::cout<<"treat as face"<<std::endl;
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive,false)) );
             break;
         case Shape::POLYGEN:
             std::cout<<"treat as face"<<std::endl;
@@ -202,7 +243,7 @@ void createTopoElements(Primitive* lastpPrimitive){
             std::cout<<"treat as curve"<<std::endl;
             break;
         case Shape::CIRCLE:
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive,true)) );
             std::cout<<"treat as circle"<<std::endl;
             break;
         default:
@@ -211,7 +252,17 @@ void createTopoElements(Primitive* lastpPrimitive){
     }
     return;
 }
-
+void changePrimitiveAttribute(Primitive* rawPrimitive){
+    for (auto element: rawPrimitive->elementList){
+        element->setColor(rawPrimitive->getColor());
+        if (element->getType() == pr::TopoType::point)
+            dynamic_cast<pr::Point*>(element.get())->setPointSize(rawPrimitive->getPointSize());
+        else if (element->getType() == pr::TopoType::line)
+            dynamic_cast<pr::Line*>(element.get())->setLineWidth(rawPrimitive->getThickness());
+        else if (element->getType() == pr::TopoType::diagnoal)
+            dynamic_cast<pr::Diagnoal*>(element.get())->setLineWidth(rawPrimitive->getThickness());
+    }
+}
 void updateTopoElements(Primitive* lastpPrimitive){
     ShaderStyle& style = ShaderStyle::getStyle();
     const ImVec4 nowColor = style.drawColor;
@@ -222,7 +273,6 @@ void updateTopoElements(Primitive* lastpPrimitive){
     if (shape == GL_POINTS){
         for (int i = 0; i< lastpPrimitive->getVertexNum(); i++){
             lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Point>(lastpPrimitive,i,false)) );
-            
         }
     }
     else if (shape == GL_LINES || shape == GL_LINE){

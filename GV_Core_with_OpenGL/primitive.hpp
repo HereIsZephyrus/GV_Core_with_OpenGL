@@ -63,8 +63,6 @@ public:
     void drawElement();
     void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
-    glm::vec4 getColor() const{return color;}
-    GLenum getShape() const{return shape;}
     friend class pr::Element;
     friend class pr::Point;
     friend class pr::Line;
@@ -73,10 +71,6 @@ public:
     friend class pr::Diagnoal;
     friend void clipByShape();
     GLsizei getVertexNum() const{return static_cast<GLsizei>(vertices.size() / stride);}
-    void setName(std::string name){this->name = name;}
-    void setHold(bool isHolding){this->holding = isHolding;}
-    bool getHold() const{return holding;}
-    std::string getName() const {return name;}
     vertexArray vertices;//,transfered;
     std::vector<pElement> elementList;
     GLuint priority;
@@ -86,8 +80,18 @@ public:
     }
     void createOutboundElement();
     void destroyOutboundElement();
-    Primitive* getSelf() {return m_self;}
     void useShader();
+    std::string getName() const {return name;}
+    bool getHold() const{return holding;}
+    GLfloat getPointSize(){return pointsize;}
+    GLfloat getThickness(){return thickness;}
+    glm::vec4 getColor() const{return color;}
+    GLenum getShape() const{return shape;}
+    void setName(std::string name){this->name = name;}
+    void setHold(bool isHolding){this->holding = isHolding;}
+    void setColor(ImVec4 UIcolor){color = {UIcolor.x,UIcolor.y,UIcolor.z,UIcolor.w};}
+    void setPointsize(GLfloat pointSize){pointsize = pointSize;}
+    void setThickness(GLfloat lineWidth){thickness = lineWidth;}
     glm::mat3 transMat;
     //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
 protected:
@@ -103,8 +107,8 @@ private:
     Shader* shader;
     glm::vec4 color;
     std::string name;
-    Primitive* m_self;
     bool holding;
+    Shape drawType;
     GLfloat thickness,pointsize;
 };
 

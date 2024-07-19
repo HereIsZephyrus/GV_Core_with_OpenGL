@@ -15,7 +15,6 @@
 		322E53092C1532E6002AFB73 /* primitive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E53072C1532E6002AFB73 /* primitive.cpp */; };
 		323A00E32C0AA4360056BAD1 /* libglfw.3.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */; };
 		323A00E42C0AA4360056BAD1 /* libglfw.3.4.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		323A00E72C0AC3530056BAD1 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 323A00E62C0AC3530056BAD1 /* glad.c */; };
 		323A00EE2C0AC7440056BAD1 /* commander.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00EC2C0AC7440056BAD1 /* commander.cpp */; };
 		32505E732C44115E00C6CE5D /* initialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32505E712C44115E00C6CE5D /* initialization.cpp */; };
 		326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 326A8BE72C0A28E300E30250 /* OpenGL.framework */; };
@@ -76,7 +75,6 @@
 		322E53072C1532E6002AFB73 /* primitive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = primitive.cpp; sourceTree = "<group>"; };
 		322E53082C1532E6002AFB73 /* primitive.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = primitive.hpp; sourceTree = "<group>"; };
 		323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.4.dylib; path = ../../../../opt/homebrew/Cellar/glfw/3.4/lib/libglfw.3.4.dylib; sourceTree = "<group>"; };
-		323A00E62C0AC3530056BAD1 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glad.c; path = "../../OpenGL/glad-4.1/src/glad.c"; sourceTree = "<group>"; };
 		323A00EC2C0AC7440056BAD1 /* commander.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = commander.cpp; sourceTree = "<group>"; };
 		323A00ED2C0AC7440056BAD1 /* commander.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = commander.hpp; sourceTree = "<group>"; };
 		32505E712C44115E00C6CE5D /* initialization.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = initialization.cpp; sourceTree = "<group>"; };
@@ -182,7 +180,6 @@
 				323A00ED2C0AC7440056BAD1 /* commander.hpp */,
 				322E52F82C13F6E2002AFB73 /* window.cpp */,
 				322E52F92C13F6E2002AFB73 /* window.hpp */,
-				323A00E62C0AC3530056BAD1 /* glad.c */,
 				3278B0C12C097C5500DF6489 /* main.cpp */,
 				328C8CFC2C3C1D69006160E6 /* objectmodel.cpp */,
 				328C8CFD2C3C1D69006160E6 /* objectmodel.hpp */,
@@ -308,7 +305,6 @@
 			files = (
 				3278B0C22C097C5500DF6489 /* main.cpp in Sources */,
 				322E53062C14A5CF002AFB73 /* rendering.cpp in Sources */,
-				323A00E72C0AC3530056BAD1 /* glad.c in Sources */,
 				32C5E09B2C18A14E00152CDF /* imgui_impl_glfw.cpp in Sources */,
 				32C5E09A2C18A14E00152CDF /* imgui_draw.cpp in Sources */,
 				32C5E09F2C18A14E00152CDF /* imgui.cpp in Sources */,
@@ -467,7 +463,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYSTEM_HEADER_SEARCH_PATHS = (
 					"${glew_header-2.2}",
-					"${glad_header-4.1}",
 					"${glfw_header-3.4}",
 					"${glm_header-1.0}",
 				);
@@ -489,7 +484,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYSTEM_HEADER_SEARCH_PATHS = (
 					"${glew_header-2.2}",
-					"${glad_header-4.1}",
 					"${glfw_header-3.4}",
 					"${glm_header-1.0}",
 				);
