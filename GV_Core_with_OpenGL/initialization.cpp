@@ -120,3 +120,7 @@ int initItem(){
     //gui::editLayer = 0;
     return 0;
 }
+int initGDAL(){
+    //GDALAllRegister();
+    return  0;
+}

@@ -12,6 +12,9 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+//#include <gdal_priv.h>
+#include <gdal.h>
+//#include <ogrsf_frmts.h>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -28,4 +31,5 @@ int initInterect(GLFWwindow* &window);
 int initStyle();
 int initShaders();
 int initItem();
+int initGDAL();
 #endif /* initialization_hpp */

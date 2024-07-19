@@ -33,7 +33,7 @@ int main(int argc, const char * argv[]) {
     initInterect(window);
     initStyle();
     initObject();
-    
+    initGDAL();
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         gui::DrawGUI();

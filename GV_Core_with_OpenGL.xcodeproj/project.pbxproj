@@ -15,13 +15,45 @@
 		322E53092C1532E6002AFB73 /* primitive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E53072C1532E6002AFB73 /* primitive.cpp */; };
 		323A00E32C0AA4360056BAD1 /* libglfw.3.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */; };
 		323A00E42C0AA4360056BAD1 /* libglfw.3.4.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		323A00E72C0AC3530056BAD1 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = 323A00E62C0AC3530056BAD1 /* glad.c */; };
 		323A00EE2C0AC7440056BAD1 /* commander.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 323A00EC2C0AC7440056BAD1 /* commander.cpp */; };
 		32505E732C44115E00C6CE5D /* initialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32505E712C44115E00C6CE5D /* initialization.cpp */; };
 		326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 326A8BE72C0A28E300E30250 /* OpenGL.framework */; };
 		3278B0C22C097C5500DF6489 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3278B0C12C097C5500DF6489 /* main.cpp */; };
 		328C8CFE2C3C1D69006160E6 /* objectmodel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 328C8CFC2C3C1D69006160E6 /* objectmodel.cpp */; };
 		328DF9BA2C1EE0530092223F /* shape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 328DF9B82C1EE0530092223F /* shape.cpp */; };
+		32909B8C2C49E8E200C12E61 /* libgdal.35.3.9.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909B892C49E7B200C12E61 /* libgdal.35.3.9.1.dylib */; };
+		32909B8D2C49E8E200C12E61 /* libgdal.35.3.9.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909B892C49E7B200C12E61 /* libgdal.35.3.9.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909B912C49EBD500C12E61 /* libarchive.13.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909B8E2C49EABE00C12E61 /* libarchive.13.dylib */; };
+		32909B922C49EBD500C12E61 /* libarchive.13.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909B8E2C49EABE00C12E61 /* libarchive.13.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909B942C49EC7100C12E61 /* liblzma.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909B932C49EC7100C12E61 /* liblzma.5.dylib */; };
+		32909B952C49EC7100C12E61 /* liblzma.5.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909B932C49EC7100C12E61 /* liblzma.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909B972C49ED3200C12E61 /* libzstd.1.5.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909B962C49ED3200C12E61 /* libzstd.1.5.6.dylib */; };
+		32909B982C49ED3200C12E61 /* libzstd.1.5.6.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909B962C49ED3200C12E61 /* libzstd.1.5.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909B9A2C49EE1200C12E61 /* libodbc.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909B992C49EE1200C12E61 /* libodbc.2.dylib */; };
+		32909B9B2C49EE1200C12E61 /* libodbc.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909B992C49EE1200C12E61 /* libodbc.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909B9D2C49EE6700C12E61 /* libodbcinst.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909B9C2C49EE6700C12E61 /* libodbcinst.2.dylib */; };
+		32909B9E2C49EE6700C12E61 /* libodbcinst.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909B9C2C49EE6700C12E61 /* libodbcinst.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909BA02C49EEEB00C12E61 /* libltdl.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909B9F2C49EEEB00C12E61 /* libltdl.7.dylib */; };
+		32909BA12C49EEEB00C12E61 /* libltdl.7.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909B9F2C49EEEB00C12E61 /* libltdl.7.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909BA32C49EF7C00C12E61 /* liblz4.1.9.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BA22C49EF7B00C12E61 /* liblz4.1.9.4.dylib */; };
+		32909BA42C49EF7C00C12E61 /* liblz4.1.9.4.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909BA22C49EF7B00C12E61 /* liblz4.1.9.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909BA62C49EFF800C12E61 /* libxml2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BA52C49EFF800C12E61 /* libxml2.2.dylib */; };
+		32909BA72C49EFF800C12E61 /* libxml2.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909BA52C49EFF800C12E61 /* libxml2.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909BAB2C49F0DD00C12E61 /* libicui18n.74.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BA82C49F07200C12E61 /* libicui18n.74.2.dylib */; };
+		32909BBB2C49F13000C12E61 /* libicuio.74.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BAC2C49F0DD00C12E61 /* libicuio.74.2.dylib */; };
+		32909BBC2C49F13000C12E61 /* libicuio.74.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909BAC2C49F0DD00C12E61 /* libicuio.74.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909BBD2C49F13000C12E61 /* libicutu.74.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BAD2C49F0DD00C12E61 /* libicutu.74.2.dylib */; };
+		32909BBE2C49F13000C12E61 /* libicutu.74.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909BAD2C49F0DD00C12E61 /* libicutu.74.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909BBF2C49F13000C12E61 /* libicui18n.74.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BA82C49F07200C12E61 /* libicui18n.74.2.dylib */; };
+		32909BC02C49F13000C12E61 /* libicui18n.74.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909BA82C49F07200C12E61 /* libicui18n.74.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909BC12C49F13000C12E61 /* libicutu.74.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BAD2C49F0DD00C12E61 /* libicutu.74.2.dylib */; };
+		32909BC22C49F13000C12E61 /* libicuuc.74.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BAE2C49F0DD00C12E61 /* libicuuc.74.2.dylib */; };
+		32909BC32C49F13000C12E61 /* libicuuc.74.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909BAE2C49F0DD00C12E61 /* libicuuc.74.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909BC42C49F13000C12E61 /* libicudata.74.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BB02C49F0DD00C12E61 /* libicudata.74.2.dylib */; };
+		32909BC52C49F13000C12E61 /* libicudata.74.2.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 32909BB02C49F0DD00C12E61 /* libicudata.74.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		32909BC62C49F13000C12E61 /* libicudata.74.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BB02C49F0DD00C12E61 /* libicudata.74.2.dylib */; };
+		32909BC72C49F13000C12E61 /* libicui18n.74.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BA82C49F07200C12E61 /* libicui18n.74.2.dylib */; };
+		32909BC82C49F13000C12E61 /* libicuuc.74.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 32909BAE2C49F0DD00C12E61 /* libicuuc.74.2.dylib */; };
 		32948FAD2C157E65007A0078 /* glexception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32948FAB2C157E65007A0078 /* glexception.cpp */; };
 		32C5E0992C18A14E00152CDF /* imgui_demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C5E0892C18A14E00152CDF /* imgui_demo.cpp */; };
 		32C5E09A2C18A14E00152CDF /* imgui_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C5E08A2C18A14E00152CDF /* imgui_draw.cpp */; };
@@ -42,9 +74,23 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				32909B9B2C49EE1200C12E61 /* libodbc.2.dylib in Embed Libraries */,
+				32909B8D2C49E8E200C12E61 /* libgdal.35.3.9.1.dylib in Embed Libraries */,
 				32C5E0A22C193D9C00152CDF /* libglm.dylib in Embed Libraries */,
+				32909BA12C49EEEB00C12E61 /* libltdl.7.dylib in Embed Libraries */,
+				32909BBC2C49F13000C12E61 /* libicuio.74.2.dylib in Embed Libraries */,
+				32909B982C49ED3200C12E61 /* libzstd.1.5.6.dylib in Embed Libraries */,
 				323A00E42C0AA4360056BAD1 /* libglfw.3.4.dylib in Embed Libraries */,
+				32909B9E2C49EE6700C12E61 /* libodbcinst.2.dylib in Embed Libraries */,
 				322E52F72C13EE17002AFB73 /* libGLEW.2.2.0.dylib in Embed Libraries */,
+				32909BBE2C49F13000C12E61 /* libicutu.74.2.dylib in Embed Libraries */,
+				32909BC52C49F13000C12E61 /* libicudata.74.2.dylib in Embed Libraries */,
+				32909B922C49EBD500C12E61 /* libarchive.13.dylib in Embed Libraries */,
+				32909B952C49EC7100C12E61 /* liblzma.5.dylib in Embed Libraries */,
+				32909BA42C49EF7C00C12E61 /* liblz4.1.9.4.dylib in Embed Libraries */,
+				32909BA72C49EFF800C12E61 /* libxml2.2.dylib in Embed Libraries */,
+				32909BC32C49F13000C12E61 /* libicuuc.74.2.dylib in Embed Libraries */,
+				32909BC02C49F13000C12E61 /* libicui18n.74.2.dylib in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,7 +122,6 @@
 		322E53072C1532E6002AFB73 /* primitive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = primitive.cpp; sourceTree = "<group>"; };
 		322E53082C1532E6002AFB73 /* primitive.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = primitive.hpp; sourceTree = "<group>"; };
 		323A00E22C0AA4360056BAD1 /* libglfw.3.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.4.dylib; path = ../../../../opt/homebrew/Cellar/glfw/3.4/lib/libglfw.3.4.dylib; sourceTree = "<group>"; };
-		323A00E62C0AC3530056BAD1 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glad.c; path = "../../OpenGL/glad-4.1/src/glad.c"; sourceTree = "<group>"; };
 		323A00EC2C0AC7440056BAD1 /* commander.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = commander.cpp; sourceTree = "<group>"; };
 		323A00ED2C0AC7440056BAD1 /* commander.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = commander.hpp; sourceTree = "<group>"; };
 		32505E712C44115E00C6CE5D /* initialization.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = initialization.cpp; sourceTree = "<group>"; };
@@ -100,6 +145,21 @@
 		32909B862C44E9B700C12E61 /* fillRect.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillRect.gs; sourceTree = "<group>"; };
 		32909B872C44EA2100C12E61 /* lineRect.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = lineRect.gs; sourceTree = "<group>"; };
 		32909B882C457D2700C12E61 /* bezierCurve.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = bezierCurve.gs; sourceTree = "<group>"; };
+		32909B892C49E7B200C12E61 /* libgdal.35.3.9.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgdal.35.3.9.1.dylib; path = ../../../../opt/homebrew/Cellar/gdal/3.9.1/lib/libgdal.35.3.9.1.dylib; sourceTree = "<group>"; };
+		32909B8E2C49EABE00C12E61 /* libarchive.13.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.13.dylib; path = ../../../../opt/homebrew/Cellar/libarchive/3.7.4/lib/libarchive.13.dylib; sourceTree = "<group>"; };
+		32909B932C49EC7100C12E61 /* liblzma.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblzma.5.dylib; path = ../../../../opt/homebrew/Cellar/xz/5.6.2/lib/liblzma.5.dylib; sourceTree = "<group>"; };
+		32909B962C49ED3200C12E61 /* libzstd.1.5.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzstd.1.5.6.dylib; path = ../../../../opt/homebrew/Cellar/zstd/1.5.6/lib/libzstd.1.5.6.dylib; sourceTree = "<group>"; };
+		32909B992C49EE1200C12E61 /* libodbc.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libodbc.2.dylib; path = ../../../../opt/homebrew/Cellar/unixodbc/2.3.12/lib/libodbc.2.dylib; sourceTree = "<group>"; };
+		32909B9C2C49EE6700C12E61 /* libodbcinst.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libodbcinst.2.dylib; path = ../../../../opt/homebrew/Cellar/unixodbc/2.3.12/lib/libodbcinst.2.dylib; sourceTree = "<group>"; };
+		32909B9F2C49EEEB00C12E61 /* libltdl.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libltdl.7.dylib; path = ../../../../opt/homebrew/Cellar/libtool/2.4.7/lib/libltdl.7.dylib; sourceTree = "<group>"; };
+		32909BA22C49EF7B00C12E61 /* liblz4.1.9.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblz4.1.9.4.dylib; path = ../../../../opt/homebrew/Cellar/lz4/1.9.4/lib/liblz4.1.9.4.dylib; sourceTree = "<group>"; };
+		32909BA52C49EFF800C12E61 /* libxml2.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.2.dylib; path = ../../../../opt/homebrew/Cellar/libxml2/2.12.8/lib/libxml2.2.dylib; sourceTree = "<group>"; };
+		32909BA82C49F07200C12E61 /* libicui18n.74.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicui18n.74.2.dylib; path = ../../../../opt/homebrew/Cellar/icu4c/74.2/lib/libicui18n.74.2.dylib; sourceTree = "<group>"; };
+		32909BAC2C49F0DD00C12E61 /* libicuio.74.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicuio.74.2.dylib; path = ../../../../opt/homebrew/Cellar/icu4c/74.2/lib/libicuio.74.2.dylib; sourceTree = "<group>"; };
+		32909BAD2C49F0DD00C12E61 /* libicutu.74.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicutu.74.2.dylib; path = ../../../../opt/homebrew/Cellar/icu4c/74.2/lib/libicutu.74.2.dylib; sourceTree = "<group>"; };
+		32909BAE2C49F0DD00C12E61 /* libicuuc.74.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicuuc.74.2.dylib; path = ../../../../opt/homebrew/Cellar/icu4c/74.2/lib/libicuuc.74.2.dylib; sourceTree = "<group>"; };
+		32909BAF2C49F0DD00C12E61 /* libicutest.74.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicutest.74.2.dylib; path = ../../../../opt/homebrew/Cellar/icu4c/74.2/lib/libicutest.74.2.dylib; sourceTree = "<group>"; };
+		32909BB02C49F0DD00C12E61 /* libicudata.74.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicudata.74.2.dylib; path = ../../../../opt/homebrew/Cellar/icu4c/74.2/lib/libicudata.74.2.dylib; sourceTree = "<group>"; };
 		32948FAB2C157E65007A0078 /* glexception.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = glexception.cpp; sourceTree = "<group>"; };
 		32948FAC2C157E65007A0078 /* glexception.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = glexception.hpp; sourceTree = "<group>"; };
 		32C5E0882C18A14E00152CDF /* imconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imconfig.h; sourceTree = "<group>"; };
@@ -130,10 +190,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32909B9D2C49EE6700C12E61 /* libodbcinst.2.dylib in Frameworks */,
+				32909BA62C49EFF800C12E61 /* libxml2.2.dylib in Frameworks */,
+				32909B9A2C49EE1200C12E61 /* libodbc.2.dylib in Frameworks */,
+				32909BC62C49F13000C12E61 /* libicudata.74.2.dylib in Frameworks */,
+				32909BC72C49F13000C12E61 /* libicui18n.74.2.dylib in Frameworks */,
+				32909BBB2C49F13000C12E61 /* libicuio.74.2.dylib in Frameworks */,
+				32909BC22C49F13000C12E61 /* libicuuc.74.2.dylib in Frameworks */,
+				32909B942C49EC7100C12E61 /* liblzma.5.dylib in Frameworks */,
+				32909BC12C49F13000C12E61 /* libicutu.74.2.dylib in Frameworks */,
 				322E52F62C13EE17002AFB73 /* libGLEW.2.2.0.dylib in Frameworks */,
 				326A8BEF2C0A2BC200E30250 /* OpenGL.framework in Frameworks */,
 				32C5E0A12C193D9C00152CDF /* libglm.dylib in Frameworks */,
+				32909BC42C49F13000C12E61 /* libicudata.74.2.dylib in Frameworks */,
 				323A00E32C0AA4360056BAD1 /* libglfw.3.4.dylib in Frameworks */,
+				32909B912C49EBD500C12E61 /* libarchive.13.dylib in Frameworks */,
+				32909B8C2C49E8E200C12E61 /* libgdal.35.3.9.1.dylib in Frameworks */,
+				32909BC82C49F13000C12E61 /* libicuuc.74.2.dylib in Frameworks */,
+				32909BBF2C49F13000C12E61 /* libicui18n.74.2.dylib in Frameworks */,
+				32909BA32C49EF7C00C12E61 /* liblz4.1.9.4.dylib in Frameworks */,
+				32909B972C49ED3200C12E61 /* libzstd.1.5.6.dylib in Frameworks */,
+				32909BA02C49EEEB00C12E61 /* libltdl.7.dylib in Frameworks */,
+				32909BAB2C49F0DD00C12E61 /* libicui18n.74.2.dylib in Frameworks */,
+				32909BBD2C49F13000C12E61 /* libicutu.74.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,6 +222,21 @@
 		326A8BE62C0A28E300E30250 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				32909BB02C49F0DD00C12E61 /* libicudata.74.2.dylib */,
+				32909BAC2C49F0DD00C12E61 /* libicuio.74.2.dylib */,
+				32909BAF2C49F0DD00C12E61 /* libicutest.74.2.dylib */,
+				32909BAD2C49F0DD00C12E61 /* libicutu.74.2.dylib */,
+				32909BAE2C49F0DD00C12E61 /* libicuuc.74.2.dylib */,
+				32909BA82C49F07200C12E61 /* libicui18n.74.2.dylib */,
+				32909BA52C49EFF800C12E61 /* libxml2.2.dylib */,
+				32909BA22C49EF7B00C12E61 /* liblz4.1.9.4.dylib */,
+				32909B9F2C49EEEB00C12E61 /* libltdl.7.dylib */,
+				32909B9C2C49EE6700C12E61 /* libodbcinst.2.dylib */,
+				32909B992C49EE1200C12E61 /* libodbc.2.dylib */,
+				32909B962C49ED3200C12E61 /* libzstd.1.5.6.dylib */,
+				32909B932C49EC7100C12E61 /* liblzma.5.dylib */,
+				32909B8E2C49EABE00C12E61 /* libarchive.13.dylib */,
+				32909B892C49E7B200C12E61 /* libgdal.35.3.9.1.dylib */,
 				32C5E0A02C193D9C00152CDF /* libglm.dylib */,
 				322E52FE2C140339002AFB73 /* libsfml-system.2.6.1.dylib */,
 				322E52FF2C14033A002AFB73 /* libsfml-window.2.6.1.dylib */,
@@ -182,7 +276,6 @@
 				323A00ED2C0AC7440056BAD1 /* commander.hpp */,
 				322E52F82C13F6E2002AFB73 /* window.cpp */,
 				322E52F92C13F6E2002AFB73 /* window.hpp */,
-				323A00E62C0AC3530056BAD1 /* glad.c */,
 				3278B0C12C097C5500DF6489 /* main.cpp */,
 				328C8CFC2C3C1D69006160E6 /* objectmodel.cpp */,
 				328C8CFD2C3C1D69006160E6 /* objectmodel.hpp */,
@@ -308,7 +401,6 @@
 			files = (
 				3278B0C22C097C5500DF6489 /* main.cpp in Sources */,
 				322E53062C14A5CF002AFB73 /* rendering.cpp in Sources */,
-				323A00E72C0AC3530056BAD1 /* glad.c in Sources */,
 				32C5E09B2C18A14E00152CDF /* imgui_impl_glfw.cpp in Sources */,
 				32C5E09A2C18A14E00152CDF /* imgui_draw.cpp in Sources */,
 				32C5E09F2C18A14E00152CDF /* imgui.cpp in Sources */,
@@ -463,13 +555,29 @@
 					/opt/homebrew/Cellar/glew/2.2.0_1/lib,
 					/opt/homebrew/Cellar/glfw/3.4/lib,
 					/opt/homebrew/Cellar/glm/1.0.1/lib,
+					"/opt/homebrew/Cellar/gdal/3.9.1/lib/**",
+					/opt/homebrew/Cellar/libarchive/3.7.4/lib,
+					/opt/homebrew/Cellar/xz/5.6.2/lib,
+					/opt/homebrew/Cellar/zstd/1.5.6/lib,
+					/opt/homebrew/Cellar/unixodbc/2.3.12/lib,
+					/opt/homebrew/Cellar/libtool/2.4.7/lib,
+					/opt/homebrew/Cellar/lz4/1.9.4/lib,
+					/opt/homebrew/Cellar/libxml2/2.12.8/lib,
+					/opt/homebrew/Cellar/icu4c/74.2/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYSTEM_HEADER_SEARCH_PATHS = (
 					"${glew_header-2.2}",
-					"${glad_header-4.1}",
 					"${glfw_header-3.4}",
 					"${glm_header-1.0}",
+					"${gdal_header-3.9}/**",
+					"${achieve_header-3.7}",
+					"${xz_header-5.6}",
+					"${zstd_header-1.5}",
+					"${libtool_header-2.4}",
+					"${lz4_header-1.9}",
+					"${xml_header-2.2}",
+					"${icu4c_header-74.2}",
 				);
 			};
 			name = Debug;
@@ -485,13 +593,29 @@
 					/opt/homebrew/Cellar/glew/2.2.0_1/lib,
 					/opt/homebrew/Cellar/glfw/3.4/lib,
 					/opt/homebrew/Cellar/glm/1.0.1/lib,
+					"/opt/homebrew/Cellar/gdal/3.9.1/lib/**",
+					/opt/homebrew/Cellar/libarchive/3.7.4/lib,
+					/opt/homebrew/Cellar/xz/5.6.2/lib,
+					/opt/homebrew/Cellar/zstd/1.5.6/lib,
+					/opt/homebrew/Cellar/unixodbc/2.3.12/lib,
+					/opt/homebrew/Cellar/libtool/2.4.7/lib,
+					/opt/homebrew/Cellar/lz4/1.9.4/lib,
+					/opt/homebrew/Cellar/libxml2/2.12.8/lib,
+					/opt/homebrew/Cellar/icu4c/74.2/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYSTEM_HEADER_SEARCH_PATHS = (
 					"${glew_header-2.2}",
-					"${glad_header-4.1}",
 					"${glfw_header-3.4}",
 					"${glm_header-1.0}",
+					"${gdal_header-3.9}/**",
+					"${achieve_header-3.7}",
+					"${xz_header-5.6}",
+					"${zstd_header-1.5}",
+					"${libtool_header-2.4}",
+					"${lz4_header-1.9}",
+					"${xml_header-2.2}",
+					"${icu4c_header-74.2}",
 				);
 			};
 			name = Release;
