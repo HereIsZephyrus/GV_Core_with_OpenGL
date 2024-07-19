@@ -316,7 +316,6 @@ void generateNewPrimitive(){
         createTopoElements(lastpPrimitive);
         //std::cout<<lastpPrimitive->getVertexNum()<<std::endl;
         generateNewPrimitiveList(take.drawType,lastpPrimitive);
-        //record.primitiveList.emplace_back(std::make_pair(lastpPrimitive, std::string("primitive") + std::to_string(lastpPrimitive->layer)));
     }
     else{
         take.clipShape =std::move(newPrimitive);
@@ -365,8 +364,8 @@ void generateNewPrimitiveList(Shape shape,Primitive* primitive){
     gui::itemInfo[id].count++;
     Records& record = Records::getState();
     primitive->priority = static_cast<GLuint>(record.primitiveList.size())+1;
-    record.primitiveList.emplace_back(Item(primitive, gui::itemInfo[id].typeName + std::to_string(gui::itemInfo[id].count)));
-    Take::holdon().activeLayer->itemlist.push_back(std::make_shared<Item>(record.primitiveList.back()));
+    record.primitiveList.emplace_back(std::make_shared<Item>(primitive, gui::itemInfo[id].typeName + std::to_string(gui::itemInfo[id].count)));
+    Take::holdon().activeLayer->itemlist.push_back(record.primitiveList.back());
 }
 void upstreamStatus(){
     Records& record = Records::getState();

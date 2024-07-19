@@ -63,7 +63,7 @@ public:
     void initIObuffer();
     GLfloat previewXpos,previewYpos;
     glm::vec2 previewPosition;
-    std::vector<Item> primitiveList;
+    std::vector<pItem> primitiveList;
     std::vector<Layer> layerList;
 private:
     Records(){}

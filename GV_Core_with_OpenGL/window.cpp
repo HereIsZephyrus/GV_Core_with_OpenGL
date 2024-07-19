@@ -185,7 +185,8 @@ std::set<GLuint> focusedLayers;
 GLuint editLayer = 0;
 std::string inputString;
 interectState lastState = interectState::none;
-bool isActive = false;
+bool isActive = false,toDelete = false;
+std::set<pItem> readyToDelete;
 }
 
 namespace gui{
@@ -565,13 +566,16 @@ static bool comparePrimitive(const pPrimitive& a, const pPrimitive& b) {
 void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange){
     if (items.empty())
         return;
-    std::vector<pItem>::iterator toDelete = items.end();
     Records& record = Records::getState();
     bool remainList = record.pressCtrl || record.pressShift;
     for (auto item = items.begin(); item!=items.end(); item++){
         countLayer++;
         std::string& currentName = (*item)->name;
         GLuint& currentLayer = (*item)->primitive->priority;
+        if (toDelete && readyToDelete.count(*item)){
+            (*item)->primitive->visable = false;
+            std::cout<<"to invisable primitive"<<std::endl;
+        }
         if (currentLayer != countLayer)
             toRearrange = true;
         currentLayer = countLayer;
@@ -605,7 +609,7 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
             if (item != items.end()-1)
                 std::swap(**item,**(item+1));
         ImGui::SameLine();
-        deleteButton(buttonIdentifier);
+        deleteButton(buttonIdentifier,*item);
         ImGui::SameLine();
         if (isSelected && record.doubleCliked && !record.editingString){
             record.editingString = true;
@@ -628,32 +632,34 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
         else
             ImGui::Text("%s",currentName.c_str());
         ImGui::SameLine();
-        if (ImGui::ArrowButton(std::string("##Delete" + buttonIdentifier).c_str(),ImGuiDir_Right)) {
+        if (ImGui::ArrowButton(std::string("##Locate" + buttonIdentifier).c_str(),ImGuiDir_Right)) {
             
         }
     }
+    if (toDelete)
+        items.erase(std::remove_if(items.begin(), items.end(),[](pItem x) { return readyToDelete.count(x); }),items.end());
 }
 std::string confirmDelete(){
-    std::cout<<"prepare"<<std::endl;
     ImGui::OpenPopup("Delete Confirmation");
     AlertWindowPointer& pointer = Take::holdon().alertWindow;
     if (ImGui::BeginPopupModal("Delete Confirmation", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        std::cout<<"rendering"<<std::endl;
         ImGui::Text("Are you sure to delete this element?");
         if (ImGui::Button("OK")) {
             pointer = nullptr;
             ImGui::CloseCurrentPopup();
+            toDelete = true;
         }
         ImGui::SameLine();
         if (ImGui::Button("Cancel")) {
             pointer = nullptr;
             ImGui::CloseCurrentPopup();
+            readyToDelete.clear();
         }
         ImGui::EndPopup();
     }
     return "";
 }
-void deleteButton(std::string name) {
+void deleteButton(std::string name,pItem toDelete) {
     ImGuiStyle& style = ImGui::GetStyle();
     const ImVec4 defaultButtonColor = style.Colors[ImGuiCol_Button];
     const ImVec4 defaultButtonHoveredColor = style.Colors[ImGuiCol_ButtonHovered];
@@ -662,9 +668,30 @@ void deleteButton(std::string name) {
     style.Colors[ImGuiCol_ButtonHovered] = ImVec4(1.0f, 0.5f, 0.5f, 1.0f);
     style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.8f, 0.0f, 0.0f, 1.0f);
     if (ImGui::Button(std::string("##delete"+ name).c_str())) {
-        std::cout<<"ready to delete"<<std::endl;
-        Take::holdon().alertWindow = confirmDelete;
-        //toDelete = item;
+        Take& take = Take::holdon();
+        take.alertWindow = confirmDelete;
+        gui::editLayer = 0;
+        gui::readyToDelete.insert(toDelete);
+    }
+    style.Colors[ImGuiCol_Button] = defaultButtonColor;
+    style.Colors[ImGuiCol_ButtonHovered] = defaultButtonHoveredColor;
+    style.Colors[ImGuiCol_ButtonActive] = defaultButtonActiveColor;
+}
+
+void deleteButton(std::string name,const Layer& toDeleteLayer) {
+    ImGuiStyle& style = ImGui::GetStyle();
+    const ImVec4 defaultButtonColor = style.Colors[ImGuiCol_Button];
+    const ImVec4 defaultButtonHoveredColor = style.Colors[ImGuiCol_ButtonHovered];
+    const ImVec4 defaultButtonActiveColor = style.Colors[ImGuiCol_ButtonActive];
+    style.Colors[ImGuiCol_Button] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(1.0f, 0.5f, 0.5f, 1.0f);
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.8f, 0.0f, 0.0f, 1.0f);
+    if (ImGui::Button(std::string("##delete"+ name).c_str())) {
+        Take& take = Take::holdon();
+        take.alertWindow = confirmDelete;
+        gui::editLayer = 0;
+        for (auto item : toDeleteLayer.itemlist)
+            gui::readyToDelete.insert(item);
     }
     style.Colors[ImGuiCol_Button] = defaultButtonColor;
     style.Colors[ImGuiCol_ButtonHovered] = defaultButtonHoveredColor;
@@ -697,7 +724,7 @@ void createPrimitiveList() {
                 if (layer != layers.end()-1)
                     std::swap(*layer,*(layer+1));
             ImGui::SameLine();
-            deleteButton(buttonIdentifier);
+            deleteButton(buttonIdentifier,*layer);
             ImGui::SameLine();
             if (layer->visable)
                 ImGui::SetNextItemOpen(true, ImGuiCond_Once);
@@ -713,6 +740,15 @@ void createPrimitiveList() {
     if (toRearrange){
         std::stable_sort(pr::mainPrimitiveList.begin(),pr::mainPrimitiveList.end(),comparePrimitive);
         std::cout<<"ReArrange"<<std::endl;
+    }
+    if (toDelete){
+        record.primitiveList.erase(std::remove_if(
+            record.primitiveList.begin(), record.primitiveList.end(),
+            [](pItem x) { return readyToDelete.count(x); }),
+        record.primitiveList.end());
+        layers.erase(std::remove_if(layers.begin(), layers.end(),[](Layer x) { return x.itemlist.empty(); }),layers.end());
+        readyToDelete.clear();
+        toDelete = false;
     }
 }
 
