@@ -46,7 +46,7 @@ void Face::draw(bool highlighted){
     setColor(highlighted);
     //thickness
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,1.0f);
+    glUniform1f(sizeLoc,2.0f);
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

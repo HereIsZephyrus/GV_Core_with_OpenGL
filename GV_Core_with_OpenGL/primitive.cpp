@@ -91,10 +91,14 @@ void Primitive::rend(GLuint& program){
     GLuint colorLoc = glGetUniformLocation(program,"setColor");
     glUniform4f(colorLoc,color.x,color.y,color.z,color.w);
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    if (shape == GL_POINTS)
-        glUniform1f(sizeLoc,ShaderStyle::getStyle().pointsize / camera.getZoom());
-    else
-        glUniform1f(sizeLoc,ShaderStyle::getStyle().thickness / camera.getZoom());
+    if (!ShaderStyle::getStyle().toFill){
+        if (shape == GL_POINTS)
+            glUniform1f(sizeLoc,ShaderStyle::getStyle().pointsize / camera.getZoom());
+        else
+            glUniform1f(sizeLoc,ShaderStyle::getStyle().thickness / camera.getZoom());
+    }else{
+        glUniform1f(sizeLoc,2.0f);
+    }
 }
 void Primitive::draw(){
     //std::cout<<"Draw is running"<<std::endl;

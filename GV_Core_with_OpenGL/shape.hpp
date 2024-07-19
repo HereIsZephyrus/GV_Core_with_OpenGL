@@ -93,7 +93,7 @@ public:
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
         if (notShowLineStyle)
-            this->pointSize = 5.0f;
+            this->pointSize = 2.0f;
         else
             this->pointSize = primitive->pointsize;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
@@ -124,15 +124,15 @@ public:
     Element(primitive){
         ShaderStyle& style = ShaderStyle::getStyle();
         if (notShowLineStyle)
-            this->lineWidth = 5.0f;
+            this->lineWidth = 2.0f;
         else
             this->lineWidth = primitive->thickness;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_LINES;
         vertexIndex = {startIndex,endIndex};
-        point[0] = std::make_shared<Point>(primitive,vertexIndex[0]);
+        point[0] = std::make_shared<Point>(primitive,vertexIndex[0],notShowLineStyle);
         primitive->elementList.push_back(point[0]);
-        point[1] = std::make_shared<Point>(primitive,vertexIndex[1]);
+        point[1] = std::make_shared<Point>(primitive,vertexIndex[1],notShowLineStyle);
         primitive->elementList.push_back(point[1]);
         calcGeoCenter();
         type = TopoType::line;
