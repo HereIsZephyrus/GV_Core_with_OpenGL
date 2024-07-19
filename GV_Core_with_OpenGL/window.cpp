@@ -575,17 +575,23 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
         currentLayer = countLayer;
         const std::string layerID = std::to_string(countLayer);
         bool isSelected = gui::focusedLayers.count(currentLayer);
-        if (isSelected)
-            (*item)->primitive->setHold(true);
-        else if (!remainList)
-                (*item)->primitive->setHold(false);
         if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
             gui::editLayer = currentLayer;
-            gui::focusedLayers.insert(currentLayer);
+            if (!remainList){
+                gui::focusedLayers.clear();
+                Take::holdon().holdonObjList.clear();
+            }
             record.state = interectState::holding;
+            if (gui::focusedLayers.count((*item)->primitive->priority) == 0)
+                Take::holdon().holdonObjList.push_back((*item)->primitive);
+            (*item)->primitive->setHold(true);
+            gui::focusedLayers.insert((*item)->primitive->priority);
+            gui::editLayer = (*item)->primitive->priority;
             isSelected = true;
             isActive = true;
         }
+        if (!isSelected && !remainList)
+                (*item)->primitive->setHold(false);
         ImGui::SameLine();
         ImGui::Checkbox(std::string("##" + layerID).c_str(),&((*item)->primitive->visable));
         ImGui::SameLine();

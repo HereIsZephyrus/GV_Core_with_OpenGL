@@ -53,11 +53,11 @@ int main(int argc, const char * argv[]) {
             // detect hold
             if (WindowParas::getInstance().mainWindowFocused && openDetect && !record.dragingMode && record.pressLeft){
                 bool selectThisPrimitive = primitiveSelectDetect(primitive->get());
+                if (!remainList && selectThisPrimitive && !(*primitive)->getHold()){
+                    gui::focusedLayers.clear();
+                    take.holdonObjList.clear();
+                }
                 if (selectThisPrimitive){
-                    if (!remainList){
-                        gui::focusedLayers.clear();
-                        take.holdonObjList.clear();
-                    }
                     record.state = interectState::holding;
                     if (gui::focusedLayers.count((*primitive)->priority) == 0)
                         Take::holdon().holdonObjList.push_back(primitive->get());
