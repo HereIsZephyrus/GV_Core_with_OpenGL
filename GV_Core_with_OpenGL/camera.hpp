@@ -58,6 +58,12 @@ public:
         updateProjectionMatrix();
         updateViewMatrix();
     }
+    void setPosition(glm::vec2 primitivePosition){
+        position.x = primitivePosition.x;
+        position.y = primitivePosition.y;
+        updateProjectionMatrix();
+        updateViewMatrix();
+    }
 private:
     Camera2D();
     glm::vec2 position;

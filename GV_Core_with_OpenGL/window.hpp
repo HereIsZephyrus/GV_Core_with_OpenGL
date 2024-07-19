@@ -74,12 +74,16 @@ extern std::array<ItemInfo, static_cast<int>(Shape::COUNT)> itemInfo;
 extern std::string inputString;
 extern std::set<GLuint> focusedLayers;
 extern GLuint editLayer ;
-extern bool isActive;
+extern bool isActive,toDelete;
+extern std::set<pItem> readyToDelete;
 void DrawGUI();
 void spiltUI();
 void createPrimitiveList();
 void drawLayerList(const std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange);
+void deleteButton(std::string name,const Layer& toDeleteLayer);
+void deleteButton(std::string name,pItem toDeleteItem);
 std::string inputLayerName();
+std::string confirmDelete();
 }
 
 #endif /* window_hpp */

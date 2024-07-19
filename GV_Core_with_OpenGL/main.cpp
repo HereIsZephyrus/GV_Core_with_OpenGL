@@ -51,6 +51,8 @@ int main(int argc, const char * argv[]) {
         bool remainList = record.pressCtrl || record.pressShift;
         for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
             // detect hold
+            if (!(*primitive)->visable || !(*primitive)->layerVisable)
+                continue;
             if (WindowParas::getInstance().mainWindowFocused && openDetect && !record.dragingMode && record.pressLeft){
                 bool selectThisPrimitive = primitiveSelectDetect(primitive->get());
                 if (openDetect && !remainList && record.state == interectState::holding && selectThisPrimitive && !(*primitive)->getHold()){
@@ -70,11 +72,9 @@ int main(int argc, const char * argv[]) {
             }
             hasHolding |= (*primitive)->getHold();
             // draw elements
-            if ((*primitive)->visable && (*primitive)->layerVisable){
-                (*primitive)->useShader();
-                for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
-                    (*element)->draw((*primitive)->getHold());
-            }
+            (*primitive)->useShader();
+            for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
+                (*element)->draw((*primitive)->getHold());
         }
         if (openDetect && record.state == interectState::holding && !hasHolding && !gui::isActive && record.pressLeft){
             gui::focusedLayers.clear();
