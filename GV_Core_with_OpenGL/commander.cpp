@@ -215,10 +215,10 @@ static bool checkCursorFocus(){
     //std::cout<<cursorX<<' '<<cursorY<<std::endl;
     if (cursorX < 0 || cursorX > windowPara.SCREEN_WIDTH/windowPara.xScale || cursorY< gui::menuBarHeight || cursorY > windowPara.SCREEN_HEIGHT/windowPara.yScale)
         return  false;
-    bool openDetect = ((Records::getState().state == interectState::holding) || (Records::getState().state == interectState::toselect));
-    if (openDetect && !Records::getState().dragingMode){
+    //bool openDetect = ((Records::getState().state == interectState::holding) || (Records::getState().state == interectState::toselect));
+    if (!Records::getState().dragingMode){
         Camera2D& camera = Camera2D::getView();
-        const GLfloat dragCameraSpeed = 10.0f,borderDetectRange = 40.0f, menuWidth = 200.0f;
+        const GLfloat dragCameraSpeed = 10.0f * camera.getZoom(),borderDetectRange = 40.0f, menuWidth = 200.0f;
         if (cursorX < borderDetectRange){
             camera.setDeltaPosition(camera.getPosition(), -dragCameraSpeed, 0);
         }

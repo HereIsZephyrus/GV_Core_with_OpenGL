@@ -44,9 +44,10 @@ int main(int argc, const char * argv[]) {
         bool hasHolding = false;
         Records& record = Records::getState();
         Take& take = Take::holdon();
+        upstreamStatus();
         //draw main primitive list
         
-        bool openDetect = ((record.state == interectState::holding) || (record.state == interectState::toselect)); // whether primitives can be select
+        bool openDetect = (! record.drawingPrimitive); // whether primitives can be select
         for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
             // detect hold
             if (WindowParas::getInstance().mainWindowFocused && openDetect && !record.dragingMode && record.pressLeft)
@@ -62,7 +63,10 @@ int main(int argc, const char * argv[]) {
         }
         if (openDetect && !hasHolding && record.pressLeft &&  !record.pressCtrl){
             take.holdonObjList.clear();
-            record.state = interectState::toselect;
+            if (gui::lastState != interectState::none){
+                record.state = gui::lastState;
+                gui::lastState = interectState::none;
+            }
         }
         
         // draw priview

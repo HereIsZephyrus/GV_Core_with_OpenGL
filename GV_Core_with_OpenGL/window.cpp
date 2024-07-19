@@ -116,8 +116,8 @@ void drawScaleText(){
     const glm::vec2 center = camera.getPosition();
     const GLfloat left = -windowPara.SCREEN_WIDTH/ windowPara.xScale / 2.0f *zoom + center.x;
     const GLfloat right = windowPara.SCREEN_WIDTH / windowPara.xScale / 2.0f *zoom+ center.x;
-    const GLfloat bottom = -windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
-    const GLfloat top = windowPara.SCREEN_HEIGHT / windowPara.xScale / 2.0f *zoom+ center.y;
+    const GLfloat bottom = -windowPara.SCREEN_HEIGHT / windowPara.yScale / 2.0f *zoom+ center.y;
+    const GLfloat top = windowPara.SCREEN_HEIGHT / windowPara.yScale / 2.0f *zoom+ center.y;
     GLfloat scale =zoom * 40.0f;
     ImGui::Begin("Transparent Window", NULL,
                  ImGuiWindowFlags_NoDecoration |
@@ -134,7 +134,7 @@ void drawScaleText(){
                  ImGuiWindowFlags_NoBackground);
     //std::cout<<-left<<' '<<top<<std::endl;
     ImGui::SetWindowPos(ImVec2(0, gui::menuBarHeight), ImGuiCond_Always);
-    const GLfloat TEXT_WIDTH =(right-left)/zoom, TEXT_HETGHT = (top-bottom)/zoom - gui::menuBarHeight * zoom;
+    const GLfloat TEXT_WIDTH =(right-left)/zoom, TEXT_HETGHT = (top-bottom)/zoom - gui::menuBarHeight;
     ImGui::SetWindowSize(ImVec2(TEXT_WIDTH, TEXT_HETGHT), ImGuiCond_Always);
     const GLfloat centerX = -left/zoom ,centerY=top/zoom-gui::menuBarHeight ,xbias = -7.0f,ybias = 1.0f;
     ImVec2 textPos = ImVec2(centerX + xbias,centerY + ybias);
@@ -184,6 +184,7 @@ static char buffer[256];
 std::set<GLuint> focusedLayers;
 GLuint editLayer = 0;
 std::string inputString;
+interectState lastState = interectState::none;
 }
 
 namespace gui{
@@ -363,7 +364,7 @@ void renderEditPanel(){
     ImGui::SetNextWindowPos(ImVec2(windowPara.SCREEN_WIDTH/windowPara.xScale, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(windowPara.SIDEBAR_WIDTH, windowPara.SCREEN_HEIGHT/windowPara.yScale/2), ImGuiCond_Always);
     ImGui::Begin("Edit Panel",nullptr, ImGuiWindowFlags_NoMove |ImGuiWindowFlags_NoResize);
-    if (take.createLayer == nullptr){
+    if (take.activeLayer == nullptr){
         if (ImGui::Button("Add Primitive")){
             take.alertWindow = inputLayerName;
             ImGui::OpenPopup("Input Dialog");
@@ -374,15 +375,15 @@ void renderEditPanel(){
             std::string layerName = take.alertWindow();
             if (layerName != ""){
                 record.layerList.push_back(Layer(layerName));
-                take.createLayer = &record.layerList.back();
+                take.activeLayer = &record.layerList.back();
             }
         }
     }
     else{
         if (ImGui::Button("Finish Draw")){
-            if (take.createLayer->itemlist.empty())
+            if (take.activeLayer->itemlist.empty())
                 record.layerList.pop_back();
-            take.createLayer = nullptr;
+            take.activeLayer = nullptr;
         }
         ImGui::SameLine();
         if (ImGui::Button("Create Element"))
@@ -630,9 +631,9 @@ void createPrimitiveList() {
     std::vector<Layer>& layers = record.layerList;
     if (ImGui::BeginListBox("##", ImVec2(250,(record.layerList.size() + itemsNum) * 25.0f))) {
         for (auto layer = layers.begin(); layer!= layers.end(); layer++){
-            bool isSelected = (take.createLayer == &(*layer));
+            bool isSelected = (take.activeLayer == &(*layer));
             if (ImGui::Selectable(std::string("##Select" + layer->name).c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
-                take.createLayer = &(*layer);
+                take.activeLayer = &(*layer);
                 record.state = interectState::drawing;
             }
             ImGui::SameLine();
@@ -664,6 +665,11 @@ void createPrimitiveList() {
     if (!remainList && !isActive && record.pressLeft){
         gui::focusedLayers.clear();
         take.holdonObjList.clear();
+        //std::cout<<static_cast<int>(record.state)<<' '<<static_cast<int>(gui::lastState)<<std::endl;
+        if (gui::lastState != interectState::none){
+            record.state = gui::lastState;
+            gui::lastState = interectState::none;
+        }
     }
 }
 

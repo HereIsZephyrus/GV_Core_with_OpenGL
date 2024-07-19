@@ -8,7 +8,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "D5669937-F427-4357-A29C-698891AC9D0B"
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GV_Core_with_OpenGL/controller/commander_collection.hpp"
@@ -24,7 +24,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "10017811-E4D9-4AED-A32F-9303CFFEA6B0"
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GV_Core_with_OpenGL/controller/commander_collection.hpp"
@@ -151,33 +151,17 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FE6189C1-D50A-4728-9575-9D1690FC85B8"
+            uuid = "56C298BA-8B0B-47BA-81D3-BE0CA529522D"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "GV_Core_with_OpenGL/commander.cpp"
+            filePath = "GV_Core_with_OpenGL/window.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "202"
-            endingLineNumber = "202"
-            landmarkName = "MeauCallback(window, key, scancode, action, mods)"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
+            landmarkName = "initOpenGL(window)"
             landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "79DBADDC-F4D2-4BD5-8A5F-08034B2D541D"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "GV_Core_with_OpenGL/primitive.cpp"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
-            landmarkName = "Primitive::rend(program)"
-            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -190,9 +174,9 @@
             filePath = "GV_Core_with_OpenGL/commander.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "209"
-            endingLineNumber = "209"
-            landmarkName = "MeauCallback(window, key, scancode, action, mods)"
+            startingLineNumber = "225"
+            endingLineNumber = "225"
+            landmarkName = "checkCursorFocus()"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>

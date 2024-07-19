@@ -28,4 +28,5 @@ void editPrimitive();
 void generateNewPrimitive();
 void generatePreviewPrimitive(const vertexArray&);
 void generateNewPrimitiveList(Shape shape,Primitive* primitive);
+void upstreamStatus();
 #endif /* factor_hpp */

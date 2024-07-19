@@ -69,6 +69,7 @@ namespace gui {
 constexpr GLfloat detactBias = 0.48f;
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
+extern interectState lastState;
 extern std::array<ItemInfo, static_cast<int>(Shape::COUNT)> itemInfo;
 extern std::string inputString;
 void DrawGUI();
