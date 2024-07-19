@@ -277,7 +277,7 @@ private:
 };
 class OutBound{
 public:
-    OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,glm::mat4* transMat){
+    OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,glm::mat3* transMat){
         vertices = {minX, minY, 0.0,minX, maxY, 0.0,maxX, maxY, 0.0,maxX, minY, 0.0,};
         geoCenter = {(minX + maxX)/2,(minY + maxY)/2};
         rotateCenter = geoCenter;
@@ -288,7 +288,7 @@ public:
     glm::vec2 getRotateCenter() const{return rotateCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
     void draw(bool highlighted);
-    glm::mat4* getTransmat(){return refTransMat;}
+    glm::mat3* getTransmat(){return refTransMat;}
     int cursorDetect(GLdouble xpos,GLdouble ypos);
     const glm::vec3 getSize(){return size;}
     const GLfloat getMinX(){return vertices[0];}
@@ -296,7 +296,7 @@ public:
     const GLfloat getMaxX(){return vertices[6];}
     const GLfloat getMaxY(){return vertices[7];}
 private:
-    glm::mat4* refTransMat;
+    glm::mat3* refTransMat;
     glm::vec2 geoCenter,rotateCenter;
     vertexArray vertices;
     glm::vec3 size;

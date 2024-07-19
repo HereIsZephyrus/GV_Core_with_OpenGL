@@ -68,10 +68,10 @@ void Curve::draw(bool highlighted){
     glBindVertexArray(0);
     return;
 }
-void OutBound::draw(bool highlighted){
+//void OutBound::draw(bool highlighted){
     
-    return;
-}
+//    return;
+//}
 void Diagnoal::draw(bool highlighted){
     setColor(highlighted);
     //thickness
@@ -153,10 +153,6 @@ bool Face::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     }
     return inside;
 }
-bool OutBound::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
-   
-    return false;
-}
 bool Curve::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     
     return false;
@@ -207,11 +203,8 @@ bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     }
     return false;
 }
-int OutBound::cursorDetect(GLdouble xpos, GLdouble ypos){
-    return 2;
-}
-int outboundDetect(pElement outbound){
-    return 12;
+int OutBound::cursorDetect(GLdouble xpos,GLdouble ypos){
+    return 0;
 }
 }//namespace pr
 

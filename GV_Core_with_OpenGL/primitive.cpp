@@ -13,6 +13,7 @@
 #include "window.hpp"
 #include "camera.hpp"
 #include "rendering.hpp"
+#include "shape.hpp"
 constexpr GLfloat INF = 1e10;
 Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
@@ -152,7 +153,7 @@ void Primitive::createOutboundElement(){
         if (maxY < vertexY){maxY = vertexY; /*maxYid = i;*/}
     }
     //const std::vector<GLuint> outboundIndex = {minXid,minYid,maxXid,maxYid};
-    outBound = std::make_shared<pr::OutBound>(getSelf(),minX,minY,maxX,maxY);
+    outBound = std::make_shared<pr::OutBound>(minX,minY,maxX,maxY,&transMat);
 }
 static GLfloat lagrange_basis(int i, GLfloat x, const std::vector<GLfloat>& points) {
     GLfloat basis = 1.0f;

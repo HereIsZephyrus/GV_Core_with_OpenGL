@@ -241,7 +241,7 @@ int InterectResponseCheck(GLFWwindow* &window){
     coord::generateCoordinateAxis();
     WindowParas::getInstance().mainWindowFocused = checkCursorFocus();
     if (Records::getState().state == interectState::editing && WindowParas::getInstance().mainWindowFocused)
-        editPrimitive();
+        outboundInterectCheck(Take::holdon().editingPrimitive->outBound);
     return 0;
 }
 

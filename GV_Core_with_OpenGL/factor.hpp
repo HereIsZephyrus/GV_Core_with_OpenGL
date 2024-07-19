@@ -24,7 +24,7 @@ void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY);
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY);
 void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY);
 void toAlignment(vertexArray& array,Shape shape);
-void editPrimitive();
+void outboundInterectCheck(pOutbound);
 void generateNewPrimitive();
 void generatePreviewPrimitive(const vertexArray&);
 void generateNewPrimitiveList(Shape shape,Primitive* primitive);

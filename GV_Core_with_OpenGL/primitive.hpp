@@ -98,6 +98,7 @@ public:
     void setPointsize(GLfloat pointSize){pointsize = pointSize;}
     void setThickness(GLfloat lineWidth){thickness = lineWidth;}
     glm::mat3 transMat;
+    pOutbound outBound;
     Primitive* getSelf(){return m_self;}
     //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
 protected:
@@ -117,7 +118,6 @@ private:
     bool holding;
     Shape drawType;
     GLfloat thickness,pointsize;
-    pOutbound outBound;
 };
 
 typedef std::unique_ptr<Primitive> pPrimitive;

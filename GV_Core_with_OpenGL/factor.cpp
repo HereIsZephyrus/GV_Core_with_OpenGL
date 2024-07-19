@@ -57,7 +57,7 @@ void toAlignment(vertexArray& array,Shape shape){
         array[stride+1] = array[1] + dy;
     }
 }
-void editPrimitive(pOutbound outbound){
+void outboundInterectCheck(pOutbound outbound){
     Take& take = Take::holdon();
     Records& record = Records::getState();
     WindowParas& windowPara = WindowParas::getInstance();
@@ -193,6 +193,7 @@ void editPrimitive(pOutbound outbound){
             move[2][0] = -refX; move[2][1] = -refY;
             take.transMat = take.transMat * move;
         }
+        *outbound->getTransmat() = take.transMat;
     }
 }
 void generateNewPrimitive(){
