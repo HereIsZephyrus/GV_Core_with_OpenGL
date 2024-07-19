@@ -125,7 +125,6 @@ GLfloat distancePointToLineSQ(GLfloat x1,GLfloat y1,GLfloat x2,GLfloat y2, GLflo
     GLfloat distance = a * a / (m * m + 1);
     return distance;
 }
-
 bool Line::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     WindowParas& windowPara = WindowParas::getInstance();
     //std::cout<<"detect line"<<std::endl;
@@ -168,15 +167,45 @@ bool Face::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
 }
 bool OutBound::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
    
-    return true;
+    return false;
 }
 bool Curve::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     
-    return true;
+    return false;
 }
 bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
-    
-    return true;
+    WindowParas& windowPara = WindowParas::getInstance();
+    //std::cout<<"detect Diagnoal"<<std::endl;
+    const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+    const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+    if (isCircle){
+        const GLfloat a = abs(point[0]->getGeoCenter().x - geoCenter.x), b = abs(point[0]->getGeoCenter().y - geoCenter.y);
+        const GLfloat xaxis = (cursorX - geoCenter.x) * (cursorX - geoCenter.x) / (a * a);
+        const GLfloat yaxis = (cursorY - geoCenter.y) * (cursorY - geoCenter.y) / (b * b);
+        if (xaxis + yaxis <= 1)
+            return true;
+    }else{
+        GLfloat minX,minY,maxX,maxY;
+        if (point[0]->getGeoCenter().x > point[1]->getGeoCenter().x){
+            minX = point[1]->getGeoCenter().x;
+            maxX = point[0]->getGeoCenter().x;
+        }
+        else{
+            minX = point[0]->getGeoCenter().x;
+            maxX = point[1]->getGeoCenter().x;
+        }
+        if (point[0]->getGeoCenter().y > point[1]->getGeoCenter().y){
+            minY = point[1]->getGeoCenter().y;
+            maxY = point[0]->getGeoCenter().y;
+        }
+        else{
+            minY = point[0]->getGeoCenter().y;
+            maxY = point[1]->getGeoCenter().y;
+        }
+        if (cursorX >= minX && cursorX <= maxX && cursorY >= minY && cursorY <= maxY)
+            return true;
+    }
+    return false;
 }
 int outboundDetect(pElement outbound){
     return 12;
@@ -203,7 +232,7 @@ void createTopoElements(Primitive* lastpPrimitive){
             break;
         case Shape::RECTANGLE:
             std::cout<<"treat as face"<<std::endl;
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive,false)) );
             break;
         case Shape::POLYGEN:
             std::cout<<"treat as face"<<std::endl;
@@ -214,7 +243,7 @@ void createTopoElements(Primitive* lastpPrimitive){
             std::cout<<"treat as curve"<<std::endl;
             break;
         case Shape::CIRCLE:
-            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive)) );
+            lastpPrimitive->elementList.push_back(std::static_pointer_cast<pr::Element>(std::make_shared<pr::Diagnoal>(lastpPrimitive,true)) );
             std::cout<<"treat as circle"<<std::endl;
             break;
         default:
