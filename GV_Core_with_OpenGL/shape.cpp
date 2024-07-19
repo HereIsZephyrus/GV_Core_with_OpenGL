@@ -31,8 +31,9 @@ void Element::setColor(bool highlighted){
 void Point::draw(bool highlighted){
     setColor(highlighted);
     //thickness
+    const GLfloat zoom = Camera2D::getView().getZoom();
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,pointSize);
+    glUniform1f(sizeLoc,pointSize / zoom);
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -43,8 +44,9 @@ void Point::draw(bool highlighted){
 void Line::draw(bool highlighted){
     setColor(highlighted);
     //thickness
+    const GLfloat zoom = Camera2D::getView().getZoom();
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,lineWidth);
+    glUniform1f(sizeLoc,lineWidth / zoom);
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -67,8 +69,9 @@ void Face::draw(bool highlighted){
 void Curve::draw(bool highlighted){
     setColor(highlighted);
     //thickness
+    const GLfloat zoom = Camera2D::getView().getZoom();
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,lineWidth);
+    glUniform1f(sizeLoc,lineWidth / zoom);
     //std::cout<<"print curve"<<std::endl;
     // load data
     glBindVertexArray(identifier->VAO);
@@ -84,8 +87,9 @@ void OutBound::draw(bool highlighted){
 void Diagnoal::draw(bool highlighted){
     setColor(highlighted);
     //thickness
+    const GLfloat zoom = Camera2D::getView().getZoom();
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,lineWidth);
+    glUniform1f(sizeLoc,lineWidth / zoom);
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -108,12 +112,20 @@ bool Point::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
     const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
     const GLfloat& pointX = (*refVertex)[vertexIndex[0] * stride],pointY = (*refVertex)[vertexIndex[0] * stride + 1];
-    const GLfloat pointDetectRange = 5.0f;
-    if ((cursorX - pointX) * (cursorX - pointX) + (cursorY - pointY) * (cursorY - pointY) <= pointDetectRange * pointDetectRange){
+    const GLfloat pointDetectRange = gui::detactBias * Camera2D::getView().getZoom();
+    if ((cursorX - pointX) * (cursorX - pointX) + (cursorY - pointY) * (cursorY - pointY) <= pointDetectRange * pointDetectRange * pointSize * pointSize){
         return true;
     }
     return false;
 }
+GLfloat distancePointToLineSQ(GLfloat x1,GLfloat y1,GLfloat x2,GLfloat y2, GLfloat x0, GLfloat y0) {
+    const GLfloat m = (y2 - y1) / (x2 - x1);
+    const GLfloat b = y1 - m * x1;
+    const float a = std::abs(m * x0 - y0 + b);
+    GLfloat distance = a * a / (m * m + 1);
+    return distance;
+}
+
 bool Line::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     WindowParas& windowPara = WindowParas::getInstance();
     //std::cout<<"detect line"<<std::endl;
@@ -122,17 +134,17 @@ bool Line::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     const GLfloat& pointX1 = (*refVertex)[vertexIndex[0] * stride],pointY1 = (*refVertex)[vertexIndex[0] * stride + 1];
     const GLfloat& pointX2 = (*refVertex)[vertexIndex[1] * stride],pointY2 = (*refVertex)[vertexIndex[1] * stride + 1];
     const GLfloat zoom = Camera2D::getView().getZoom();
-    const GLfloat lineAngleRange = 0.2f * zoom, paralellRange = 5.0f * zoom;
+    const GLfloat paralellRange = gui::detactBias * zoom;
     bool inTheRange = false,onTheSlop = false;
     if (abs(pointX2- pointX1)< paralellRange){
         inTheRange = (cursorY > pointY1) != (cursorY > pointY2);
-        onTheSlop = (abs(pointX1 - cursorX)< paralellRange) || (abs(pointX2 - cursorX)< paralellRange);
+        onTheSlop = (abs(pointX1 - cursorX)< paralellRange * lineWidth) || (abs(pointX2 - cursorX)< paralellRange * lineWidth);
     }else if (abs(pointY2 - pointY1)<paralellRange){
         inTheRange = (cursorX > pointX1) != (cursorX > pointX2);
-        onTheSlop = (abs(pointY1 - cursorY)< paralellRange) || (abs(pointY2 - cursorY)< paralellRange);
+        onTheSlop = (abs(pointY1 - cursorY)< paralellRange * lineWidth) || (abs(pointY2 - cursorY)< paralellRange * lineWidth);
     }else{
         inTheRange = ((cursorX > pointX1) != (cursorX > pointX2)) && (cursorY > pointY1) != (cursorY > pointY2);
-        onTheSlop = abs((cursorX - pointX1)/ (cursorY - pointY1) - (pointX2 - pointX1)/ (pointY2 - pointY1)) <= lineAngleRange;
+        onTheSlop = distancePointToLineSQ(pointX1,pointY1,pointX2,pointY2,cursorX,cursorY)<= paralellRange * paralellRange* lineWidth * lineWidth;
     }
     if (inTheRange && onTheSlop)
         return true;
