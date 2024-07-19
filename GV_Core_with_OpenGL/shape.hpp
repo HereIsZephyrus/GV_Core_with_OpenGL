@@ -287,6 +287,7 @@ public:
             this->lineWidth = 5.0f;
         else
             this->lineWidth = primitive->thickness;
+        this->isFill = style.toFill;
         this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_LINES;
         vertexIndex = {startIndex,endIndex};
@@ -312,7 +313,7 @@ protected:
 private:
     GLfloat lineWidth;
     pPoint point[2];
-    bool isCircle;
+    bool isCircle,isFill;
 };
 int outboundDetect(pElement outbound);
 }//namespace pr

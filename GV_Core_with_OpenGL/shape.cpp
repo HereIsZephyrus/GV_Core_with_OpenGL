@@ -180,10 +180,16 @@ bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
     if (isCircle){
         const GLfloat a = abs(point[0]->getGeoCenter().x - geoCenter.x), b = abs(point[0]->getGeoCenter().y - geoCenter.y);
-        const GLfloat xaxis = (cursorX - geoCenter.x) * (cursorX - geoCenter.x) / (a * a);
-        const GLfloat yaxis = (cursorY - geoCenter.y) * (cursorY - geoCenter.y) / (b * b);
-        if (xaxis + yaxis <= 1)
-            return true;
+        const GLfloat xaxis = (cursorX - geoCenter.x) * (cursorX - geoCenter.x);
+        const GLfloat yaxis = (cursorY - geoCenter.y) * (cursorY - geoCenter.y) ;
+        if (isFill)
+            return xaxis / (a * a) + yaxis / (b * b) <= 1;
+        else{
+            GLfloat currentLineWidth = lineWidth * Camera2D::getView().getZoom();
+            bool outside = xaxis / ((a + currentLineWidth/2) * (a + currentLineWidth/2) )+ yaxis / ((b + currentLineWidth/2) * (b + lineWidth/2)) <=1;
+            bool inside = xaxis / ((a - currentLineWidth/2) * (a - currentLineWidth/2) )+ yaxis / ((b - currentLineWidth/2) * (b - lineWidth/2)) >=1;
+            return outside && inside;
+        }
     }else{
         GLfloat minX,minY,maxX,maxY;
         if (point[0]->getGeoCenter().x > point[1]->getGeoCenter().x){
@@ -202,8 +208,14 @@ bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
             minY = point[0]->getGeoCenter().y;
             maxY = point[1]->getGeoCenter().y;
         }
-        if (cursorX >= minX && cursorX <= maxX && cursorY >= minY && cursorY <= maxY)
-            return true;
+        if (isFill)
+            return cursorX >= minX && cursorX <= maxX && cursorY >= minY && cursorY <= maxY;
+        else{
+            GLfloat currentLineWidth = lineWidth * Camera2D::getView().getZoom()* gui::detactBias;
+            bool outside = cursorX >= (minX - currentLineWidth/2) && cursorX <= (maxX + currentLineWidth/2) && (cursorY >= minY-currentLineWidth/2) && (cursorY <= maxY + currentLineWidth/2);
+            bool inside = cursorX >= (minX + currentLineWidth/2) && cursorX <= (maxX - currentLineWidth/2) && (cursorY >= minY + currentLineWidth/2) && (cursorY <= maxY - currentLineWidth/2);
+            return outside && !inside;
+        }
     }
     return false;
 }
