@@ -12,21 +12,9 @@ namespace pr{
 void Element::setColor(bool highlighted){
     //color
     GLuint colorLoc = glGetUniformLocation(shader->program,"setColor");
-    if (highlighted){
-        ImVec4 backgroundColor = WindowParas::getInstance().backgroundColor;
-        if (shape == GL_POINTS || shape == GL_POINT){
-            glUniform4f(colorLoc,1-backgroundColor.x,1-backgroundColor.y,1-backgroundColor.z,1.0f);
-        }else if (shape ==GL_LINES || shape == GL_LINE_LOOP){
-            glUniform4f(colorLoc,1-backgroundColor.x - 0.2f,1-backgroundColor.y - 0.2f,1-backgroundColor.z - 0.2f,1.0f);
-        }
-        else{
-            //glUnrangtaiform4f(colorLoc,style.color.x+ 0.1f,style.color.y+ 0.1f,style.color.z+0.1f,style.color.w);
-            glUniform4f(colorLoc,style.color.x + 0.1f,style.color.y+ 0.1f,style.color.z + 0.1f,style.color.w);
-        }
-    }
-    else{
-        glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
-    }
+    GLuint brightLoc = glGetUniformLocation(shader->program,"brightness");
+    glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
+    glUniform1f(brightLoc,1+0.2f*static_cast<int>(highlighted));
 }
 void Point::draw(bool highlighted){
     setColor(highlighted);
