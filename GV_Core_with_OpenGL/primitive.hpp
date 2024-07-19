@@ -41,9 +41,11 @@ class Point;
 class Line;
 class Face;
 class Curve;
+class OutBound;
 class Diagnoal;
 }
 typedef std::shared_ptr<pr::Element> pElement;
+typedef std::shared_ptr<pr::OutBound> pOutbound;
 class Primitive{
 public:
     Primitive(vertexArray vertices,Shape shape,GLsizei stride);
@@ -79,7 +81,10 @@ public:
         return priority<x.priority;
     }
     void createOutboundElement();
-    void destroyOutboundElement();
+    void destroyOutboundElement(){
+        outBound.reset();
+        outBound = nullptr;
+    }
     void useShader();
     std::string getName() const {return name;}
     bool getHold() const{return holding;}
@@ -93,6 +98,7 @@ public:
     void setPointsize(GLfloat pointSize){pointsize = pointSize;}
     void setThickness(GLfloat lineWidth){thickness = lineWidth;}
     glm::mat3 transMat;
+    Primitive* getSelf(){return m_self;}
     //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
 protected:
     void generateCurve();
@@ -105,11 +111,13 @@ private:
     GLenum shape;
     GLsizei stride,indexLen;
     Shader* shader;
+    Primitive* m_self;
     glm::vec4 color;
     std::string name;
     bool holding;
     Shape drawType;
     GLfloat thickness,pointsize;
+    pOutbound outBound;
 };
 
 typedef std::unique_ptr<Primitive> pPrimitive;

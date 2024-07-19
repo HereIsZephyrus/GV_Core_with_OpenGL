@@ -176,11 +176,11 @@
 		3278B0C02C097C5500DF6489 /* GV_Core_with_OpenGL */ = {
 			isa = PBXGroup;
 			children = (
+				3278B0C12C097C5500DF6489 /* main.cpp */,
 				323A00EC2C0AC7440056BAD1 /* commander.cpp */,
 				323A00ED2C0AC7440056BAD1 /* commander.hpp */,
 				322E52F82C13F6E2002AFB73 /* window.cpp */,
 				322E52F92C13F6E2002AFB73 /* window.hpp */,
-				3278B0C12C097C5500DF6489 /* main.cpp */,
 				328C8CFC2C3C1D69006160E6 /* objectmodel.cpp */,
 				328C8CFD2C3C1D69006160E6 /* objectmodel.hpp */,
 				322E53042C14A5CF002AFB73 /* rendering.cpp */,

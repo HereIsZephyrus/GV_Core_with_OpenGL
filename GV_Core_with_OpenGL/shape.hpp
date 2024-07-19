@@ -61,7 +61,6 @@ public:
     const indexArray& getVertexIndex() const{return vertexIndex;}
     virtual bool cursorSelectDetect(GLdouble xpos,GLdouble ypos) = 0;
     glm::vec2 getGeoCenter() const{return geoCenter;}
-    glm::vec2 getRotateCenter() const{return rotateCenter;};
 protected:
     void bindEBObuffer(){
         glGenBuffers(1, &EBO);
@@ -73,7 +72,7 @@ protected:
     virtual void calcGeoCenter()=0;
     pVertexArray refVertex;
     indexArray vertexIndex;
-    glm::vec2 geoCenter,rotateCenter;
+    glm::vec2 geoCenter;
     bool visable;
     GLuint EBO;
     const primitiveIdentifier* identifier;
@@ -114,7 +113,6 @@ protected:
     void calcGeoCenter(){
         geoCenter.x = (*refVertex)[vertexIndex[0]* stride];
         geoCenter.y = (*refVertex)[vertexIndex[0]* stride + 1];
-        rotateCenter = geoCenter;
     }
 private:
     GLfloat pointSize;
@@ -153,7 +151,6 @@ protected:
         glm::vec2 centerLoc1 = point[0]->getGeoCenter(),centerLoc2 = point[1]->getGeoCenter();
         geoCenter.x = (centerLoc1.x + centerLoc2.x)/2;
         geoCenter.y = (centerLoc1.y + centerLoc2.y)/2;
-        rotateCenter = geoCenter;
     }
 private:
     GLfloat lineWidth;
@@ -196,7 +193,6 @@ protected:
         }
         geoCenter.x /= vertexNum;
         geoCenter.y /= vertexNum;
-        rotateCenter = geoCenter;
     }
 private:
     std::vector<pLine> line;
@@ -237,49 +233,10 @@ protected:
         }
         geoCenter.x /= vertexNum;
         geoCenter.y /= vertexNum;
-        rotateCenter = geoCenter;
     }
 private:
     GLfloat lineWidth;
     std::vector<pPoint> controlPoints;
-};
-class OutBound: public Element{
-public:
-    OutBound(Primitive* primitive,GLuint startIndex,GLuint endIndex,bool notShowLineStyle = false,bool visable = true):
-    Element(primitive){
-        ShaderStyle& style = ShaderStyle::getStyle();
-        this->lineWidth = 5.0f;
-        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
-        shape = GL_LINES;
-        vertexArray::const_iterator itp1 = (*refVertex).begin() + startIndex * stride;
-        vertexArray::const_iterator itp2 = (*refVertex).begin() + endIndex * stride;
-        const GLfloat p1x = *(itp1) , p1y = *(itp1+1);
-        const GLfloat p2x = *(itp2) , p2y = *(itp2+1);
-        addPoint(Take::holdon().drawingVertices, p1x, p2y);
-        addPoint(Take::holdon().drawingVertices, p1y, p2x);
-        vertexIndex = {0,2,1,3};
-        for (int i = 0; i<4; i++)
-            point[i] = std::make_shared<Point>(primitive,vertexIndex[i]);
-        calcGeoCenter();
-        type = TopoType::outBound;
-        this->visable = visable;
-        bindEBObuffer();
-    }
-    glm::vec2 getCenterLocation() const{return geoCenter;}
-    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
-    void draw(bool highlighted);
-protected:
-    void calcGeoCenter(){
-        geoCenter.x = 0;
-        geoCenter.y = 0;
-        glm::vec2 centerLoc1 = point[0]->getGeoCenter(),centerLoc2 = point[2]->getGeoCenter();
-        geoCenter.x = (centerLoc1.x + centerLoc2.x)/2;
-        geoCenter.y = (centerLoc1.y + centerLoc2.y)/2;
-        rotateCenter = geoCenter;
-    }
-private:
-    GLfloat lineWidth;
-    pPoint point[4];
 };
 class Diagnoal: public Element{
 public:
@@ -312,12 +269,37 @@ protected:
         glm::vec2 centerLoc1 = point[0]->getGeoCenter(),centerLoc2 = point[1]->getGeoCenter();
         geoCenter.x = (centerLoc1.x + centerLoc2.x)/2;
         geoCenter.y = (centerLoc1.y + centerLoc2.y)/2;
-        rotateCenter = geoCenter;
     }
 private:
     GLfloat lineWidth;
     pPoint point[2];
     bool isCircle,isFill;
+};
+class OutBound{
+public:
+    OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,glm::mat4* transMat){
+        vertices = {minX, minY, 0.0,minX, maxY, 0.0,maxX, maxY, 0.0,maxX, minY, 0.0,};
+        geoCenter = {(minX + maxX)/2,(minY + maxY)/2};
+        rotateCenter = geoCenter;
+        refTransMat = transMat;
+        size = {maxX - minX, maxY - minY, 0.0f};
+    }
+    glm::vec2 getGeocenter() const{return geoCenter;}
+    glm::vec2 getRotateCenter() const{return rotateCenter;}
+    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
+    void draw(bool highlighted);
+    glm::mat4* getTransmat(){return refTransMat;}
+    int cursorDetect(GLdouble xpos,GLdouble ypos);
+    const glm::vec3 getSize(){return size;}
+    const GLfloat getMinX(){return vertices[0];}
+    const GLfloat getMinY(){return vertices[1];}
+    const GLfloat getMaxX(){return vertices[6];}
+    const GLfloat getMaxY(){return vertices[7];}
+private:
+    glm::mat4* refTransMat;
+    glm::vec2 geoCenter,rotateCenter;
+    vertexArray vertices;
+    glm::vec3 size;
 };
 //typedef std::shared_ptr<Diagnoal> pDiagnoal;
 int outboundDetect(pElement outbound);

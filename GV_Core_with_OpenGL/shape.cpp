@@ -207,6 +207,9 @@ bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     }
     return false;
 }
+int OutBound::cursorDetect(GLdouble xpos, GLdouble ypos){
+    return 2;
+}
 int outboundDetect(pElement outbound){
     return 12;
 }

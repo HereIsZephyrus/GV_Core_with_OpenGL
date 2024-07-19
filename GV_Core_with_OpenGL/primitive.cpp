@@ -13,9 +13,11 @@
 #include "window.hpp"
 #include "camera.hpp"
 #include "rendering.hpp"
+constexpr GLfloat INF = 1e10;
 Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
+    m_self = this;
     this->vertices = vertices;
     this->elementList.clear();
     this->holding = false;
@@ -25,6 +27,7 @@ Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(str
     this->drawType = shape;
     ShaderStyle& style = ShaderStyle::getStyle();
     setColor(style.drawColor);
+    this->outBound = nullptr;
     this->thickness = style.thickness;
     this->pointsize = style.pointsize;
     switch (shape) {
@@ -139,10 +142,17 @@ void Primitive::transformVertex(const indexArray& vertexIndex,const glm::mat3& i
     }
 }
 void Primitive::createOutboundElement(){
-    
-}
-void Primitive::destroyOutboundElement(){
-    
+    GLfloat minX = INF,minY = INF,maxX = -INF,maxY = -INF;
+    //GLuint minXid = 0, minYid = 0, maxXid = 0, maxYid = 0;
+    for (int i=0; i<getVertexNum(); i++){
+        const GLfloat vertexX = vertices[i * stride], vertexY = vertices[i * stride + 1];
+        if (minX > vertexX){minX = vertexX; /*minXid = i;*/}
+        if (minY > vertexY){minY = vertexY; /*minYid = i;*/}
+        if (maxX < vertexX){maxX = vertexX; /*maxXid = i;*/}
+        if (maxY < vertexY){maxY = vertexY; /*maxYid = i;*/}
+    }
+    //const std::vector<GLuint> outboundIndex = {minXid,minYid,maxXid,maxYid};
+    outBound = std::make_shared<pr::OutBound>(getSelf(),minX,minY,maxX,maxY);
 }
 static GLfloat lagrange_basis(int i, GLfloat x, const std::vector<GLfloat>& points) {
     GLfloat basis = 1.0f;
