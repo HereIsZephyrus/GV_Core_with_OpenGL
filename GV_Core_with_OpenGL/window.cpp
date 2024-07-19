@@ -185,6 +185,7 @@ std::set<GLuint> focusedLayers;
 GLuint editLayer = 0;
 std::string inputString;
 interectState lastState = interectState::none;
+bool isActive = false;
 }
 
 namespace gui{
@@ -533,10 +534,10 @@ static bool comparePrimitive(const pPrimitive& a, const pPrimitive& b) {
 void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange){
     if (items.empty())
         return;
-    std::vector<Primitive*>& holdonObjList = Take::holdon().holdonObjList;
     static bool show_delete_popup = false;
     std::vector<pItem>::iterator toDelete = items.end();
     Records& record = Records::getState();
+    bool remainList = record.pressCtrl || record.pressShift;
     for (auto item = items.begin(); item!=items.end(); item++){
         countLayer++;
         std::string& currentName = (*item)->name;
@@ -546,9 +547,10 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
         currentLayer = countLayer;
         const std::string layerID = std::to_string(countLayer);
         bool isSelected = gui::focusedLayers.count(currentLayer);
-        if (isSelected && !(*item)->primitive->getHold())
-            holdonObjList.push_back((*item)->primitive);
-        (*item)->primitive->setHold(isSelected);
+        if (isSelected)
+            (*item)->primitive->setHold(true);
+        else if (!remainList)
+                (*item)->primitive->setHold(false);
         if (ImGui::Selectable(layerID.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
             gui::editLayer = currentLayer;
             gui::focusedLayers.insert(currentLayer);
@@ -626,8 +628,8 @@ void createPrimitiveList() {
     GLuint countLayer = 0;
     Records& record = Records::getState();
     Take& take = Take::holdon();
-    const bool remainList = record.pressShift;
-    bool isActive = false,toRearrange = false;
+    bool toRearrange = false;
+    isActive = false;
     std::vector<Layer>& layers = record.layerList;
     if (ImGui::BeginListBox("##", ImVec2(250,(record.layerList.size() + itemsNum) * 25.0f))) {
         for (auto layer = layers.begin(); layer!= layers.end(); layer++){
@@ -661,15 +663,6 @@ void createPrimitiveList() {
     if (toRearrange){
         std::stable_sort(pr::mainPrimitiveList.begin(),pr::mainPrimitiveList.end(),comparePrimitive);
         std::cout<<"ReArrange"<<std::endl;
-    }
-    if (!remainList && !isActive && record.pressLeft){
-        gui::focusedLayers.clear();
-        take.holdonObjList.clear();
-        //std::cout<<static_cast<int>(record.state)<<' '<<static_cast<int>(gui::lastState)<<std::endl;
-        if (gui::lastState != interectState::none){
-            record.state = gui::lastState;
-            gui::lastState = interectState::none;
-        }
     }
 }
 

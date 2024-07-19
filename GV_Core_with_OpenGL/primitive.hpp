@@ -86,7 +86,6 @@ public:
     }
     void createOutboundElement();
     void destroyOutboundElement();
-    Primitive* getSelf() {return m_self;}
     void useShader();
     glm::mat3 transMat;
     //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}

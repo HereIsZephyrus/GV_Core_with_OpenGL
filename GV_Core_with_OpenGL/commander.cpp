@@ -271,25 +271,6 @@ bool primitiveSelectDetect(Primitive* primitive){
         pElement characterPrimitive = primitive -> elementList.back();
         selected = (*characterPrimitive).cursorSelectDetect(xpos, ypos);
     }
-    
-    if (selected){
-        //std::cout<<"selected"<<std::endl;
-        record.state = interectState::holding;
-        if (primitive->getHold())
-            return selected;
-        else{
-            if (!record.pressCtrl)
-                Take::holdon().holdonObjList.clear();
-            Take::holdon().holdonObjList.push_back(primitive);
-        }
-        primitive->setHold(selected);
-        //std::cout<<"selected"<<Take::holdon().holdonObjList.size()<<std::endl;
-    }
-    else{
-       // std::cout<<"not selected"<<Take::holdon().holdonObjList.size()<<std::endl;
-        if (!record.pressCtrl)
-            primitive->setHold(selected);
-    }
     return selected;
 }
 
