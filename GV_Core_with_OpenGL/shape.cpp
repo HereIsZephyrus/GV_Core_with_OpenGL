@@ -68,10 +68,6 @@ void Curve::draw(bool highlighted){
     glBindVertexArray(0);
     return;
 }
-//void OutBound::draw(bool highlighted){
-    
-//    return;
-//}
 void Diagnoal::draw(bool highlighted){
     setColor(highlighted);
     //thickness
@@ -79,6 +75,7 @@ void Diagnoal::draw(bool highlighted){
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
     glUniform1f(sizeLoc,lineWidth / zoom);
     // load data
+    glBindVertexArray(identifier->VAO);
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
@@ -202,6 +199,37 @@ bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
         }
     }
     return false;
+}
+OutBound::OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,glm::mat3* transMat){
+    vertices = {minX, minY, 0.0,minX, maxY, 0.0,maxX, maxY, 0.0,maxX, minY, 0.0,};
+    geoCenter = {(minX + maxX)/2,(minY + maxY)/2};
+    rotateCenter = geoCenter;
+    refTransMat = transMat;
+    size = {maxX - minX, maxY - minY, 0.0f};
+    shader = nullptr;
+    glGenVertexArrays(1,&identifier.VAO);
+    glGenBuffers(1,&identifier.VBO);
+    glBindVertexArray(identifier.VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3 * sizeof (GLfloat),(GLvoid *)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(identifier.VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    
+};
+void OutBound::draw(){
+    if (shader == nullptr){
+        std::cerr<<"havn't bind shader"<<std::endl;
+        return;
+    }
+    else
+        shader ->use();
+    for (const auto &element: elements)
+        element->draw(true);//highlighted
+    return;
 }
 int OutBound::cursorDetect(GLdouble xpos,GLdouble ypos){
     return 0;

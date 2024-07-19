@@ -122,17 +122,6 @@ void Primitive::updateVertex(){
     glBindVertexArray(0);
 }
 
-//void Primitive::transform(const glm::mat3& inputMat){
-//    //transfered = vertices;
-//    for (auto vertex = vertices.begin(); vertex != vertices.end(); vertex+=stride) {
-//        const GLfloat rawX = *(vertex), rawY = *(vertex+1);
-//        //std::cout<< inputMat[0][0]<<' '<< inputMat[1][0]<< inputMat[2][0]<<std::endl;
-//        //std::cout<< inputMat[0][1]<<' '<< inputMat[1][1]<< inputMat[2][1]<<std::endl;
-//        *(vertex) = rawX * inputMat[0][0] + rawY * inputMat[1][0] + inputMat[2][0];
-//        *(vertex+1) = rawX * inputMat[0][1] + rawY * inputMat[1][1] + inputMat[2][1];
-//    }
-//    updateVertex();
-//}
 void Primitive::transformVertex(const indexArray& vertexIndex,const glm::mat3& inputMat){
     //transfered = vertices;
     for (auto index = vertexIndex.begin(); index != vertexIndex.end(); index++) {
@@ -154,6 +143,7 @@ void Primitive::createOutboundElement(){
     }
     //const std::vector<GLuint> outboundIndex = {minXid,minYid,maxXid,maxYid};
     outBound = std::make_shared<pr::OutBound>(minX,minY,maxX,maxY,&transMat);
+    outBound->elements.push_back(std::make_shared<pr::Face>(outBound.get()));
 }
 static GLfloat lagrange_basis(int i, GLfloat x, const std::vector<GLfloat>& points) {
     GLfloat basis = 1.0f;

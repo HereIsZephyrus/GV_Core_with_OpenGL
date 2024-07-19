@@ -39,6 +39,34 @@ enum class TopoType{
 class Line;
 class Face;
 //don't recycle point/line/face index -- don't need to tackle so much elements for now.
+class OutBound{
+public:
+    OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,glm::mat3* transMat);
+    void draw();
+    glm::vec2 getGeocenter() const{return geoCenter;}
+    glm::vec2 getRotateCenter() const{return rotateCenter;}
+    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
+    void draw(bool highlighted);
+    glm::mat3* getTransmat(){return refTransMat;}
+    int cursorDetect(GLdouble xpos,GLdouble ypos);
+    const glm::vec3 getSize(){return size;}
+    const GLfloat getMinX(){return vertices[0];}
+    const GLfloat getMinY(){return vertices[1];}
+    const GLfloat getMaxX(){return vertices[6];}
+    const GLfloat getMaxY(){return vertices[7];}
+    const primitiveIdentifier* getIdentifier() const{return &identifier;}
+    Shader* shader;
+    vertexArray vertices;
+    friend Primitive;
+    friend Line;
+    friend Face;
+private:
+    glm::mat3* refTransMat;
+    glm::vec2 geoCenter,rotateCenter;
+    glm::vec3 size;
+    primitiveIdentifier identifier;
+    std::vector<pElement> elements;
+};
 class Element{
 public:
     virtual void draw(bool highlighted)=0;
@@ -49,6 +77,14 @@ public:
         const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
         style.color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
         stride = primitive->stride;
+        visable = true;
+    }
+    Element(const OutBound* outbound){
+        refVertex = std::make_shared<vertexArray>(outbound->vertices);
+        identifier = outbound->getIdentifier();
+        shader = outbound->shader;
+        style.color = {0.75,0.75,0.75,0.4};
+        stride = 3;
         visable = true;
     }
     bool getVisable() const {return visable;}
@@ -86,22 +122,28 @@ protected:
     void setColor(bool highlighted);
     //ShaderPara style;
 };
-
 class Point: public Element{
 public:
     Point(Primitive* primitive,GLuint startIndex,bool notShowLineStyle = false,bool visable = true):
     Element(primitive){
-        ShaderStyle& style = ShaderStyle::getStyle();
         if (notShowLineStyle)
             this->pointSize = 2.0f;
         else
             this->pointSize = primitive->pointsize;
-        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_POINTS;
         vertexIndex = {startIndex};
         calcGeoCenter();
         type = TopoType::point;
         this->visable = visable;
+        bindEBObuffer();
+    }
+    Point(OutBound* outbound,GLuint startIndex):Element(outbound){
+        this->pointSize = 10.0f;
+        shape = GL_POINTS;
+        vertexIndex = {startIndex};
+        calcGeoCenter();
+        type = TopoType::point;
+        this->visable = true;
         bindEBObuffer();
     }
     friend class Line;
@@ -139,6 +181,18 @@ public:
         this->visable = visable;
         bindEBObuffer();
     }
+    Line(OutBound* outbound, GLuint startIndex, GLuint endIndex):Element(outbound){
+        this->lineWidth = 6.0f;
+        vertexIndex = {startIndex,endIndex};
+        point[0] = std::make_shared<Point>(outbound,vertexIndex[0]);
+        outbound->elements.push_back(point[0]);
+        point[1] = std::make_shared<Point>(outbound,vertexIndex[1]);
+        outbound->elements.push_back(point[1]);
+        calcGeoCenter();
+        type = TopoType::line;
+        this->visable = true;
+        bindEBObuffer();
+    }
     friend class Face;
     glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
@@ -161,10 +215,8 @@ class Face: public Element{
 public:
     Face(Primitive* primitive,bool visable = true):
     Element(primitive){
-        ShaderStyle& style = ShaderStyle::getStyle();
-        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = primitive->shape;
-        const int n =  static_cast<int>((*refVertex).size()/stride);
+        const int n = static_cast<int>((*refVertex).size()/stride);
         bool notShowLineStyle = !(shape == GL_LINE_STRIP || shape == GL_LINE_LOOP);
         for (int i = 0; i<n-1; i++){
             vertexIndex.push_back(i);
@@ -177,6 +229,21 @@ public:
         calcGeoCenter();
         type = TopoType::face;
         this->visable = visable;
+        bindEBObuffer();
+    }
+    Face(OutBound* outbound):Element(outbound){
+        const int n =  static_cast<int>((*refVertex).size()/stride);
+        for (int i = 0; i<n-1; i++){
+            vertexIndex.push_back(i);
+            line.push_back(std::make_shared<Line>(outbound,i,i+1));
+            outbound->elements.push_back(line.back());
+        }
+        vertexIndex.push_back(n-1);
+        line.push_back(std::make_shared<Line>(outbound,n-1,0));
+        outbound->elements.push_back(line.back());
+        calcGeoCenter();
+        type = TopoType::face;
+        this->visable = true;
         bindEBObuffer();
     }
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
@@ -201,8 +268,6 @@ class Curve: public Element{
 public:
     Curve(Primitive* primitive,bool notShowLineStyle = false,bool visable = true):
     Element(primitive){
-        ShaderStyle& style = ShaderStyle::getStyle();
-        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         if (notShowLineStyle)
             this->lineWidth = 5.0f;
         else
@@ -248,7 +313,6 @@ public:
         else
             this->lineWidth = primitive->thickness;
         this->isFill = style.toFill;
-        this->style.color = {style.drawColor.x,style.drawColor.y,style.drawColor.z,style.drawColor.w};
         shape = GL_LINES;
         vertexIndex = {startIndex,endIndex};
         point[0] = std::make_shared<Point>(primitive,vertexIndex[startIndex],true,false);
@@ -275,33 +339,6 @@ private:
     pPoint point[2];
     bool isCircle,isFill;
 };
-class OutBound{
-public:
-    OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,glm::mat3* transMat){
-        vertices = {minX, minY, 0.0,minX, maxY, 0.0,maxX, maxY, 0.0,maxX, minY, 0.0,};
-        geoCenter = {(minX + maxX)/2,(minY + maxY)/2};
-        rotateCenter = geoCenter;
-        refTransMat = transMat;
-        size = {maxX - minX, maxY - minY, 0.0f};
-    }
-    glm::vec2 getGeocenter() const{return geoCenter;}
-    glm::vec2 getRotateCenter() const{return rotateCenter;}
-    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
-    void draw(bool highlighted);
-    glm::mat3* getTransmat(){return refTransMat;}
-    int cursorDetect(GLdouble xpos,GLdouble ypos);
-    const glm::vec3 getSize(){return size;}
-    const GLfloat getMinX(){return vertices[0];}
-    const GLfloat getMinY(){return vertices[1];}
-    const GLfloat getMaxX(){return vertices[6];}
-    const GLfloat getMaxY(){return vertices[7];}
-private:
-    glm::mat3* refTransMat;
-    glm::vec2 geoCenter,rotateCenter;
-    vertexArray vertices;
-    glm::vec3 size;
-};
-//typedef std::shared_ptr<Diagnoal> pDiagnoal;
 int outboundDetect(pElement outbound);
 }//namespace pr
 #endif /* shape_hpp */
