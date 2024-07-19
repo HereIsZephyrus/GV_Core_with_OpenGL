@@ -107,7 +107,6 @@ private:
     Shader* shader;
     glm::vec4 color;
     std::string name;
-    Primitive* m_self;
     bool holding;
     Shape drawType;
     GLfloat thickness,pointsize;

@@ -387,8 +387,11 @@ void renderEditPanel(){
             take.activeLayer = nullptr;
         }
         ImGui::SameLine();
-        if (ImGui::Button("Create Element"))
+        if (ImGui::Button("Create Element")){
+            gui::focusedLayers.clear();
+            take.holdonObjList.clear();
             record.showCreateElementWindow = true;
+        }
     }
     ImGui::ColorEdit4("Color", (float*)&style.drawColor);
     // line style

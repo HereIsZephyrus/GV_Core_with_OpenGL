@@ -47,7 +47,7 @@ int main(int argc, const char * argv[]) {
         upstreamStatus();
         //draw main primitive list
         
-        bool openDetect = (! record.drawingPrimitive); // whether primitives can be select
+        bool openDetect = (! record.drawingPrimitive) && (take.alertWindow == nullptr); // whether primitives can be select
         bool remainList = record.pressCtrl || record.pressShift;
         for (auto primitive = pr::mainPrimitiveList.begin(); primitive!= pr::mainPrimitiveList.end(); primitive++){
             // detect hold

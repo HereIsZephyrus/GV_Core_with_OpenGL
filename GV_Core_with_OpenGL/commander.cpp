@@ -380,10 +380,8 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
     Take& take = Take::holdon();
     if (Records::getState().drawingPrimitive && take.drawType != Shape::MARKER){//generate preview
         //take the last point
-        //WindowParas& windowPara = WindowParas::getInstance();
         vertexArray tempVertices;
-       
-            tempVertices = take.drawingVertices;
+        tempVertices = take.drawingVertices;
         addPoint(tempVertices,xpos,ypos);
         if (Records::getState().pressCtrl)
             toAlignment(tempVertices,take.drawType);

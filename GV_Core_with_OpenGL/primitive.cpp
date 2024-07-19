@@ -16,7 +16,6 @@
 Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
-    m_self = this;
     this->vertices = vertices;
     this->elementList.clear();
     this->holding = false;
@@ -91,14 +90,10 @@ void Primitive::rend(GLuint& program){
     GLuint colorLoc = glGetUniformLocation(program,"setColor");
     glUniform4f(colorLoc,color.x,color.y,color.z,color.w);
     GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    if (!ShaderStyle::getStyle().toFill){
-        if (shape == GL_POINTS)
-            glUniform1f(sizeLoc,ShaderStyle::getStyle().pointsize / camera.getZoom());
-        else
-            glUniform1f(sizeLoc,ShaderStyle::getStyle().thickness / camera.getZoom());
-    }else{
+    if ((drawType == Shape::RECTANGLE || drawType == Shape::CIRCLE || drawType == Shape::POLYGEN) && ShaderStyle::getStyle().toFill)
         glUniform1f(sizeLoc,2.0f);
-    }
+    else
+        glUniform1f(sizeLoc,ShaderStyle::getStyle().thickness / camera.getZoom());
 }
 void Primitive::draw(){
     //std::cout<<"Draw is running"<<std::endl;
