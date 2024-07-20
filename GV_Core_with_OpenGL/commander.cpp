@@ -112,10 +112,6 @@ void mouseEditCallback(GLFWwindow* window, int button, int action, int mods){
         record.previewXpos = cursorX;
         record.previewYpos = cursorY;
     }
-    if (action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_LEFT && windowPara.mainWindowFocused) {
-        Take& take = Take::holdon();
-        take.editingPrimitive->transMat = take.transMat;
-    }
     return;
 }
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {

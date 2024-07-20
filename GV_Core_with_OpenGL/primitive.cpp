@@ -85,7 +85,7 @@ void Primitive::rend(GLuint& program){
     Camera2D& camera = Camera2D::getView();
     glm::mat4 projection = camera.getProjectionMatrix();
     glm::mat4 view = camera.getViewMatrix();
-    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 model = transMat;
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -130,7 +130,7 @@ void Primitive::updateVertex(){
     glBindVertexArray(0);
 }
 
-void Primitive::transformVertex(const indexArray& vertexIndex,const glm::mat3& inputMat){
+void Primitive::transformVertex(const indexArray& vertexIndex,const glm::mat4& inputMat){
     //transfered = vertices;
     for (auto index = vertexIndex.begin(); index != vertexIndex.end(); index++) {
         const GLint beginIndex = (*index) * stride;

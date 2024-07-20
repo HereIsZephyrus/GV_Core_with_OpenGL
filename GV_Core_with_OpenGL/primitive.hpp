@@ -60,8 +60,8 @@ public:
     void bindShader(Shader* tobind){shader = tobind;}
     void updateVertex();
     void draw();
-    void transformVertex(const indexArray&,const glm::mat3&);
-    //void transform(const glm::mat3&);
+    void transformVertex(const indexArray&,const glm::mat4&);
+    //void transform(const glm::mat4&);
     void drawElement();
     void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
@@ -98,10 +98,9 @@ public:
     void setPointsize(GLfloat pointSize){pointsize = pointSize;}
     void setThickness(GLfloat lineWidth){thickness = lineWidth;}
     GLfloat calcThicknessBias();
-    glm::mat3 transMat;
+    glm::mat4 transMat;
     pOutbound outBound;
     Primitive* getSelf(){return m_self;}
-    //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
 protected:
     void generateCurve();
     void lagrangeInterpolation(const GLint,const vertexArray& ,const GLsizei);
