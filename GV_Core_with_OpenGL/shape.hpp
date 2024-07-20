@@ -40,14 +40,14 @@ class Face;
 //don't recycle point/line/face index -- don't need to tackle so much elements for now.
 class OutBound{
 public:
-    OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,const GLfloat thickness,glm::mat4* transMat);
+    OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,const GLfloat thickness,const glm::mat4& primitiveTransMat);
     void draw();
     void updateThicknessBias(GLfloat newthickness);
     glm::vec2 getGeocenter() const{return geoCenter;}
     glm::vec2 getRotateCenter() const{return rotateCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
-    glm::mat4* getTransmat() const{return refTransMat;}
-    void multiTransmat(const glm::mat4& newMat){ *refTransMat = newMat * (*refTransMat);}
+    glm::mat4 getTransmat() const{return transMat;}
+    void setTransmat(const glm::mat4& newMat){ transMat = newMat;}
     int cursorDetect(GLdouble xpos,GLdouble ypos);
     const glm::vec4 getSize(){return size;}
     const GLfloat getMinX(){return vertices[0];}
@@ -62,7 +62,7 @@ public:
     friend Face;
 private:
     void updateVertex();
-    glm::mat4* refTransMat;
+    glm::mat4 transMat;
     glm::vec2 geoCenter,rotateCenter;
     glm::vec4 size;
     primitiveIdentifier identifier;

@@ -149,7 +149,7 @@ void Primitive::createOutboundElement(){
         if (maxY < vertexY){maxY = vertexY; /*maxYid = i;*/}
     }
     GLfloat bias = calcThicknessBias();
-    outBound = std::make_shared<pr::OutBound>(minX,minY,maxX,maxY,bias,&transMat);
+    outBound = std::make_shared<pr::OutBound>(minX,minY,maxX,maxY,bias,transMat);
 }
 static GLfloat lagrange_basis(int i, GLfloat x, const std::vector<GLfloat>& points) {
     GLfloat basis = 1.0f;
@@ -236,6 +236,8 @@ void Primitive::useShader(){
     glm::mat4 projection = camera.getProjectionMatrix();
     glm::mat4 view = camera.getViewMatrix();
     glm::mat4 model = transMat;
+    if (outBound != nullptr && outBound->getTransmat() != transMat)
+        model = outBound -> transMat * model;
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));

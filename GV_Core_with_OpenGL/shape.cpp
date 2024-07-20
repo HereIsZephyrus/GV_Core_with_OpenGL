@@ -84,7 +84,6 @@ void Diagnoal::draw(bool highlighted,bool setStyle){
     }
     // load data
     glBindVertexArray(identifier->VAO);
-    glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glDrawElements(shape,static_cast<GLsizei>(vertexIndex.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
@@ -208,7 +207,7 @@ bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     }
     return false;
 }
-OutBound::OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,const GLfloat thickness,glm::mat4* transMat){
+OutBound::OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,const GLfloat thickness,const glm::mat4& primitiveTransMat){
     thickBias = 0;
     shader = rd::namedShader["outboundShader"].get();
     glGenVertexArrays(1,&identifier.VAO);
@@ -221,7 +220,7 @@ OutBound::OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfl
     updateThicknessBias(thickness);
     geoCenter = {(minX + maxX)/2,(minY + maxY)/2};
     rotateCenter = geoCenter;
-    refTransMat = transMat;
+    transMat = primitiveTransMat;
     size = {maxX - minX, maxY - minY, 0.0f,1.0f};
     updateVertex();
 };
@@ -254,7 +253,10 @@ void OutBound::draw(){
     Camera2D& camera = Camera2D::getView();
     glm::mat4 projection = camera.getProjectionMatrix();
     glm::mat4 view = camera.getViewMatrix();
-    glm::mat4 model = *refTransMat;
+    glm::mat4 model = transMat;
+    const glm::mat4& primitiveMat = Take::holdon().editingPrimitive->getTransMat();
+    if (primitiveMat != transMat)
+        model = primitiveMat * model;
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));

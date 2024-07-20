@@ -92,13 +92,14 @@ public:
     GLfloat getThickness(){return thickness;}
     glm::vec4 getColor() const{return color;}
     GLenum getShape() const{return shape;}
+    glm::mat4 getTransMat() const {return transMat;}
     void setName(std::string name){this->name = name;}
     void setHold(bool isHolding){this->holding = isHolding;}
     void setColor(ImVec4 UIcolor){color = {UIcolor.x,UIcolor.y,UIcolor.z,UIcolor.w};}
     void setPointsize(GLfloat pointSize){pointsize = pointSize;}
     void setThickness(GLfloat lineWidth){thickness = lineWidth;}
+    void multiTransmat(const glm::mat4& multiMat){ transMat = multiMat * transMat;}
     GLfloat calcThicknessBias();
-    glm::mat4 transMat;
     pOutbound outBound;
     Primitive* getSelf(){return m_self;}
 protected:
@@ -118,6 +119,7 @@ private:
     bool holding;
     Shape drawType;
     GLfloat thickness,pointsize;
+    glm::mat4 transMat;
 };
 
 typedef std::unique_ptr<Primitive> pPrimitive;
