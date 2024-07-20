@@ -17,6 +17,7 @@
 #include "camera.hpp"
 #include "primitive.hpp"
 #include "shape.hpp"
+#include "factor.hpp"
 
 GLfloat WindowParas::screen2normalX(GLdouble screenX){
     return  (2.0f * static_cast<GLfloat>(screenX/ SCREEN_WIDTH * xScale)) - 1.0f;
@@ -766,14 +767,6 @@ void clipPoints(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin
     //std::cout<<"after"<<vertices.size()<<std::endl;
 }
 
-static int getRegionCode(const GLfloat& x, const GLfloat& y,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax) {
-    int code = 0;
-    if (x < xMin) code |= left_bit_code; //left
-    if (x > xMax) code |= right_bit_code; //right
-    if (y < yMin) code |= button_bit_code; //button
-    if (y > yMax) code |= top_bit_code; //top
-    return code;
-}
 void clipCohenSutherLand(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
     vertexArray newArray;
     newArray.clear();

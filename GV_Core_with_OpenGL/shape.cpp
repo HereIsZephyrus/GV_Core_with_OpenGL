@@ -298,8 +298,7 @@ int OutBound::cursorDetect(GLdouble xpos,GLdouble ypos){
     if (cursorY >= minY && cursorY <= maxY && abs(cursorX - maxX) <= paralellRange)
         return -2;
     // detect by liang-barsky
-    
-    return 0;
+    return getRegionCode(cursorX, cursorY, minX, maxX, minY, maxY);
 }
 }//namespace pr
 

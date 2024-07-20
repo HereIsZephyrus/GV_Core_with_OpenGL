@@ -242,16 +242,8 @@ void Primitive::useShader(){
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 }
-void Primitive::exertTransmat(const glm::mat4& multiMat,const glm::vec2& refLine){
-    glm::mat4 move = glm::mat4(1.0f),exert = multiMat;
-    glm::vec4 refForPrimitive = transMat * glm::vec4(outBound->getGeocenter().x,outBound->getGeocenter().y,0.0f,1.0f);
-    //move[3][0] = refForPrimitive.x;
-    //move[3][1] = refForPrimitive.y;
-    exert = move * exert;
-    //move[3][0] = -refForPrimitive.x;
-    //move[3][1] = -refForPrimitive.y;
-    exert = exert * move;
-    transMat = exert * transMat;
+void Primitive::exertTransmat(const glm::mat4& multiMat){
+    transMat = multiMat * transMat;
 }
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;

@@ -19,12 +19,17 @@
 #include "rendering.hpp"
 #include "window.hpp"
 
+constexpr GLint left_bit_code = 0x1;
+constexpr GLint right_bit_code = 0x2;
+constexpr GLint button_bit_code = 0x4;
+constexpr GLint top_bit_code = 0x8;
 void addPoint(vertexArray& array,const GLdouble cursorX, const GLdouble cursorY);
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLfloat orthoY);
 void addPoint(vertexArray& array,const GLfloat orthoX, const GLdouble cursorY);
 void addPoint(vertexArray& array,const GLdouble cursorX, const GLfloat orthoY);
 void toAlignment(vertexArray& array,Shape shape);
 void outboundInterectCheck(pOutbound);
+int getRegionCode(const GLfloat& x, const GLfloat& y,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax);
 void generateNewPrimitive();
 void generatePreviewPrimitive(const vertexArray&);
 void generateNewPrimitiveList(Shape shape,Primitive* primitive);

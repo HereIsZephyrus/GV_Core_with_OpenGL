@@ -129,7 +129,8 @@ void outboundInterectCheck(pOutbound outbound){
             const glm::vec2 startVec = glm::vec2{record.previewXpos - rotateCenter.x,record.previewYpos - rotateCenter.y};
             const glm::vec2 endVec = glm::vec2{cursorX - rotateCenter.x,cursorY - rotateCenter.y};
             const GLfloat theta = glm::dot(startVec, endVec) / (glm::length(startVec) * glm::length(endVec));
-            newTransMat[0][0] = glm::cos(theta); newTransMat[1][0] = glm::sin(-theta);
+            std::cout<<theta<<std::endl;
+            newTransMat[0][0] = glm::cos(theta); newTransMat[1][0] = -glm::sin(theta);
             newTransMat[0][1] = glm::sin(theta); newTransMat[1][1] = glm::cos(theta);
             newTransMat = move * newTransMat;
             move[3][0] = -rotateCenter.x; move[3][1] = -rotateCenter.y;
@@ -363,4 +364,35 @@ void upstreamStatus(){
             record.layerList.pop_back();
         take.activeLayer = nullptr;
     }
+}
+
+int getRegionCode(const GLfloat& x, const GLfloat& y,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax) {
+    int code = 0,count = 0;
+    if (x < xMin) {
+        code |= left_bit_code;
+        count++;
+    }
+    if (x > xMax) {
+        code |= right_bit_code;
+        count++;
+    }
+    if (y < yMin) {
+        code |= button_bit_code;
+        count++;
+    }
+    if (y > yMax) {
+        code |= top_bit_code;
+        count++;
+    }
+    if (count>1){
+        Records& record = Records::getState();
+        GLdouble xpos,ypos;
+        WindowParas& windowPara = WindowParas::getInstance();
+        glfwGetCursorPos(windowPara.window, &xpos, &ypos);
+        const GLfloat cursorX =windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+        const GLfloat cursorY =windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+        record.previewXpos = cursorX;
+        record.previewYpos = cursorY;
+    }
+    return code;
 }

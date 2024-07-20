@@ -98,7 +98,7 @@ public:
     void setColor(ImVec4 UIcolor){color = {UIcolor.x,UIcolor.y,UIcolor.z,UIcolor.w};}
     void setPointsize(GLfloat pointSize){pointsize = pointSize;}
     void setThickness(GLfloat lineWidth){thickness = lineWidth;}
-    void exertTransmat(const glm::mat4& multiMat,const glm::vec2& refLine);
+    void exertTransmat(const glm::mat4& multiMat);
     void setTransmat(const glm::mat4& newMat){ transMat = newMat;}
     GLfloat calcThicknessBias();
     pOutbound outBound;

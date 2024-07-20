@@ -61,10 +61,6 @@ void generateCoordinateAxis();
 void drawScaleText();
 }
 
-constexpr GLint left_bit_code = 0x1;
-constexpr GLint right_bit_code = 0x2;
-constexpr GLint button_bit_code = 0x4;
-constexpr GLint top_bit_code = 0x8;
 namespace gui {
 constexpr GLfloat detactBias = 0.48f;
 constexpr GLfloat outboundBias = 2.0f;
