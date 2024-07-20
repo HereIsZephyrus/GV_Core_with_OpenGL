@@ -47,12 +47,14 @@ public:
     glm::vec2 getRotateCenter() const{return rotateCenter;}
     glm::mat4 getTransmat() const{return transMat;}
     void setTransmat(const glm::mat4& newMat){ transMat = newMat;}
+    void setRefLine(const GLfloat& refX,const GLfloat& refY){ refLine = {refX,refY};}
     int cursorDetect(GLdouble xpos,GLdouble ypos);
-    const glm::vec4 getSize(){return size;}
+    const glm::vec2 getSize(){return glm::vec2(size.x,size.y);}
     const GLfloat getMinX(){return vertices[0];}
     const GLfloat getMinY(){return vertices[1];}
     const GLfloat getMaxX(){return vertices[6];}
     const GLfloat getMaxY(){return vertices[7];}
+    glm::vec2 getRefline() const{return refLine;}
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
     Shader* shader;
     vertexArray vertices;
@@ -63,8 +65,9 @@ public:
 private:
     void updateVertex();
     glm::mat4 transMat;
+    glm::vec2 refLine;
     glm::vec2 geoCenter,rotateCenter;
-    glm::vec4 size;
+    glm::vec2 size;
     primitiveIdentifier identifier;
     GLfloat thickBias;
 };

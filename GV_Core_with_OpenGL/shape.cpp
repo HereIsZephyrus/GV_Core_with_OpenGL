@@ -220,7 +220,7 @@ OutBound::OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfl
     geoCenter = {(minX + maxX)/2,(minY + maxY)/2};
     rotateCenter = geoCenter;
     transMat = primitiveTransMat;
-    size = {maxX - minX, maxY - minY, 0.0f,1.0f};
+    size = {maxX - minX, maxY - minY};
     updateVertex();
 };
 void OutBound::updateVertex(){
@@ -255,7 +255,7 @@ void OutBound::draw(){
     glm::mat4 model = transMat;
     const glm::mat4& primitiveMat = Take::holdon().editingPrimitive->getTransMat();
     if (primitiveMat != transMat)
-        model = primitiveMat * model;
+        model = model * primitiveMat;
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));

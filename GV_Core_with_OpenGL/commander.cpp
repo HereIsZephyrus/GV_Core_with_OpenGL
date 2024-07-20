@@ -117,7 +117,7 @@ void mouseEditCallback(GLFWwindow* window, int button, int action, int mods){
     }
     if (action == GLFW_RELEASE && windowPara.mainWindowFocused){
         Take& take = Take::holdon();
-        take.editingPrimitive->multiTransmat(take.editingPrimitive->outBound->getTransmat());
+        take.editingPrimitive->exertTransmat(take.editingPrimitive->outBound->getTransmat(),take.editingPrimitive->outBound->getRefline());
         take.editingPrimitive->outBound->setTransmat(take.editingPrimitive->getTransMat());
     }
     return;
