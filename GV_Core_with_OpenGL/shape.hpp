@@ -46,7 +46,6 @@ public:
     glm::vec2 getGeocenter() const{return geoCenter;}
     glm::vec2 getRotateCenter() const{return rotateCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
-    void draw(bool highlighted);
     glm::mat3* getTransmat(){return refTransMat;}
     int cursorDetect(GLdouble xpos,GLdouble ypos);
     const glm::vec3 getSize(){return size;}
@@ -69,7 +68,7 @@ private:
 };
 class Element{
 public:
-    virtual void draw(bool highlighted)=0;
+    virtual void draw(bool highlighted,bool setStyle = true)=0;
     Element(const Primitive* primitive){
         refVertex = std::make_shared<vertexArray>(primitive->vertices);
         identifier = primitive->getIdentifier();
@@ -149,7 +148,7 @@ public:
     friend class Line;
     friend class Face;
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
-    void draw(bool highlighted);
+    void draw(bool highlighted,bool setStyle = true);
     void setPointSize(GLfloat newSize){pointSize = newSize;}
 protected:
     void calcGeoCenter(){
@@ -196,7 +195,7 @@ public:
     friend class Face;
     glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
-    void draw(bool highlighted);
+    void draw(bool highlighted,bool setStyle = true);
     void setLineWidth(GLfloat newWidth){lineWidth = newWidth;}
 protected:
     void calcGeoCenter(){
@@ -247,7 +246,7 @@ public:
         bindEBObuffer();
     }
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
-    void draw(bool highlighted);
+    void draw(bool highlighted,bool setStyle = true);
 protected:
     void calcGeoCenter(){
         geoCenter.x = 0;
@@ -286,7 +285,7 @@ public:
         //std::cout<<controlPoints.size()<<std::endl;
     }
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
-    void draw(bool highlighted);
+    void draw(bool highlighted,bool setStyle = true);
 protected:
     void calcGeoCenter(){
         geoCenter.x = 0;
@@ -324,7 +323,7 @@ public:
     }
     glm::vec2 getCenterLocation() const{return geoCenter;}
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
-    void draw(bool highlighted);
+    void draw(bool highlighted,bool setStyle = true);
     void setLineWidth(GLfloat newWidth){lineWidth = newWidth;}
 protected:
     void calcGeoCenter(){

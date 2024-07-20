@@ -16,12 +16,14 @@ void Element::setColor(bool highlighted){
     glUniform4f(colorLoc,style.color.x,style.color.y,style.color.z,style.color.w);
     glUniform1f(brightLoc,1+0.2f*static_cast<int>(highlighted));
 }
-void Point::draw(bool highlighted){
-    setColor(highlighted);
-    //thickness
-    const GLfloat zoom = Camera2D::getView().getZoom();
-    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,pointSize / zoom);
+void Point::draw(bool highlighted,bool setStyle){
+    if (setStyle){
+        setColor(highlighted);
+        //thickness
+        const GLfloat zoom = Camera2D::getView().getZoom();
+        GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+        glUniform1f(sizeLoc,pointSize / zoom);
+    }
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -29,12 +31,14 @@ void Point::draw(bool highlighted){
     glBindVertexArray(0);
     return;
 }
-void Line::draw(bool highlighted){
-    setColor(highlighted);
-    //thickness
-    const GLfloat zoom = Camera2D::getView().getZoom();
-    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,lineWidth / zoom);
+void Line::draw(bool highlighted,bool setStyle){
+    if (setStyle){
+        setColor(highlighted);
+        //thickness
+        const GLfloat zoom = Camera2D::getView().getZoom();
+        GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+        glUniform1f(sizeLoc,lineWidth / zoom);
+    }
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -42,11 +46,13 @@ void Line::draw(bool highlighted){
     glBindVertexArray(0);
     return;
 }
-void Face::draw(bool highlighted){
-    setColor(highlighted);
-    //thickness
-    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,2.0f);
+void Face::draw(bool highlighted,bool setStyle){
+    if (setStyle){
+        setColor(highlighted);
+        //thickness
+        GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+        glUniform1f(sizeLoc,2.0f);
+    }
     // load data
     glBindVertexArray(identifier->VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -54,7 +60,7 @@ void Face::draw(bool highlighted){
     glBindVertexArray(0);
     return;
 }
-void Curve::draw(bool highlighted){
+void Curve::draw(bool highlighted,bool setStyle){
     setColor(highlighted);
     //thickness
     const GLfloat zoom = Camera2D::getView().getZoom();
@@ -68,12 +74,14 @@ void Curve::draw(bool highlighted){
     glBindVertexArray(0);
     return;
 }
-void Diagnoal::draw(bool highlighted){
-    setColor(highlighted);
-    //thickness
-    const GLfloat zoom = Camera2D::getView().getZoom();
-    GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
-    glUniform1f(sizeLoc,lineWidth / zoom);
+void Diagnoal::draw(bool highlighted,bool setStyle){
+    if (setStyle){
+        setColor(highlighted);
+        //thickness
+        const GLfloat zoom = Camera2D::getView().getZoom();
+        GLuint sizeLoc = glGetUniformLocation(shader->program,"thickness");
+        glUniform1f(sizeLoc,lineWidth / zoom);
+    }
     // load data
     glBindVertexArray(identifier->VAO);
     glBindVertexArray(identifier->VAO);
@@ -201,7 +209,7 @@ bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     return false;
 }
 OutBound::OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,glm::mat3* transMat){
-    vertices = {minX, minY, 0.0,minX, maxY, 0.0,maxX, maxY, 0.0,maxX, minY, 0.0,};
+    vertices = {minX, minY, 0.0,minX, maxY, 0.0,maxX, maxY, 0.0,maxX, minY, 0.0};
     geoCenter = {(minX + maxX)/2,(minY + maxY)/2};
     rotateCenter = geoCenter;
     refTransMat = transMat;
@@ -218,7 +226,7 @@ OutBound::OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfl
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(GLfloat)) ,static_cast<const void*>(vertices.data()), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    
+    shader = rd::namedShader["outboundShader"].get();
 };
 void OutBound::draw(){
     if (shader == nullptr){
@@ -227,8 +235,19 @@ void OutBound::draw(){
     }
     else
         shader ->use();
-    for (const auto &element: elements)
-        element->draw(true);//highlighted
+    GLuint projectionLoc = glGetUniformLocation(shader->program, "projection");
+    GLuint viewLoc = glGetUniformLocation(shader->program, "view");
+    GLuint modelLoc = glGetUniformLocation(shader->program, "model");
+    Camera2D& camera = Camera2D::getView();
+    glm::mat4 projection = camera.getProjectionMatrix();
+    glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 model = glm::mat4(1.0f);
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glBindVertexArray(identifier.VAO);
+    glDrawArrays(GL_LINE_LOOP, 0, 4);
+    glBindVertexArray(0);
     return;
 }
 int OutBound::cursorDetect(GLdouble xpos,GLdouble ypos){

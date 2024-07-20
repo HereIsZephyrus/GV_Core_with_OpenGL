@@ -121,6 +121,8 @@
 		32C5E0A42C19464E00152CDF /* camera.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = camera.hpp; sourceTree = "<group>"; };
 		32C5E0A82C1987E000152CDF /* singleVertices.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = singleVertices.vs; sourceTree = "<group>"; };
 		32C5E0AA2C19889600152CDF /* fillWhite.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = fillWhite.frag; sourceTree = "<group>"; };
+		32CE638B2C4B8D1700F48507 /* outbound.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = outbound.vs; sourceTree = "<group>"; };
+		32CE638C2C4B8E1300F48507 /* outbound.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = outbound.gs; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,6 +230,7 @@
 			isa = PBXGroup;
 			children = (
 				32C5E0A82C1987E000152CDF /* singleVertices.vs */,
+				32CE638B2C4B8D1700F48507 /* outbound.vs */,
 				327DE2C12C3AD53900021453 /* cubeLine.gs */,
 				328C8CF82C3BB206006160E6 /* circleLine.gs */,
 				3229B9E22C2D3A76003693E6 /* curveVertices.vs */,
@@ -237,6 +240,7 @@
 				32909B862C44E9B700C12E61 /* fillRect.gs */,
 				32909B872C44EA2100C12E61 /* lineRect.gs */,
 				32909B852C44CE5100C12E61 /* lineCircle.gs */,
+				32CE638C2C4B8E1300F48507 /* outbound.gs */,
 				32909B882C457D2700C12E61 /* bezierCurve.gs */,
 				328C8CFA2C3BD27D006160E6 /* dotColor.frag */,
 				328C8CFB2C3BD3C0006160E6 /* semiColor.frag */,
