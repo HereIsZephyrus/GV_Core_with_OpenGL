@@ -57,185 +57,170 @@ void toAlignment(vertexArray& array,Shape shape){
         array[stride+1] = array[1] + dy;
     }
 }
-void editPrimitive(){
-    Take& take = Take::holdon();
+void outboundInterectCheck(pOutbound outbound){
     Records& record = Records::getState();
     WindowParas& windowPara = WindowParas::getInstance();
+    Take& take = Take::holdon();
     GLdouble xpos,ypos;
     glfwGetCursorPos(windowPara.window, &xpos, &ypos);
     const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
     const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
-    if (record.pressLeft){
-        std::cout<<"exert transfrom"<<std::endl;
-        pElement outbound = take.editingPrimitive->elementList.back();
-        take.transMat = glm::mat3(1.0f);
-        int  relationship = outboundDetect(outbound);
-        if (relationship == 0 || relationship == 1){//inside and on
-            pElement holdonElement = nullptr;
-            const GLfloat dX = (cursorX - record.previewXpos);
-            const GLfloat dY = (cursorY - record.previewYpos);
-            // to move
-            take.transMat[2][0] = dX; take.transMat[2][1] = dY;
-            //for the sake of topography build sequeence,the points push back first, then lines, then face. so when detect happend,it will be the fitest one
-            for (auto element = take.editingPrimitive->elementList.begin(); element != take.editingPrimitive->elementList.end(); element++){
-                if ((*element)->cursorSelectDetect(xpos, ypos)){
-                    holdonElement = *element;
-                    break;
-                }
-            }
-            
-            //std::cout<<"move:"<<dX<<' '<<dY<<std::endl;
-            if (holdonElement != nullptr){
-                //take.editingPrimitive->transform(holdonElement->getVertexIndex(), take.transMat);
-                /*
-                if (holdonElement->getShape() == GL_POINT || holdonElement->getShape() == GL_POINTS){
-                    //to recognize center of the point set
-                    take.editingPrimitive->transform(take.transMat);
-                }else{
-                    take.editingPrimitive->transform(holdonElement->getVertexIndex(), take.transMat);
-                }*/
-            }
-            else{
-                //no select,default move all
-                //take.editingPrimitive->transform(take.transMat);
-            }
-        }else if (relationship ==2){
-            //to rotate
-            glm::mat3 move = glm::mat3(1.0f);
+    if (record.pressLeft && windowPara.mainWindowFocused){
+        glm::mat4 newTransMat = glm::mat4(1.0f);
+        int relationship = outbound->relationship;
+        const GLfloat dX = (cursorX - record.previewXpos);
+        const GLfloat dY = (cursorY - record.previewYpos);
+        const glm::mat4 exertMat = outbound->getTransmat(),primitiveMat = take.editingPrimitive->getTransMat();
+        glm::vec4 raw_leftbottomPoint = exertMat * primitiveMat * glm::vec4(outbound->getMinX(),outbound->getMinY(),0.0f,1.0f);
+        glm::vec4 raw_righttopPoint = exertMat * primitiveMat * glm::vec4(outbound->getMaxX(),outbound->getMaxY(),0.0f,1.0f);
+        const GLfloat minX = raw_leftbottomPoint.x,minY = raw_leftbottomPoint.y;
+        const GLfloat maxX = raw_righttopPoint.x,maxY = raw_righttopPoint.y;
+        //glm::vec2 size = {maxX - minX,maxY - minY};
+        glm::vec2 size = outbound->getSize();
+        if (relationship == 0){// 0000 inside to move
+            std::cout<<"0000 inside to move"<<std::endl;
+            newTransMat[3][0] = 1 + dX; newTransMat[3][1] = 1 + dY;
+        }else if (relationship == 1){// 0001 left to sheer
+            std::cout<<"0001 left to sheer"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat sheerX = dX/size.x;
+            const GLfloat refX = minX, refY = outbound->getGeocenter().y;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[1][0] = sheerX; newTransMat[2][0] = -sheerX * refY;
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+        }else if (relationship == 2){// 0010 right to sheer
+            std::cout<<"0010 right to sheer"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat sheerX = dX/size.x;
+            const GLfloat refX = maxX, refY = outbound->getGeocenter().y;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[1][0] = sheerX; newTransMat[2][0] = -sheerX * refY;
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+        }else if (relationship == 4){// 0100 bottom to sheer
+            std::cout<<"0100 bottom to sheer"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat sheerY = dY/size.y;
+            const GLfloat refX = outbound->getGeocenter().x, refY = minY;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[0][1] = sheerY; newTransMat[2][1] = -sheerY * refX;
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+        }else if (relationship == 8){// 1000 top to sheer
+            std::cout<<"1000 top to sheer"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat sheerY = dY/size.y;
+            const GLfloat refX = outbound->getGeocenter().x, refY = maxY;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[0][1] = sheerY; newTransMat[2][1] = -sheerY * refX;
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+        }else if (relationship == 9 || relationship == 10 || relationship == 5 || relationship == 6){
+            //1001 1010 0110 0101 four corners to rotate
+            std::cout<<"1001 1010 0110 0101 four corners to rotate"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
             const glm::vec2 rotateCenter = outbound->getRotateCenter();
-            move[2][0] = rotateCenter.x; move[2][1] = rotateCenter.y;
+            move[3][0] = rotateCenter.x; move[3][1] = rotateCenter.y;
             const glm::vec2 startVec = glm::vec2{record.previewXpos - rotateCenter.x,record.previewYpos - rotateCenter.y};
             const glm::vec2 endVec = glm::vec2{cursorX - rotateCenter.x,cursorY - rotateCenter.y};
             const GLfloat theta = glm::dot(startVec, endVec) / (glm::length(startVec) * glm::length(endVec));
-            take.transMat[0][0] = glm::cos(theta); take.transMat[1][0] = glm::sin(-theta);
-            take.transMat[0][1] = glm::sin(theta); take.transMat[1][1] = glm::cos(theta);
-            take.transMat = move * take.transMat;
-            move[2][0] = -rotateCenter.x; move[2][1] = -rotateCenter.y;
-            take.transMat = take.transMat * move;
-            }
-        else if (relationship<=10){
-            //to scale
-            const GLfloat dX = abs(cursorX - record.previewXpos);
-            const GLfloat dY = abs(cursorY - record.previewYpos);
-            const pVertexArray& vertices = outbound->getVertexArray();
-            
-            glm::vec2 boundary[4]; //leftbottom - lefttop - righttop - rightbottom
-            for (int i = 0; i<4; i++){
-                GLint startIndex = outbound->getVertexIndex()[i];
-                boundary[i] = {(*vertices)[startIndex],(*vertices)[startIndex+1]};
-            }
-            const GLfloat outboundX = abs(boundary[0].x - boundary[2].x),outboundY = abs(boundary[0].y - boundary[2].y);
-            glm::mat3 move = glm::mat3(1.0f);
-            if (record.pressCtrl){
-                //to scale center
-                const glm::vec2 geoCenter = outbound->getGeoCenter();
-                move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                take.transMat[0][0] = dX; take.transMat[1][1] = dY;
-                take.transMat = move * take.transMat;
-                move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
-                take.transMat = take.transMat * move;
-            }else{
-                //warning: the scale factor(d/outboud) is not correct. It should be judged by the cursor move direction
-                if (relationship == 3){
-                    //to scale left
-                    const glm::vec2 geoCenter = boundary[2];
-                    move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                    take.transMat[0][0] = dX/outboundX;
-                    take.transMat = move * take.transMat;
-                    move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
-                    take.transMat = take.transMat * move;
-                }
-                else if (relationship == 4){
-                    //to scale top
-                    const glm::vec2 geoCenter = boundary[0];
-                    move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                    take.transMat[1][1] = dY/outboundY;
-                    take.transMat = move * take.transMat;
-                    move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
-                    take.transMat = take.transMat * move;
-                }
-                else if (relationship == 5){
-                    //to scale right
-                    const glm::vec2 geoCenter = boundary[0];
-                    move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                    take.transMat[0][0] = dX/outboundY;
-                    take.transMat = move * take.transMat;
-                    move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
-                    take.transMat = take.transMat * move;
-                }
-                else if (relationship == 6){
-                    //to scale bottom
-                    const glm::vec2 geoCenter = boundary[2];
-                    move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                     take.transMat[1][1] = dY/outboundY;
-                    take.transMat = move * take.transMat;
-                    move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
-                    take.transMat = take.transMat * move;
-                }
-                else{
-                    GLint index = relationship - 7;
-                    const glm::vec2 geoCenter = boundary[index];
-                    move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                    take.transMat[0][0] = dX/outboundX; take.transMat[1][1] = dY/outboundY;
-                    take.transMat = move * take.transMat;
-                    move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
-                    take.transMat = take.transMat * move;
-                }
-            }
-        }else{
-            //to sheer
-            const GLfloat dX = abs(cursorX - record.previewXpos);
-            const GLfloat dY = abs(cursorY - record.previewYpos);
-            const pVertexArray& vertices = outbound->getVertexArray();
-            
-            glm::vec2 boundary[4]; //leftbottom - lefttop - righttop - rightbottom
-            for (int i = 0; i<4; i++){
-                GLint startIndex = outbound->getVertexIndex()[i];
-                boundary[i] = {(*vertices)[startIndex],(*vertices)[startIndex+1]};
-            }
-            const GLfloat outboundX = abs(boundary[0].x - boundary[2].x),outboundY = abs(boundary[0].y - boundary[2].y);
-            glm::mat3 move = glm::mat3(1.0f);
-            if (relationship == 11){
-                //to sheer left
-                const GLfloat sheerX = dX/outboundX;
-                const glm::vec2 geoCenter = boundary[2];
-                move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                take.transMat[0][1] = sheerX; take.transMat[2][1] = -sheerX * geoCenter.y;
-                take.transMat = move * take.transMat;
-                move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
-                take.transMat = take.transMat * move;
-            }
-            else if (relationship == 12){
-                //to sheer top
-                const GLfloat sheerY = dY/outboundY;
-                const glm::vec2 geoCenter = boundary[0];
-                move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                take.transMat[0][1] = sheerY; take.transMat[2][1] = -sheerY * geoCenter.x;
-                take.transMat = move * take.transMat;
-                move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
-                take.transMat = take.transMat * move;
-            }
-            else if (relationship == 13){
-                //to sheer right
-                const GLfloat sheerX = dX/outboundX;
-                const glm::vec2 geoCenter = boundary[0];
-                move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                take.transMat[0][1] = sheerX; take.transMat[2][1] = -sheerX * geoCenter.y;
-                take.transMat = move * take.transMat;
-                move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
-                take.transMat = take.transMat * move;
-            }
-            else if (relationship == 14){
-                //to sheer bottom
-                const glm::vec2 geoCenter = boundary[2];
-                const GLfloat sheerY = dY/outboundY;
-                move[2][0] = geoCenter.x; move[2][1] = geoCenter.y;
-                take.transMat[0][1] = sheerY; take.transMat[2][1] = -sheerY * geoCenter.x;
-                take.transMat = move * take.transMat;
-                move[2][0] = -geoCenter.x; move[2][1] = -geoCenter.y;
-                take.transMat = take.transMat * move;
-            }
+            std::cout<<theta<<std::endl;
+            newTransMat[0][0] = glm::cos(theta); newTransMat[1][0] = -glm::sin(theta);
+            newTransMat[0][1] = glm::sin(theta); newTransMat[1][1] = glm::cos(theta);
+            newTransMat = move * newTransMat;
+            move[3][0] = -rotateCenter.x; move[3][1] = -rotateCenter.y;
+            newTransMat = newTransMat * move;
+        }else if (relationship == -1){// -0001 left to scale
+            std::cout<<"-0001 left to scale"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat refX = maxX, refY = outbound->getGeocenter().y;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[0][0] = std::max(0.1f, 1 - dX/size.x);
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+            outbound->setRefLine(refX,refY);
+        }else if (relationship == -2){// -0010 right to scale
+            std::cout<<"-0010 right to scale"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat refX = minX, refY = outbound->getGeocenter().y;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[0][0] = std::min(10.0f, 1 + dX/size.x);
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+            outbound->setRefLine(refX,refY);
+        }else if (relationship == -4){// -0100 bottom to scale
+            std::cout<<"-0100 bottom to scale"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat refX = outbound->getGeocenter().x, refY = maxY;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[1][1] = std::max(0.1f, 1 - dY/size.y);
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+            outbound->setRefLine(refX,refY);
+        }else if (relationship == -8){// -1000 top to scale
+            std::cout<<"-1000 top to scale"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat refX = outbound->getGeocenter().x, refY = minY;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[1][1] = std::min(10.0f, 1 + dY/size.y);
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+            outbound->setRefLine(refX,refY);
+        }else if (relationship == -9){// -1001 left-top to scale
+            std::cout<<"-1001 left-top to scale"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat refX = maxX, refY = minY;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[0][0] = std::max(0.1f, 1 - dX/size.x);
+            newTransMat[1][1] = std::min(10.0f, 1 + dY/size.y);
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+            outbound->setRefLine(refX,refY);
+        }else if (relationship == -10){// -1010 right-top to scale
+            std::cout<<"-1010 right-top to scale"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat refX = minX, refY = minY;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[0][0] = std::min(10.0f, 1 + dX/size.x);
+            newTransMat[1][1] = std::min(10.0f, 1 + dY/size.y);
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+            outbound->setRefLine(refX,refY);
+        }else if (relationship == -6){// -0110 right-bottom to scale
+            std::cout<<"-0110 right-bottom to scale"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat refX = minX, refY = maxY;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[0][0] = std::min(10.0f, 1 + dX/size.x);
+            newTransMat[1][1] = std::max(0.1f, 1 - dY/size.y);
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+            outbound->setRefLine(refX,refY);
+        }else if (relationship == -5){// -0101 left-bottom to scale
+            std::cout<<"-0101 left-bottom to scale"<<std::endl;
+            glm::mat4 move = glm::mat4(1.0f);
+            const GLfloat refX = maxX, refY = maxY;
+            move[3][0] = refX; move[3][1] = refY;
+            newTransMat[0][0] = std::max(0.1f, 1 - dX/size.x);
+            newTransMat[1][1] = std::max(0.1f, 1 - dY/size.y);
+            newTransMat = move * newTransMat;
+            move[3][0] = -refX; move[3][1] = -refY;
+            newTransMat = newTransMat * move;
+            outbound->setRefLine(refX,refY);
         }
+        outbound->setTransmat(newTransMat);
     }
 }
 void generateNewPrimitive(){
@@ -379,4 +364,41 @@ void upstreamStatus(){
             record.layerList.pop_back();
         take.activeLayer = nullptr;
     }
+    if (record.showAxis)
+        coord::generateCoordinateAxis();
+    if (record.state != interectState::drawing && !record.drawingPrimitive && record.showCreateElementWindow){
+        take.drawType = Shape::NONE;
+        record.showCreateElementWindow = false;
+    }
+}
+
+int getRegionCode(const GLfloat& x, const GLfloat& y,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax) {
+    int code = 0,count = 0;
+    if (x < xMin) {
+        code |= left_bit_code;
+        count++;
+    }
+    if (x > xMax) {
+        code |= right_bit_code;
+        count++;
+    }
+    if (y < yMin) {
+        code |= button_bit_code;
+        count++;
+    }
+    if (y > yMax) {
+        code |= top_bit_code;
+        count++;
+    }
+    if (count>1){
+        Records& record = Records::getState();
+        GLdouble xpos,ypos;
+        WindowParas& windowPara = WindowParas::getInstance();
+        glfwGetCursorPos(windowPara.window, &xpos, &ypos);
+        const GLfloat cursorX =windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+        const GLfloat cursorY =windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+        record.previewXpos = cursorX;
+        record.previewYpos = cursorY;
+    }
+    return code;
 }

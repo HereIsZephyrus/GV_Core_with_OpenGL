@@ -64,6 +64,8 @@ public:
         updateProjectionMatrix();
         updateViewMatrix();
     }
+    void updateProjectionMatrix();
+    void updateViewMatrix() ;
 private:
     Camera2D();
     glm::vec2 position;
@@ -73,7 +75,5 @@ private:
     glm::mat4 projectionMatrix;
     glm::mat4 viewMatrix;
     const GLfloat deltaTime = 0.016f; // 60FPS
-    void updateProjectionMatrix();
-    void updateViewMatrix() ;
 };
 #endif /* camera_hpp */

@@ -90,8 +90,8 @@ extern std::vector<pShader> mainShaderList;
 //extern Shader* defaultShader;
 GLchar* filePath(const char* fileName);
 std::string geneateColorShader(const ImVec4& color);
-const size_t headTypeNum = 2;
-const size_t lineTypeNum = 3;
+constexpr size_t headTypeNum = 2;
+constexpr size_t lineTypeNum = 3;
 };
 
 #endif /* rendering_hpp */

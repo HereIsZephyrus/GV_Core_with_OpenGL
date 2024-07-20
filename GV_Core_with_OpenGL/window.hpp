@@ -61,12 +61,13 @@ void generateCoordinateAxis();
 void drawScaleText();
 }
 
-constexpr GLint left_bit_code = 0x1;
-constexpr GLint right_bit_code = 0x2;
-constexpr GLint button_bit_code = 0x4;
-constexpr GLint top_bit_code = 0x8;
 namespace gui {
 constexpr GLfloat detactBias = 0.48f;
+constexpr GLfloat outboundBias = 2.0f;
+constexpr GLfloat borderDetectRange = 20.0f;
+constexpr GLfloat menuWidth = 200.0f;
+constexpr GLfloat dragCameraSpeed = 6.0f;
+constexpr GLfloat doubleClickBias = 0.2f;
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
 extern interectState lastState;
@@ -79,7 +80,7 @@ extern std::set<pItem> readyToDelete;
 void DrawGUI();
 void spiltUI();
 void createPrimitiveList();
-void drawLayerList(const std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange);
+void drawLayerList(Layer& parentLayer,GLuint& countLayer,bool& isActive,bool& toRearrange);
 void deleteButton(std::string name,const Layer& toDeleteLayer);
 void deleteButton(std::string name,pItem toDeleteItem);
 std::string inputLayerName();

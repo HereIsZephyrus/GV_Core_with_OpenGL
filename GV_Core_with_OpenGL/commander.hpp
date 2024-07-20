@@ -92,7 +92,6 @@ public:
     Shape drawType;
     bool holdonToDraw; // hold on to draw or click to draw
     pPrimitive clipShape;
-    glm::mat3 transMat;
 private:
     Take(){
         editingPrimitive = nullptr;

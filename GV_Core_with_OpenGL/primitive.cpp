@@ -13,18 +13,23 @@
 #include "window.hpp"
 #include "camera.hpp"
 #include "rendering.hpp"
+#include "shape.hpp"
+constexpr GLfloat INF = 1e10;
 Primitive::Primitive(vertexArray vertices,Shape shape,GLsizei stride):stride(stride){
     if (!HAS_INIT_OPENGL_CONTEXT)
         initOpenGL(WindowParas::getInstance().window);
+    m_self = this;
     this->vertices = vertices;
     this->elementList.clear();
     this->holding = false;
     this->visable = true;
     this->layerVisable = true;
+    this->toDelete = false;
     this->transMat = glm::mat4(1.0f);
     this->drawType = shape;
     ShaderStyle& style = ShaderStyle::getStyle();
     setColor(style.drawColor);
+    this->outBound = nullptr;
     this->thickness = style.thickness;
     this->pointsize = style.pointsize;
     switch (shape) {
@@ -81,7 +86,7 @@ void Primitive::rend(GLuint& program){
     Camera2D& camera = Camera2D::getView();
     glm::mat4 projection = camera.getProjectionMatrix();
     glm::mat4 view = camera.getViewMatrix();
-    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 model = transMat;
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -109,7 +114,15 @@ void Primitive::draw(){
     glBindVertexArray(0);
     return;
 }
- 
+GLfloat Primitive::calcThicknessBias(){
+    if (drawType == Shape::POINTS)
+        return pointsize;
+    else if (drawType == Shape::LINES || drawType == Shape::LOOP)
+        return thickness;
+    else if (!ShaderStyle::getStyle().toFill)
+        return thickness;
+    return 0;
+}
 void Primitive::updateVertex(){
     glBindVertexArray(identifier.VAO);
     glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
@@ -118,18 +131,7 @@ void Primitive::updateVertex(){
     glBindVertexArray(0);
 }
 
-//void Primitive::transform(const glm::mat3& inputMat){
-//    //transfered = vertices;
-//    for (auto vertex = vertices.begin(); vertex != vertices.end(); vertex+=stride) {
-//        const GLfloat rawX = *(vertex), rawY = *(vertex+1);
-//        //std::cout<< inputMat[0][0]<<' '<< inputMat[1][0]<< inputMat[2][0]<<std::endl;
-//        //std::cout<< inputMat[0][1]<<' '<< inputMat[1][1]<< inputMat[2][1]<<std::endl;
-//        *(vertex) = rawX * inputMat[0][0] + rawY * inputMat[1][0] + inputMat[2][0];
-//        *(vertex+1) = rawX * inputMat[0][1] + rawY * inputMat[1][1] + inputMat[2][1];
-//    }
-//    updateVertex();
-//}
-void Primitive::transformVertex(const indexArray& vertexIndex,const glm::mat3& inputMat){
+void Primitive::transformVertex(const indexArray& vertexIndex,const glm::mat4& inputMat){
     //transfered = vertices;
     for (auto index = vertexIndex.begin(); index != vertexIndex.end(); index++) {
         const GLint beginIndex = (*index) * stride;
@@ -139,10 +141,16 @@ void Primitive::transformVertex(const indexArray& vertexIndex,const glm::mat3& i
     }
 }
 void Primitive::createOutboundElement(){
-    
-}
-void Primitive::destroyOutboundElement(){
-    
+    GLfloat minX = INF,minY = INF,maxX = -INF,maxY = -INF;
+    for (int i=0; i<getVertexNum(); i++){
+        const GLfloat vertexX = vertices[i * stride], vertexY = vertices[i * stride + 1];
+        if (minX > vertexX){minX = vertexX; /*minXid = i;*/}
+        if (minY > vertexY){minY = vertexY; /*minYid = i;*/}
+        if (maxX < vertexX){maxX = vertexX; /*maxXid = i;*/}
+        if (maxY < vertexY){maxY = vertexY; /*maxYid = i;*/}
+    }
+    GLfloat bias = calcThicknessBias();
+    outBound = std::make_shared<pr::OutBound>(minX,minY,maxX,maxY,bias,transMat);
 }
 static GLfloat lagrange_basis(int i, GLfloat x, const std::vector<GLfloat>& points) {
     GLfloat basis = 1.0f;
@@ -229,9 +237,14 @@ void Primitive::useShader(){
     glm::mat4 projection = camera.getProjectionMatrix();
     glm::mat4 view = camera.getViewMatrix();
     glm::mat4 model = transMat;
+    if (outBound != nullptr && outBound->getTransmat() != transMat)
+        model = outBound -> transMat * model;
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+}
+void Primitive::exertTransmat(const glm::mat4& multiMat){
+    transMat = multiMat * transMat;
 }
 namespace pr {
 std::vector<std::unique_ptr<Primitive> >mainPrimitiveList;

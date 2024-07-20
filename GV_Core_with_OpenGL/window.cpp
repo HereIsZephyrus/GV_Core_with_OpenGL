@@ -17,6 +17,7 @@
 #include "camera.hpp"
 #include "primitive.hpp"
 #include "shape.hpp"
+#include "factor.hpp"
 
 GLfloat WindowParas::screen2normalX(GLdouble screenX){
     return  (2.0f * static_cast<GLfloat>(screenX/ SCREEN_WIDTH * xScale)) - 1.0f;
@@ -249,12 +250,12 @@ static void projectMenu() {
 
 static void editMenu() {
     Records& record = Records::getState();
-    if (ImGui::MenuItem("Undo", "CTRL Z")){
+    //if (ImGui::MenuItem("Undo", "CTRL Z")){
         
-    }
-    if (ImGui::MenuItem("Redo", "CTRL Shift Z")){
+    //}
+    //if (ImGui::MenuItem("Redo", "CTRL Shift Z")){
         
-    }
+    //}
     if (record.state != interectState::drawing && ImGui::MenuItem("Start edit")){
         record.state = interectState::drawing;
         panelStackNum ++;
@@ -277,14 +278,17 @@ static void editMenu() {
 }
 
 static void viewMenu() {
-    if (ImGui::MenuItem("Zoom to layer", "CTRL F")){
-        
-    }
     if (ImGui::MenuItem("Zoom in", "CTRL Alt +")){
-        
+        Camera2D& camera = Camera2D::getView();
+        camera.getView().zoomInOut(2.0f);
+        camera.updateProjectionMatrix();
+        camera.updateViewMatrix();
     }
     if (ImGui::MenuItem("Zoom out", "CTRL Alt -")){
-        
+        Camera2D& camera = Camera2D::getView();
+        camera.getView().zoomInOut(-2.0f);
+        camera.updateProjectionMatrix();
+        camera.updateViewMatrix();
     }
     if (ImGui::MenuItem("Drag", "F5"))
         Records::getState().dragingMode = GL_TRUE;
@@ -563,7 +567,8 @@ void renderPrimitiveSelectPanel(){
 static bool comparePrimitive(const pPrimitive& a, const pPrimitive& b) {
     return *a < *b;
 }
-void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,bool& toRearrange){
+void drawLayerList(Layer& parentLayer,GLuint& countLayer,bool& isActive,bool& toRearrange){
+    std::vector<pItem>& items = parentLayer.itemlist;
     if (items.empty())
         return;
     Records& record = Records::getState();
@@ -574,7 +579,7 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
         GLuint& currentLayer = (*item)->primitive->priority;
         if (toDelete && readyToDelete.count(*item)){
             (*item)->primitive->visable = false;
-            std::cout<<"to invisable primitive"<<std::endl;
+            (*item)->primitive->toDelete = true;
         }
         if (currentLayer != countLayer)
             toRearrange = true;
@@ -582,14 +587,16 @@ void drawLayerList(std::vector<pItem>& items,GLuint& countLayer,bool& isActive,b
         const std::string buttonIdentifier = std::to_string(countLayer);
         bool isSelected = gui::focusedLayers.count(currentLayer);
         if (ImGui::Selectable(buttonIdentifier.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns| ImGuiSelectableFlags_AllowItemOverlap)){
+            Take& take = Take::holdon();
             gui::editLayer = currentLayer;
             if (!remainList && record.state == interectState::holding){
                 gui::focusedLayers.clear();
-                Take::holdon().holdonObjList.clear();
+                take.holdonObjList.clear();
+                take.activeLayer = &parentLayer;
             }
             record.state = interectState::holding;
             if (gui::focusedLayers.count((*item)->primitive->priority) == 0)
-                Take::holdon().holdonObjList.push_back((*item)->primitive);
+                take.holdonObjList.push_back((*item)->primitive);
             (*item)->primitive->setHold(true);
             gui::focusedLayers.insert((*item)->primitive->priority);
             gui::editLayer = (*item)->primitive->priority;
@@ -713,6 +720,16 @@ void createPrimitiveList() {
                 take.activeLayer = &(*layer);
                 record.state = interectState::drawing;
             }
+            if (isSelected && record.doubleCliked){
+                take.alertWindow = inputLayerName;
+                record.editingString = true;
+                inputString = "";
+            }
+            if (take.alertWindow == inputLayerName){
+                std::string layerName = take.alertWindow();
+                if (layerName != "")
+                    (*layer).name = layerName;
+            }
             ImGui::SameLine();
             ImGui::Checkbox(std::string("##Checkbox" + buttonIdentifier).c_str(),&layer->visable);
             ImGui::SameLine();
@@ -731,7 +748,7 @@ void createPrimitiveList() {
             for (auto item : layer->itemlist)
                 item->primitive->layerVisable = layer->visable;
             if (ImGui::TreeNode(buttonIdentifier.c_str())) {
-                drawLayerList(layer->itemlist,countLayer,isActive,toRearrange);
+                drawLayerList(*layer,countLayer,isActive,toRearrange);
                 ImGui::TreePop();
             }
         }
@@ -766,14 +783,6 @@ void clipPoints(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin
     //std::cout<<"after"<<vertices.size()<<std::endl;
 }
 
-static int getRegionCode(const GLfloat& x, const GLfloat& y,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax) {
-    int code = 0;
-    if (x < xMin) code |= left_bit_code; //left
-    if (x > xMax) code |= right_bit_code; //right
-    if (y < yMin) code |= button_bit_code; //button
-    if (y > yMax) code |= top_bit_code; //top
-    return code;
-}
 void clipCohenSutherLand(vertexArray& vertices, const GLsizei& stride,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax){
     vertexArray newArray;
     newArray.clear();

@@ -73,8 +73,11 @@ int main(int argc, const char * argv[]) {
             hasHolding |= (*primitive)->getHold();
             // draw elements
             (*primitive)->useShader();
-            for (auto element = (*primitive)->elementList.begin(); element!=(*primitive)->elementList.end(); element++)
+            for (auto element = (*primitive)->elementList.rbegin(); element!=(*primitive)->elementList.rend(); element++)
                 (*element)->draw((*primitive)->getHold());
+            if ((*primitive)->outBound != nullptr){
+                (*primitive)->outBound->draw();
+            }
         }
         if (openDetect && record.state == interectState::holding && !hasHolding && !gui::isActive && record.pressLeft){
             gui::focusedLayers.clear();

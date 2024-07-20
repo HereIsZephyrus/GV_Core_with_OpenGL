@@ -108,6 +108,12 @@ int initShaders(){
     previewCircleShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
     previewCircleShader->linkProgram();
     rd::namedShader["previewCircleShader"] = std::move(previewCircleShader);
+    pShader outboundShader (new Shader());
+    outboundShader->attchShader(rd::filePath("outbound.vs"),GL_VERTEX_SHADER);
+    //outboundShader->attchShader(rd::filePath("outbound.gs"), GL_GEOMETRY_SHADER);
+    outboundShader->attchShader(rd::filePath("fillWhite.frag"),GL_FRAGMENT_SHADER);
+    outboundShader->linkProgram();
+    rd::namedShader["outboundShader"] = std::move(outboundShader);
     return 0;
 }
 int initItem(){

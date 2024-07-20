@@ -41,9 +41,11 @@ class Point;
 class Line;
 class Face;
 class Curve;
+class OutBound;
 class Diagnoal;
 }
 typedef std::shared_ptr<pr::Element> pElement;
+typedef std::shared_ptr<pr::OutBound> pOutbound;
 class Primitive{
 public:
     Primitive(vertexArray vertices,Shape shape,GLsizei stride);
@@ -58,8 +60,8 @@ public:
     void bindShader(Shader* tobind){shader = tobind;}
     void updateVertex();
     void draw();
-    void transformVertex(const indexArray&,const glm::mat3&);
-    //void transform(const glm::mat3&);
+    void transformVertex(const indexArray&,const glm::mat4&);
+    //void transform(const glm::mat4&);
     void drawElement();
     void rend(GLuint& program);
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
@@ -74,12 +76,15 @@ public:
     vertexArray vertices;//,transfered;
     std::vector<pElement> elementList;
     GLuint priority;
-    bool visable,layerVisable;
+    bool visable,layerVisable,toDelete;
     bool operator < (const Primitive& x) const{
         return priority<x.priority;
     }
     void createOutboundElement();
-    void destroyOutboundElement();
+    void destroyOutboundElement(){
+        outBound.reset();
+        outBound = nullptr;
+    }
     void useShader();
     std::string getName() const {return name;}
     bool getHold() const{return holding;}
@@ -87,13 +92,17 @@ public:
     GLfloat getThickness(){return thickness;}
     glm::vec4 getColor() const{return color;}
     GLenum getShape() const{return shape;}
+    glm::mat4 getTransMat() const {return transMat;}
     void setName(std::string name){this->name = name;}
     void setHold(bool isHolding){this->holding = isHolding;}
     void setColor(ImVec4 UIcolor){color = {UIcolor.x,UIcolor.y,UIcolor.z,UIcolor.w};}
     void setPointsize(GLfloat pointSize){pointsize = pointSize;}
     void setThickness(GLfloat lineWidth){thickness = lineWidth;}
-    glm::mat3 transMat;
-    //void addMat(const glm::mat3& inputMat){transMat = transMat * inputMat;}
+    void exertTransmat(const glm::mat4& multiMat);
+    void setTransmat(const glm::mat4& newMat){ transMat = newMat;}
+    GLfloat calcThicknessBias();
+    pOutbound outBound;
+    Primitive* getSelf(){return m_self;}
 protected:
     void generateCurve();
     void lagrangeInterpolation(const GLint,const vertexArray& ,const GLsizei);
@@ -105,11 +114,13 @@ private:
     GLenum shape;
     GLsizei stride,indexLen;
     Shader* shader;
+    Primitive* m_self;
     glm::vec4 color;
     std::string name;
     bool holding;
     Shape drawType;
     GLfloat thickness,pointsize;
+    glm::mat4 transMat;
 };
 
 typedef std::unique_ptr<Primitive> pPrimitive;

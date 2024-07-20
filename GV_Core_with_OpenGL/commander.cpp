@@ -105,16 +105,20 @@ void mouseEditCallback(GLFWwindow* window, int button, int action, int mods){
     WindowParas& windowPara = WindowParas::getInstance();
     if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT) {
         Records& record = Records::getState();
+        Take& take = Take::holdon();
         GLdouble xpos,ypos;
         glfwGetCursorPos(windowPara.window, &xpos, &ypos);
         const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
         const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
         record.previewXpos = cursorX;
         record.previewYpos = cursorY;
+        if (windowPara.mainWindowFocused)
+            take.editingPrimitive->outBound->relationship = take.editingPrimitive->outBound->cursorDetect(xpos, ypos);
     }
-    if (action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_LEFT && windowPara.mainWindowFocused) {
+    if (action == GLFW_RELEASE && windowPara.mainWindowFocused){
         Take& take = Take::holdon();
-        take.editingPrimitive->transMat = take.transMat;
+        take.editingPrimitive->exertTransmat(take.editingPrimitive->outBound->getTransmat());
+        take.editingPrimitive->outBound->setTransmat(take.editingPrimitive->getTransMat());
     }
     return;
 }
@@ -218,17 +222,17 @@ static bool checkCursorFocus(){
     //bool openDetect = ((Records::getState().state == interectState::holding) || (Records::getState().state == interectState::toselect));
     if (!Records::getState().dragingMode){
         Camera2D& camera = Camera2D::getView();
-        const GLfloat dragCameraSpeed = 10.0f * camera.getZoom(),borderDetectRange = 40.0f, menuWidth = 200.0f;
-        if (cursorX < borderDetectRange){
+        const GLfloat dragCameraSpeed = gui::dragCameraSpeed * camera.getZoom();
+        if (cursorX < gui::borderDetectRange){
             camera.setDeltaPosition(camera.getPosition(), -dragCameraSpeed, 0);
         }
-        else if (cursorX> windowPara.SCREEN_WIDTH/windowPara.xScale - borderDetectRange){
+        else if (cursorX> windowPara.SCREEN_WIDTH/windowPara.xScale - gui::borderDetectRange){
             camera.setDeltaPosition(camera.getPosition(), dragCameraSpeed, 0);
         }
-        if (cursorY < borderDetectRange  && cursorX > menuWidth){
+        if (cursorY < gui::borderDetectRange + gui::menuBarHeight && cursorX > gui::menuWidth){
             camera.setDeltaPosition(camera.getPosition(), 0, dragCameraSpeed);
         }
-        else if (cursorY> windowPara.SCREEN_HEIGHT/windowPara.yScale - borderDetectRange){
+        else if (cursorY> windowPara.SCREEN_HEIGHT/windowPara.yScale - gui::borderDetectRange){
             camera.setDeltaPosition(camera.getPosition(), 0, -dragCameraSpeed);
         }
     }
@@ -238,10 +242,9 @@ static bool checkCursorFocus(){
 int InterectResponseCheck(GLFWwindow* &window){
     Camera2D& camera = Camera2D::getView();
     camera.processKeyboard(window);
-    coord::generateCoordinateAxis();
     WindowParas::getInstance().mainWindowFocused = checkCursorFocus();
     if (Records::getState().state == interectState::editing && WindowParas::getInstance().mainWindowFocused)
-        editPrimitive();
+        outboundInterectCheck(Take::holdon().editingPrimitive->outBound);
     return 0;
 }
 
@@ -394,10 +397,9 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
 void doubleClickDetected(GLFWwindow* window, int button, int action, int mods){
     GLdouble& lastClickTime = WindowParas::getInstance().lastClickTime;
     GLboolean& doubleClickState = Records::getState().doubleCliked;
-    const float doubleClikBias = 0.2;
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
             GLdouble currentTime = glfwGetTime();
-            if (currentTime - lastClickTime < doubleClikBias)
+        if (currentTime - lastClickTime < gui::doubleClickBias)
                 doubleClickState = GL_TRUE;
             else
                 doubleClickState = GL_FALSE;
