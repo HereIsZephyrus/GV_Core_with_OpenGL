@@ -222,17 +222,17 @@ static bool checkCursorFocus(){
     //bool openDetect = ((Records::getState().state == interectState::holding) || (Records::getState().state == interectState::toselect));
     if (!Records::getState().dragingMode){
         Camera2D& camera = Camera2D::getView();
-        const GLfloat dragCameraSpeed = 10.0f * camera.getZoom(),borderDetectRange = 40.0f, menuWidth = 200.0f;
-        if (cursorX < borderDetectRange){
+        const GLfloat dragCameraSpeed = gui::dragCameraSpeed * camera.getZoom();
+        if (cursorX < gui::borderDetectRange){
             camera.setDeltaPosition(camera.getPosition(), -dragCameraSpeed, 0);
         }
-        else if (cursorX> windowPara.SCREEN_WIDTH/windowPara.xScale - borderDetectRange){
+        else if (cursorX> windowPara.SCREEN_WIDTH/windowPara.xScale - gui::borderDetectRange){
             camera.setDeltaPosition(camera.getPosition(), dragCameraSpeed, 0);
         }
-        if (cursorY < borderDetectRange  && cursorX > menuWidth){
+        if (cursorY < gui::borderDetectRange + gui::menuBarHeight && cursorX > gui::menuWidth){
             camera.setDeltaPosition(camera.getPosition(), 0, dragCameraSpeed);
         }
-        else if (cursorY> windowPara.SCREEN_HEIGHT/windowPara.yScale - borderDetectRange){
+        else if (cursorY> windowPara.SCREEN_HEIGHT/windowPara.yScale - gui::borderDetectRange){
             camera.setDeltaPosition(camera.getPosition(), 0, -dragCameraSpeed);
         }
     }
@@ -398,10 +398,9 @@ void processCursorTrace(GLFWwindow* window,double xpos, double ypos){
 void doubleClickDetected(GLFWwindow* window, int button, int action, int mods){
     GLdouble& lastClickTime = WindowParas::getInstance().lastClickTime;
     GLboolean& doubleClickState = Records::getState().doubleCliked;
-    const float doubleClikBias = 0.2;
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
             GLdouble currentTime = glfwGetTime();
-            if (currentTime - lastClickTime < doubleClikBias)
+        if (currentTime - lastClickTime < gui::doubleClickBias)
                 doubleClickState = GL_TRUE;
             else
                 doubleClickState = GL_FALSE;

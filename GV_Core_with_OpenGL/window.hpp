@@ -64,6 +64,10 @@ void drawScaleText();
 namespace gui {
 constexpr GLfloat detactBias = 0.48f;
 constexpr GLfloat outboundBias = 2.0f;
+constexpr GLfloat borderDetectRange = 20.0f;
+constexpr GLfloat menuWidth = 200.0f;
+constexpr GLfloat dragCameraSpeed = 6.0f;
+constexpr GLfloat doubleClickBias = 0.2f;
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
 extern interectState lastState;
