@@ -76,7 +76,7 @@ public:
     vertexArray vertices;//,transfered;
     std::vector<pElement> elementList;
     GLuint priority;
-    bool visable,layerVisable;
+    bool visable,layerVisable,toDelete;
     bool operator < (const Primitive& x) const{
         return priority<x.priority;
     }
