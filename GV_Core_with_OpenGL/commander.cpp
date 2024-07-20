@@ -242,7 +242,6 @@ static bool checkCursorFocus(){
 int InterectResponseCheck(GLFWwindow* &window){
     Camera2D& camera = Camera2D::getView();
     camera.processKeyboard(window);
-    coord::generateCoordinateAxis();
     WindowParas::getInstance().mainWindowFocused = checkCursorFocus();
     if (Records::getState().state == interectState::editing && WindowParas::getInstance().mainWindowFocused)
         outboundInterectCheck(Take::holdon().editingPrimitive->outBound);

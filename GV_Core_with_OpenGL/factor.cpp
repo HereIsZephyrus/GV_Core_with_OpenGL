@@ -364,6 +364,12 @@ void upstreamStatus(){
             record.layerList.pop_back();
         take.activeLayer = nullptr;
     }
+    if (record.showAxis)
+        coord::generateCoordinateAxis();
+    if (record.state != interectState::drawing && !record.drawingPrimitive && record.showCreateElementWindow){
+        take.drawType = Shape::NONE;
+        record.showCreateElementWindow = false;
+    }
 }
 
 int getRegionCode(const GLfloat& x, const GLfloat& y,const GLfloat& xMin,const GLfloat& xMax,const GLfloat& yMin,const GLfloat& yMax) {
