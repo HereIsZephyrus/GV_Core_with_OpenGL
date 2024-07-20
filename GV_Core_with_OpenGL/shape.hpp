@@ -34,7 +34,6 @@ enum class TopoType{
     face,
     curve,
     diagnoal,
-    outBound,
 };
 class Line;
 class Face;
@@ -64,7 +63,6 @@ private:
     glm::vec2 geoCenter,rotateCenter;
     glm::vec3 size;
     primitiveIdentifier identifier;
-    std::vector<pElement> elements;
 };
 class Element{
 public:
@@ -76,14 +74,6 @@ public:
         const ImVec4 uiColor = ShaderStyle::getStyle().drawColor;
         style.color = {uiColor.x,uiColor.y,uiColor.z,uiColor.w};
         stride = primitive->stride;
-        visable = true;
-    }
-    Element(const OutBound* outbound){
-        refVertex = std::make_shared<vertexArray>(outbound->vertices);
-        identifier = outbound->getIdentifier();
-        shader = outbound->shader;
-        style.color = {0.75,0.75,0.75,0.4};
-        stride = 3;
         visable = true;
     }
     bool getVisable() const {return visable;}
@@ -136,15 +126,6 @@ public:
         this->visable = visable;
         bindEBObuffer();
     }
-    Point(OutBound* outbound,GLuint startIndex):Element(outbound){
-        this->pointSize = 10.0f;
-        shape = GL_POINTS;
-        vertexIndex = {startIndex};
-        calcGeoCenter();
-        type = TopoType::point;
-        this->visable = true;
-        bindEBObuffer();
-    }
     friend class Line;
     friend class Face;
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
@@ -178,18 +159,6 @@ public:
         calcGeoCenter();
         type = TopoType::line;
         this->visable = visable;
-        bindEBObuffer();
-    }
-    Line(OutBound* outbound, GLuint startIndex, GLuint endIndex):Element(outbound){
-        this->lineWidth = 6.0f;
-        vertexIndex = {startIndex,endIndex};
-        point[0] = std::make_shared<Point>(outbound,vertexIndex[0]);
-        outbound->elements.push_back(point[0]);
-        point[1] = std::make_shared<Point>(outbound,vertexIndex[1]);
-        outbound->elements.push_back(point[1]);
-        calcGeoCenter();
-        type = TopoType::line;
-        this->visable = true;
         bindEBObuffer();
     }
     friend class Face;
@@ -228,21 +197,6 @@ public:
         calcGeoCenter();
         type = TopoType::face;
         this->visable = visable;
-        bindEBObuffer();
-    }
-    Face(OutBound* outbound):Element(outbound){
-        const int n =  static_cast<int>((*refVertex).size()/stride);
-        for (int i = 0; i<n-1; i++){
-            vertexIndex.push_back(i);
-            line.push_back(std::make_shared<Line>(outbound,i,i+1));
-            outbound->elements.push_back(line.back());
-        }
-        vertexIndex.push_back(n-1);
-        line.push_back(std::make_shared<Line>(outbound,n-1,0));
-        outbound->elements.push_back(line.back());
-        calcGeoCenter();
-        type = TopoType::face;
-        this->visable = true;
         bindEBObuffer();
     }
     bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
