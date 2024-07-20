@@ -250,12 +250,12 @@ static void projectMenu() {
 
 static void editMenu() {
     Records& record = Records::getState();
-    if (ImGui::MenuItem("Undo", "CTRL Z")){
+    //if (ImGui::MenuItem("Undo", "CTRL Z")){
         
-    }
-    if (ImGui::MenuItem("Redo", "CTRL Shift Z")){
+    //}
+    //if (ImGui::MenuItem("Redo", "CTRL Shift Z")){
         
-    }
+    //}
     if (record.state != interectState::drawing && ImGui::MenuItem("Start edit")){
         record.state = interectState::drawing;
         panelStackNum ++;
@@ -278,14 +278,17 @@ static void editMenu() {
 }
 
 static void viewMenu() {
-    if (ImGui::MenuItem("Zoom to layer", "CTRL F")){
-        
-    }
     if (ImGui::MenuItem("Zoom in", "CTRL Alt +")){
-        
+        Camera2D& camera = Camera2D::getView();
+        camera.getView().zoomInOut(2.0f);
+        camera.updateProjectionMatrix();
+        camera.updateViewMatrix();
     }
     if (ImGui::MenuItem("Zoom out", "CTRL Alt -")){
-        
+        Camera2D& camera = Camera2D::getView();
+        camera.getView().zoomInOut(-2.0f);
+        camera.updateProjectionMatrix();
+        camera.updateViewMatrix();
     }
     if (ImGui::MenuItem("Drag", "F5"))
         Records::getState().dragingMode = GL_TRUE;
