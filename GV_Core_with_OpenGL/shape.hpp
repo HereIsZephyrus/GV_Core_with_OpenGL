@@ -45,7 +45,6 @@ public:
     void updateThicknessBias(GLfloat newthickness);
     glm::vec2 getGeocenter() const{return geoCenter;}
     glm::vec2 getRotateCenter() const{return rotateCenter;}
-    bool cursorSelectDetect(GLdouble xpos,GLdouble ypos);
     glm::mat4 getTransmat() const{return transMat;}
     void setTransmat(const glm::mat4& newMat){ transMat = newMat;}
     int cursorDetect(GLdouble xpos,GLdouble ypos);
@@ -57,6 +56,7 @@ public:
     const primitiveIdentifier* getIdentifier() const{return &identifier;}
     Shader* shader;
     vertexArray vertices;
+    int relationship;
     friend Primitive;
     friend Line;
     friend Face;

@@ -105,12 +105,15 @@ void mouseEditCallback(GLFWwindow* window, int button, int action, int mods){
     WindowParas& windowPara = WindowParas::getInstance();
     if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT) {
         Records& record = Records::getState();
+        Take& take = Take::holdon();
         GLdouble xpos,ypos;
         glfwGetCursorPos(windowPara.window, &xpos, &ypos);
         const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
         const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
         record.previewXpos = cursorX;
         record.previewYpos = cursorY;
+        if (windowPara.mainWindowFocused)
+            take.editingPrimitive->outBound->relationship = take.editingPrimitive->outBound->cursorDetect(xpos, ypos);
     }
     if (action == GLFW_RELEASE && windowPara.mainWindowFocused){
         Take& take = Take::holdon();

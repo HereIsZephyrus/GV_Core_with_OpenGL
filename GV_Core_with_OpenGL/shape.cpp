@@ -207,8 +207,7 @@ bool Diagnoal::cursorSelectDetect(GLdouble xpos,GLdouble ypos){
     }
     return false;
 }
-OutBound::OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,const GLfloat thickness,const glm::mat4& primitiveTransMat){
-    thickBias = 0;
+OutBound::OutBound(GLfloat const minX,GLfloat const minY,GLfloat const maxX,GLfloat const maxY,const GLfloat thickness,const glm::mat4& primitiveTransMat):relationship(0),thickBias(0){
     shader = rd::namedShader["outboundShader"].get();
     glGenVertexArrays(1,&identifier.VAO);
     glGenBuffers(1,&identifier.VBO);
@@ -267,6 +266,39 @@ void OutBound::draw(){
     return;
 }
 int OutBound::cursorDetect(GLdouble xpos,GLdouble ypos){
+    WindowParas& windowPara = WindowParas::getInstance();
+    const GLfloat cursorX = windowPara.normal2orthoX(windowPara.screen2normalX(xpos));
+    const GLfloat cursorY = windowPara.normal2orthoY(windowPara.screen2normalY(ypos));
+    const GLfloat zoom = Camera2D::getView().getZoom();
+    glm::vec4 raw_leftbottomPoint = transMat * glm::vec4(getMinX(),getMinY(),0.0f,1.0f);
+    glm::vec4 raw_righttopPoint = transMat * glm::vec4(getMaxX(),getMaxY(),0.0f,1.0f);
+    const GLfloat minX = raw_leftbottomPoint.x,minY = raw_leftbottomPoint.y;
+    const GLfloat maxX = raw_righttopPoint.x,maxY = raw_righttopPoint.y;
+    // detect whether cursor on the outbound
+    const GLfloat pointDetectRange = gui::detactBias * zoom * 16.0f;
+    GLfloat detectX = minX,detectY = minY;
+    if ((cursorX - detectX) * (cursorX - detectX) + (cursorY - detectY) * (cursorY - detectY) <= pointDetectRange * pointDetectRange)
+        return -5;
+    detectX = minX;detectY = maxY;
+    if ((cursorX - detectX) * (cursorX - detectX) + (cursorY - detectY) * (cursorY - detectY) <= pointDetectRange * pointDetectRange)
+        return -9;
+    detectX = maxX;detectY = maxY;
+    if ((cursorX - detectX) * (cursorX - detectX) + (cursorY - detectY) * (cursorY - detectY) <= pointDetectRange * pointDetectRange)
+        return -10;
+    detectX = maxX;detectY = minY;
+    if ((cursorX - detectX) * (cursorX - detectX) + (cursorY - detectY) * (cursorY - detectY) <= pointDetectRange * pointDetectRange)
+        return -6;
+    const GLfloat paralellRange = gui::detactBias * zoom * 10.0f;
+    if (cursorX >= minX && cursorX <= maxX && abs(cursorY - minY) <= paralellRange)
+        return -4;
+    if (cursorX >= minX && cursorX <= maxX && abs(cursorY - maxY) <= paralellRange)
+        return -8;
+    if (cursorY >= minY && cursorY <= maxY && abs(cursorX - minX) <= paralellRange)
+        return -1;
+    if (cursorY >= minY && cursorY <= maxY && abs(cursorX - maxX) <= paralellRange)
+        return -2;
+    // detect by liang-barsky
+    
     return 0;
 }
 }//namespace pr

@@ -67,6 +67,7 @@ constexpr GLint button_bit_code = 0x4;
 constexpr GLint top_bit_code = 0x8;
 namespace gui {
 constexpr GLfloat detactBias = 0.48f;
+constexpr GLfloat outboundBias = 2.0f;
 extern unsigned int panelStackNum; //count sidebar stack num,(not achieved)
 extern float menuBarHeight;
 extern interectState lastState;
