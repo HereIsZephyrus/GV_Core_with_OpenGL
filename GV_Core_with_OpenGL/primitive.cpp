@@ -113,7 +113,15 @@ void Primitive::draw(){
     glBindVertexArray(0);
     return;
 }
- 
+GLfloat Primitive::calcThicknessBias(){
+    if (drawType == Shape::POINTS)
+        return pointsize;
+    else if (drawType == Shape::LINES || drawType == Shape::LOOP)
+        return thickness;
+    else if (!ShaderStyle::getStyle().toFill)
+        return thickness;
+    return 0;
+}
 void Primitive::updateVertex(){
     glBindVertexArray(identifier.VAO);
     glBindBuffer(GL_ARRAY_BUFFER, identifier.VBO);
@@ -140,7 +148,8 @@ void Primitive::createOutboundElement(){
         if (maxX < vertexX){maxX = vertexX; /*maxXid = i;*/}
         if (maxY < vertexY){maxY = vertexY; /*maxYid = i;*/}
     }
-    outBound = std::make_shared<pr::OutBound>(minX,minY,maxX,maxY,&transMat);
+    GLfloat bias = calcThicknessBias();
+    outBound = std::make_shared<pr::OutBound>(minX,minY,maxX,maxY,bias,&transMat);
 }
 static GLfloat lagrange_basis(int i, GLfloat x, const std::vector<GLfloat>& points) {
     GLfloat basis = 1.0f;

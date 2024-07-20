@@ -97,6 +97,7 @@ public:
     void setColor(ImVec4 UIcolor){color = {UIcolor.x,UIcolor.y,UIcolor.z,UIcolor.w};}
     void setPointsize(GLfloat pointSize){pointsize = pointSize;}
     void setThickness(GLfloat lineWidth){thickness = lineWidth;}
+    GLfloat calcThicknessBias();
     glm::mat3 transMat;
     pOutbound outBound;
     Primitive* getSelf(){return m_self;}
